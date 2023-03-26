@@ -1,4 +1,5 @@
 const client = require('./index');
+const { createUser } = require('./users');
 
 const dropTables = async () => {
     try {
@@ -16,7 +17,7 @@ const dropTables = async () => {
         `);
         console.log('Finished dropping tables.');
     } catch (error) {
-        console.log('Error when dropping tables!');
+        console.log('Error dropping tables!');
         console.error(error);
     };
 };
@@ -75,6 +76,7 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(100) NOT NULL,
+                email VARCHAR(150) NOT NULL,
                 active BOOLEAN DEFAULT true,
                 firstname VARCHAR(100),
                 surname VARCHAR(100),
@@ -183,7 +185,47 @@ const createTables = async () => {
                 features TEXT
             );
         `)
+        console.log('Finished creating tables!');
     } catch (error) {
+        console.log('Error creating tables!');
+        console.error(error);
+    };
+};
+
+const createInitialUsers = async () => {
+    try {
+        console.log('Creating users...');
+
+        const userOne = await createUser({
+            username: 'tredding',
+            password: '12345',
+            email: 'tateredding@gmail.com',
+            firstname: 'Tate',
+            bio: 'I am the creator of this website!'
+        });
+
+        const userTwo = await createUser({
+            username: 'peaseblossom',
+            password: '12345',
+            email: 'ninasemail@gmail.com',
+            firstname: 'Nina',
+            location: 'Fort Collins, CO'
+        });
+
+        const userThree = await createUser({
+            username: 'DavisTheButcher',
+            password: '12345',
+            email: 'daviswells@gmail.com',
+            firstname: 'Davis',
+            surname: 'Wells',
+            location: 'The Regional'
+        });
+        console.log(userOne);
+        console.log(userTwo);
+        console.log(userThree);
+        console.log('Finished creating users!')
+    } catch (error) {
+        console.log('Error creating users!');
         console.error(error);
     };
 };
@@ -201,6 +243,7 @@ const rebuildDB = async () => {
 const testDB = async () => {
     try {
         console.log('Testing database...');
+        await createInitialUsers();
         console.log('Finished testing database!')
     } catch (error) {
         console.error(error);
