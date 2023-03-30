@@ -2,6 +2,7 @@ const client = require('./index');
 const { createUser } = require('./users');
 const { createCampaign } = require('./campaigns');
 const { createUserCampaign } = require('./user_campaigns');
+const { createMessage } = require('./messages');
 
 const dropTables = async () => {
     try {
@@ -371,6 +372,56 @@ const createInitialUserCampaigns = async () => {
     };
 };
 
+const createInitialMessages = async () => {
+    try {
+        console.log('Creating messages...');
+
+        const messageOne = await createMessage({
+            senderId: 1,
+            campaignId: 1,
+            content: 'How does this Sunday at 6pm work for the next session?'
+        });
+
+        const messageTwo = await createMessage({
+            senderId: 2,
+            campaignId: 1,
+            content: 'Sign me up!',
+        });
+
+        const messageThree = await createMessage({
+            senderId: 3,
+            campaignId: 1,
+            content: 'Sunday works great!'
+        });
+
+        const messageFour = await createMessage({
+            senderId: 1,
+            campaignId: 2,
+            content: 'This is a public message'
+        });
+
+        const messageFive = await createMessage({
+            senderId: 2,
+            recipientId: 1,
+            campaignId: 2,
+            content: 'This is a private message',
+            public: false
+        });
+
+        console.log([
+            messageOne,
+            messageTwo,
+            messageThree,
+            messageFour,
+            messageFive
+        ]);
+        console.log('Finished creating messages!');
+    } catch (error) {
+        console.log('Error creating messages!');
+        console.error(error);
+    };
+};
+
 const rebuildDB = async () => {
     try {
         client.connect();
@@ -387,6 +438,7 @@ const testDB = async () => {
         await createInitialUsers();
         await createInitialCampaigns();
         await createInitialUserCampaigns();
+        await createInitialMessages();
         console.log('Finished testing database!')
     } catch (error) {
         console.error(error);
