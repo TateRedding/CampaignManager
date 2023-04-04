@@ -3,6 +3,7 @@ const { createUser } = require('./users');
 const { createCampaign } = require('./campaigns');
 const { createUserCampaign } = require('./user_campaigns');
 const { createMessage } = require('./messages');
+const { createCharacter } = require('./characters');
 
 const dropTables = async () => {
     try {
@@ -11,7 +12,13 @@ const dropTables = async () => {
             DROP TABLE IF EXISTS user_campaigns;
             DROP TABLE IF EXISTS messages;
             DROP TABLE IF EXISTS characters;
-            DROP TABLE IF EXISTS proficiencies;
+            DROP TABLE IF EXISTS saving_throw_proficiencies;
+            DROP TABLE IF EXISTS skill_proficiencies;
+            DROP TABLE IF EXISTS armor_proficiencies;
+            DROP TABLE IF EXISTS weapon_proficiencies;
+            DROP TABLE IF EXISTS language_proficiencies;
+            DROP TABLE IF EXISTS tool_proficiencies;
+            DROP TABLE IF EXISTS vehicle_proficiencies;
             DROP TABLE IF EXISTS campaigns;
             DROP TABLE IF EXISTS users;
             DROP TYPE IF EXISTS alignment;
@@ -116,14 +123,18 @@ const createTables = async () => {
                 "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
-            CREATE TABLE proficiencies (
+            CREATE TABLE saving_throw_proficiencies (
                 id SERIAL PRIMARY KEY,
                 strength BOOLEAN DEFAULT false,
                 dexterity BOOLEAN DEFAULT false,
                 constitution BOOLEAN DEFAULT false,
                 intelligence BOOLEAN DEFAULT false,
                 wisdom BOOLEAN DEFAULT false,
-                charisma BOOLEAN DEFAULT false,
+                charisma BOOLEAN DEFAULT false
+            );
+
+            CREATE TABLE skill_proficiencies (
+                id SERIAL PRIMARY KEY,
                 acrobatics BOOLEAN DEFAULT false,
                 "animalHandling" BOOLEAN DEFAULT false,
                 arcana BOOLEAN DEFAULT false,
@@ -140,17 +151,48 @@ const createTables = async () => {
                 persuasion BOOLEAN DEFAULT false,
                 religion BOOLEAN DEFAULT false,
                 "sleightOfHand" BOOLEAN DEFAULT false,
-                survival BOOLEAN DEFAULT false,
-                "simpleMeleeWeapons" BOOLEAN DEFAULT false,
-                "martialMeleeWeapons" BOOLEAN DEFAULT false,
-                "simpleRangedWeapons" BOOLEAN DEFAULT false,
-                "martialRangedWeapons" BOOLEAN DEFAULT false,
+                survival BOOLEAN DEFAULT false
+            );
+
+            CREATE TABLE armor_proficiencies (
+                id SERIAL PRIMARY KEY,
                 "lightArmor" BOOLEAN DEFAULT false,
                 "mediumArmor" BOOLEAN DEFAULT false,
                 "heavyArmor" BOOLEAN DEFAULT false,
-                shields BOOLEAN DEFAULT false,
-                "landVehicles" BOOLEAN DEFAULT false,
-                "waterVehicles" BOOLEAN DEFAULT false,
+                shields BOOLEAN DEFAULT false
+            );
+ 
+            CREATE TABLE weapon_proficiencies (
+                id SERIAL PRIMARY KEY,
+                "simpleMeleeWeapons" BOOLEAN DEFAULT false,
+                "martialMeleeWeapons" BOOLEAN DEFAULT false,
+                "simpleRangedWeapons" BOOLEAN DEFAULT false,
+                "martialRangedWeapons" BOOLEAN DEFAULT false
+            );
+ 
+            CREATE TABLE language_proficiencies (
+                id SERIAL PRIMARY KEY,
+                common BOOLEAN DEFAULT true,
+                dwarvish BOOLEAN DEFAULT false,
+                elvish BOOLEAN DEFAULT false,
+                giant BOOLEAN DEFAULT false,
+                gnomish BOOLEAN DEFAULT false,
+                goblin BOOLEAN DEFAULT false,
+                halfling BOOLEAN DEFAULT false,
+                orc BOOLEAN DEFAULT false,
+                druidic BOOLEAN DEFAULT false,
+                abyssal BOOLEAN DEFAULT false,
+                celestial BOOLEAN DEFAULT false,
+                draconic BOOLEAN DEFAULT false,
+                "deepSpeech" BOOLEAN DEFAULT false,
+                infernal BOOLEAN DEFAULT false,
+                primordial BOOLEAN DEFAULT false,
+                sylvan BOOLEAN DEFAULT false,
+                undercommon BOOLEAN DEFAULT false
+            );
+
+            CREATE TABLE tool_proficiencies (
+                id SERIAL PRIMARY KEY,
                 "alchemistSupplies" BOOLEAN DEFAULT false,
                 "brewerSupplies" BOOLEAN DEFAULT false,
                 "calligrapherSupplies" BOOLEAN DEFAULT false,
@@ -190,6 +232,12 @@ const createTables = async () => {
                 "thieveTools" BOOLEAN DEFAULT false
             );
 
+            CREATE TABLE vehicle_proficiencies (
+                id SERIAL PRIMARY KEY,
+                "landVehicles" BOOLEAN DEFAULT false,
+                "waterVehicles" BOOLEAN DEFAULT false
+            ); 
+ 
             CREATE TABLE characters (
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
@@ -215,12 +263,18 @@ const createTables = async () => {
                 intelligence INTEGER DEFAULT 10,
                 wisdom INTEGER DEFAULT 10,
                 charisma INTEGER DEFAULT 10,
-                proficiencies INTEGER NOT NULL REFERENCES proficiencies(id),
+                "savingThrowProficiencies" INTEGER REFERENCES saving_throw_proficiencies(id),
+                "skillProficiencies" INTEGER REFERENCES skill_proficiencies(id),
+                "armorProficiencies" INTEGER REFERENCES armor_proficiencies(id),
+                "weaponProficiencies" INTEGER REFERENCES weapon_proficiencies(id),
+                "languageProficiencies" INTEGER REFERENCES language_proficiencies(id),
+                "toolProficiencies" INTEGER REFERENCES tool_proficiencies(id),
+                "vehicleProficiencies" INTEGER REFERENCES vehicle_proficiencies(id),
                 "armorClass" INTEGER DEFAULT 10,
                 speed INTEGER DEFAULT 25,
                 "maxHitPoints" INTEGER,
                 "currentHitPoints" INTEGER,
-                "temporaryHitPoints" INTEGER,
+                "temporaryHitPoints" INTEGER DEFAULT 0,
                 "hitDieType" HITDIE,
                 "deathSaveSuccesses" INTEGER DEFAULT 0,
                 "deathSaveFailures" INTEGER DEFAULT 0,
@@ -275,7 +329,7 @@ const createInitialUsers = async () => {
             location: 'The Regional'
         });
 
-        console.log([ userOne, userTwo, userThree ]);
+        console.log([userOne, userTwo, userThree]);
         console.log('Finished creating users!')
     } catch (error) {
         console.log('Error creating users!');
@@ -306,7 +360,7 @@ const createInitialCampaigns = async () => {
             name: 'Bee Boop Potato Soup'
         });
 
-        console.log([ campaignOne, campaignTwo, campaignThree ]);
+        console.log([campaignOne, campaignTwo, campaignThree]);
         console.log('Finished creating campaigns!');
     } catch (error) {
         console.log('Error creating campaigns!');
@@ -422,6 +476,82 @@ const createInitialMessages = async () => {
     };
 };
 
+const createInitialCharacters = async () => {
+    try {
+        console.log('Creating characters...');
+
+        const characterOne = await createCharacter({
+            userId: 1,
+            campaignId: 3,
+            name: 'Tredd Fargrim',
+            species: 'dwarf',
+            class: 'paladin',
+            alignment: 'lawful-good',
+            background: 'noble',
+            age: 146,
+            height: '3 feet, 5 inches',
+            weight: 190,
+            eyes: 'brown',
+            hair: 'reddish brown',
+            skin: 'pale',
+            strength: 16,
+            dexterity: 9,
+            constitution: 14,
+            wisdom: 8,
+            charisma: 13,
+            armorClass: 18,
+            maxHitPoints: 12,
+            currentHitPoints: 12,
+            hitDieType: 'd10',
+            attacks: {
+                name: 'Greataxe',
+                type: 'martial melee',
+                damage: '1d12',
+                damageType: 'slashing',
+            },
+            gold: 100,
+            equipment: 'Shield, plate armor, greatsword, 10 torches, 50 feet of hempen rope',
+            personalityTraits: 'I have a pretty big ego. I am very easy to get along with.',
+            ideals: 'Justice must be served',
+            bonds: 'I must protect those who cannot protect themselves',
+            flaws: 'I cannot turn down a drink',
+            features: 'Lay on Hands, Divine Sense'
+        }, {
+            strength: true,
+            constitution: true
+        }, {
+            history: true,
+            intimidation: true,
+            perception: true,
+            religion: true,
+            survival: true
+        }, {
+            lightArmor: true,
+            mediumArmor: true,
+            heavyArmor: true,
+            shields: true
+        }, {
+            simpleMeleeWeapons: true,
+            martialMeleeWeapons: true,
+            simpleRangedWeapons: true,
+            martialRangedWeapons: true,
+        }, {
+            dwarvish: true
+        }, {
+            masonTools: true
+        }, {
+            landVehicles: true
+        });
+
+        console.log(characterOne);
+
+        console.log('Finished creating characters!');
+    } catch (error) {
+        console.log('Error creating characters!');
+        console.error(error);
+    };
+};
+
 const rebuildDB = async () => {
     try {
         client.connect();
@@ -439,6 +569,7 @@ const testDB = async () => {
         await createInitialCampaigns();
         await createInitialUserCampaigns();
         await createInitialMessages();
+        await createInitialCharacters();
         console.log('Finished testing database!')
     } catch (error) {
         console.error(error);
