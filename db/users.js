@@ -6,6 +6,21 @@ const createUser = async ({ ...fields }) => {
     return await createRow('users', fields);
 };
 
+const getUserById = async (id) => {
+    try {
+        const { rows: [user] } = await client.query(`
+          SELECT *
+          FROM users
+          WHERE id=${id};
+        `);
+        delete user.password;
+        return user;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
-    createUser
+    createUser,
+    getUserById
 };
