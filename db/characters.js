@@ -1,4 +1,5 @@
 const client = require('./index');
+const { getTrueProficiencies } = require('./utils');
 const {
     createSavingThrowProficiencies,
     createSkillProficiencies,
@@ -59,6 +60,57 @@ const getCharacterById = async (id) => {
             FROM characters
             WHERE id=${id};
         `)
+
+        const { rows: [savingThrowProficiencies] } = await client.query(`
+            SELECT *
+            FROM saving_throw_proficiencies
+            WHERE id=${character.savingThrowProficiencies};
+        `);
+
+        const { rows: [skillProficiencies] } = await client.query(`
+            SELECT *
+            FROM skill_proficiencies
+            WHERE id=${character.skillProficiencies};
+        `);
+
+        const { rows: [armorProficiencies] } = await client.query(`
+            SELECT *
+            FROM armor_proficiencies
+            WHERE id=${character.armorProficiencies};
+        `);
+
+        const { rows: [weaponProficiencies] } = await client.query(`
+            SELECT *
+            FROM weapon_proficiencies
+            WHERE id=${character.weaponProficiencies};
+        `);
+
+        const { rows: [languageProficiencies] } = await client.query(`
+            SELECT *
+            FROM language_proficiencies
+            WHERE id=${character.languageProficiencies};
+        `);
+
+        const { rows: [toolProficiencies] } = await client.query(`
+            SELECT *
+            FROM tool_proficiencies
+            WHERE id=${character.toolProficiencies};
+        `);
+
+        const { rows: [vehicleProficiencies] } = await client.query(`
+            SELECT *
+            FROM vehicle_proficiencies
+            WHERE id=${character.vehicleProficiencies};
+        `);
+
+        character.savingThrowProficiencies = getTrueProficiencies(savingThrowProficiencies);
+        character.skillProficiencies = getTrueProficiencies(skillProficiencies);
+        character.armorProficiencies = getTrueProficiencies(armorProficiencies);
+        character.weaponProficiencies = getTrueProficiencies(weaponProficiencies);
+        character.languageProficiencies = getTrueProficiencies(languageProficiencies);
+        character.toolProficiencies = getTrueProficiencies(toolProficiencies);
+        character.vehicleProficiencies = getTrueProficiencies(vehicleProficiencies);
+        
         return character;
     } catch (error) {
         console.error(error);

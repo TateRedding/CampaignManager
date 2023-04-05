@@ -15,6 +15,16 @@ const createRow = async (table, fields) => {
     };
 };
 
+const getTrueProficiencies = (arr) => {
+    return Object.keys(arr).reduce((acc, key) => {
+        if (key !== 'id' && arr[key]) {
+            acc.push(key);
+        };
+        return acc;
+    }, []);
+}
+
 module.exports = {
-    createRow
+    createRow,
+    getTrueProficiencies
 };
