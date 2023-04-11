@@ -12,19 +12,9 @@ const dropTables = async () => {
             DROP TABLE IF EXISTS user_campaigns;
             DROP TABLE IF EXISTS messages;
             DROP TABLE IF EXISTS characters;
-            DROP TABLE IF EXISTS saving_throw_proficiencies;
-            DROP TABLE IF EXISTS skill_proficiencies;
-            DROP TABLE IF EXISTS armor_proficiencies;
-            DROP TABLE IF EXISTS weapon_proficiencies;
-            DROP TABLE IF EXISTS language_proficiencies;
-            DROP TABLE IF EXISTS tool_proficiencies;
-            DROP TABLE IF EXISTS vehicle_proficiencies;
             DROP TABLE IF EXISTS campaigns;
             DROP TABLE IF EXISTS users;
             DROP TYPE IF EXISTS alignment;
-            DROP TYPE IF EXISTS class;
-            DROP TYPE IF EXISTS hitdie;
-            DROP TYPE IF EXISTS species;
         `);
         console.log('Finished dropping tables.');
     } catch (error) {
@@ -49,46 +39,13 @@ const createTables = async () => {
                 'chaotic-evil'
             );
 
-            CREATE TYPE class AS ENUM (
-                'barbarian',
-                'bard',
-                'cleric',
-                'druid',
-                'fighter',
-                'monk',
-                'paladin',
-                'ranger',
-                'rogue',
-                'sorcerer',
-                'warlock',
-                'wizard'
-            );
-
-            CREATE TYPE hitdie AS ENUM (
-                'd6',
-                'd8',
-                'd10',
-                'd12'
-            );
-
-            CREATE TYPE species AS ENUM (
-                'dwarf',
-                'elf',
-                'halfling',
-                'half-elf',
-                'half-orc',
-                'human',
-                'dragonborn',
-                'gnome',
-                'tiefling'
-            );
-
             CREATE TABLE users (
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL,
                 active BOOLEAN DEFAULT true,
+                "lookingForGroup" BOOLEAN DEFAULT false,
                 firstname VARCHAR(100),
                 surname VARCHAR(100),
                 location VARCHAR(100),
@@ -122,121 +79,6 @@ const createTables = async () => {
                 public BOOLEAN DEFAULT true,
                 "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
-
-            CREATE TABLE saving_throw_proficiencies (
-                id SERIAL PRIMARY KEY,
-                strength BOOLEAN DEFAULT false,
-                dexterity BOOLEAN DEFAULT false,
-                constitution BOOLEAN DEFAULT false,
-                intelligence BOOLEAN DEFAULT false,
-                wisdom BOOLEAN DEFAULT false,
-                charisma BOOLEAN DEFAULT false
-            );
-
-            CREATE TABLE skill_proficiencies (
-                id SERIAL PRIMARY KEY,
-                acrobatics BOOLEAN DEFAULT false,
-                "animalHandling" BOOLEAN DEFAULT false,
-                arcana BOOLEAN DEFAULT false,
-                athletics BOOLEAN DEFAULT false,
-                deception BOOLEAN DEFAULT false,
-                history BOOLEAN DEFAULT false,
-                insight BOOLEAN DEFAULT false,
-                intimidation BOOLEAN DEFAULT false,
-                investigation BOOLEAN DEFAULT false,
-                medicine BOOLEAN DEFAULT false,
-                nature BOOLEAN DEFAULT false,
-                perception BOOLEAN DEFAULT false,
-                performance BOOLEAN DEFAULT false,
-                persuasion BOOLEAN DEFAULT false,
-                religion BOOLEAN DEFAULT false,
-                "sleightOfHand" BOOLEAN DEFAULT false,
-                survival BOOLEAN DEFAULT false
-            );
-
-            CREATE TABLE armor_proficiencies (
-                id SERIAL PRIMARY KEY,
-                "lightArmor" BOOLEAN DEFAULT false,
-                "mediumArmor" BOOLEAN DEFAULT false,
-                "heavyArmor" BOOLEAN DEFAULT false,
-                shields BOOLEAN DEFAULT false
-            );
- 
-            CREATE TABLE weapon_proficiencies (
-                id SERIAL PRIMARY KEY,
-                "simpleMeleeWeapons" BOOLEAN DEFAULT false,
-                "martialMeleeWeapons" BOOLEAN DEFAULT false,
-                "simpleRangedWeapons" BOOLEAN DEFAULT false,
-                "martialRangedWeapons" BOOLEAN DEFAULT false
-            );
- 
-            CREATE TABLE language_proficiencies (
-                id SERIAL PRIMARY KEY,
-                common BOOLEAN DEFAULT true,
-                dwarvish BOOLEAN DEFAULT false,
-                elvish BOOLEAN DEFAULT false,
-                giant BOOLEAN DEFAULT false,
-                gnomish BOOLEAN DEFAULT false,
-                goblin BOOLEAN DEFAULT false,
-                halfling BOOLEAN DEFAULT false,
-                orc BOOLEAN DEFAULT false,
-                druidic BOOLEAN DEFAULT false,
-                abyssal BOOLEAN DEFAULT false,
-                celestial BOOLEAN DEFAULT false,
-                draconic BOOLEAN DEFAULT false,
-                "deepSpeech" BOOLEAN DEFAULT false,
-                infernal BOOLEAN DEFAULT false,
-                primordial BOOLEAN DEFAULT false,
-                sylvan BOOLEAN DEFAULT false,
-                undercommon BOOLEAN DEFAULT false
-            );
-
-            CREATE TABLE tool_proficiencies (
-                id SERIAL PRIMARY KEY,
-                "alchemistSupplies" BOOLEAN DEFAULT false,
-                "brewerSupplies" BOOLEAN DEFAULT false,
-                "calligrapherSupplies" BOOLEAN DEFAULT false,
-                "carpenterTools" BOOLEAN DEFAULT false,
-                "cartographerTools" BOOLEAN DEFAULT false,
-                "cobblerTools" BOOLEAN DEFAULT false,
-                "cookUtensils" BOOLEAN DEFAULT false,
-                "glassblowerTools" BOOLEAN DEFAULT false,
-                "jewelerTools" BOOLEAN DEFAULT false,
-                "leatherworkerTools" BOOLEAN DEFAULT false,
-                "masonTools" BOOLEAN DEFAULT false,
-                "painterSupplies" BOOLEAN DEFAULT false,
-                "potterTools" BOOLEAN DEFAULT false,
-                "smithTools" BOOLEAN DEFAULT false,
-                "tinkerTools" BOOLEAN DEFAULT false,
-                "weaverTools" BOOLEAN DEFAULT false,
-                "woodcarverTools" BOOLEAN DEFAULT false,
-                "disguiseKit" BOOLEAN DEFAULT false,
-                "forgeryKit" BOOLEAN DEFAULT false,
-                "diceSet" BOOLEAN DEFAULT false,
-                "dragonchessSet" BOOLEAN DEFAULT false,
-                "playingCardSet" BOOLEAN DEFAULT false,
-                "threeDragonAnteSet" BOOLEAN DEFAULT false,
-                "herbalismKit" BOOLEAN DEFAULT false,
-                bagpipes BOOLEAN DEFAULT false,
-                drum BOOLEAN DEFAULT false,
-                dulcimer BOOLEAN DEFAULT false,
-                flute BOOLEAN DEFAULT false,
-                lute BOOLEAN DEFAULT false,
-                lyre BOOLEAN DEFAULT false,
-                horn BOOLEAN DEFAULT false,
-                "panFlute" BOOLEAN DEFAULT false,
-                shawm BOOLEAN DEFAULT false,
-                viol BOOLEAN DEFAULT false,
-                "navigatorTools" BOOLEAN DEFAULT false,
-                "poisonerTools" BOOLEAN DEFAULT false,
-                "thieveTools" BOOLEAN DEFAULT false
-            );
-
-            CREATE TABLE vehicle_proficiencies (
-                id SERIAL PRIMARY KEY,
-                "landVehicles" BOOLEAN DEFAULT false,
-                "waterVehicles" BOOLEAN DEFAULT false
-            ); 
  
             CREATE TABLE characters (
                 id SERIAL PRIMARY KEY,
@@ -244,11 +86,13 @@ const createTables = async () => {
                 "campaignId" INTEGER REFERENCES campaigns(id),
                 public BOOLEAN DEFAULT true,
                 name VARCHAR(100) NOT NULL,
-                level INTEGER NOT NULL DEFAULT 1,
-                species SPECIES NOT NULL,
-                class CLASS NOT NULL,
+                level INTEGER DEFAULT 1,
+                experience INTEGER DEFAULT 0,
+                species VARCHAR(50) NOT NULL,
+                subspecies VARCHAR(50),
+                class VARCHAR(50) NOT NULL,
                 subclass VARCHAR(50),
-                alignment ALIGNMENT NOT NULL,
+                alignment ALIGNMENT NOT NULL, 
                 background VARCHAR(100) NOT NULL,
                 age INTEGER,
                 height VARCHAR(50),
@@ -263,19 +107,14 @@ const createTables = async () => {
                 intelligence INTEGER DEFAULT 10,
                 wisdom INTEGER DEFAULT 10,
                 charisma INTEGER DEFAULT 10,
-                "savingThrowProficiencies" INTEGER REFERENCES saving_throw_proficiencies(id),
-                "skillProficiencies" INTEGER REFERENCES skill_proficiencies(id),
-                "armorProficiencies" INTEGER REFERENCES armor_proficiencies(id),
-                "weaponProficiencies" INTEGER REFERENCES weapon_proficiencies(id),
-                "languageProficiencies" INTEGER REFERENCES language_proficiencies(id),
-                "toolProficiencies" INTEGER REFERENCES tool_proficiencies(id),
-                "vehicleProficiencies" INTEGER REFERENCES vehicle_proficiencies(id),
+                proficiencies JSON NOT NULL,
                 "armorClass" INTEGER DEFAULT 10,
                 speed INTEGER DEFAULT 25,
-                "maxHitPoints" INTEGER,
-                "currentHitPoints" INTEGER,
+                "maxHitPoints" INTEGER DEFAULT 0,
+                "currentHitPoints" INTEGER DEFAULT 0,
                 "temporaryHitPoints" INTEGER DEFAULT 0,
-                "hitDieType" HITDIE,
+                "totalHitDice" JSON NOT NULL,
+                "currentHitDice" JSON NOT NULL,
                 "deathSaveSuccesses" INTEGER DEFAULT 0,
                 "deathSaveFailures" INTEGER DEFAULT 0,
                 attacks JSON,
@@ -290,7 +129,7 @@ const createTables = async () => {
                 ideals TEXT,
                 bonds TEXT,
                 flaws TEXT,
-                features TEXT
+                features JSON
             );
         `)
         console.log('Finished creating tables!');
@@ -324,6 +163,7 @@ const createInitialUsers = async () => {
             username: 'DavisTheButcher',
             password: '12345',
             email: 'daviswells@gmail.com',
+            lookingForGroup: true,
             firstname: 'Davis',
             surname: 'Wells',
             location: 'The Regional'
@@ -485,6 +325,7 @@ const createInitialCharacters = async () => {
             campaignId: 3,
             name: 'Tredd Fargrim',
             species: 'dwarf',
+            subspecies: 'mountain dwarf',
             class: 'paladin',
             alignment: 'lawful-good',
             background: 'noble',
@@ -499,15 +340,58 @@ const createInitialCharacters = async () => {
             constitution: 14,
             wisdom: 8,
             charisma: 13,
+            proficiencies: {
+                savingThrows: [
+                    'strength',
+                    'constitution'
+                ],
+                skills: [
+                    'history',
+                    'intimidation',
+                    'perception',
+                    'religion',
+                    'survival'
+                ],
+                armor: [
+                    'light',
+                    'medium',
+                    'heavy',
+                    'shields'
+                ],
+                weapons: [
+                    'simple_melee',
+                    'martial_melee',
+                    'simple_ranged',
+                    'martial_ranged'
+                ],
+                langauges: [
+                    'common',
+                    'dwarvish'
+                ],
+                tools: [
+                    "mason's_tools"
+                ],
+                vehicles: [
+                    'land'
+                ]
+            },
             armorClass: 18,
             maxHitPoints: 12,
             currentHitPoints: 12,
-            hitDieType: 'd10',
+            totalHitDice: {
+                'd10': 1
+            },
+            currentHitDice: {
+                'd8': 13
+            },
             attacks: {
-                name: 'Greataxe',
-                type: 'martial melee',
-                damage: '1d12',
-                damageType: 'slashing',
+                attacks: [
+                    {
+                        name: 'Greataxe',
+                        type: 'martial melee',
+                        damage: '1d12',
+                        damageType: 'slashing'
+                    }]
             },
             gold: 100,
             equipment: 'Shield, plate armor, greatsword, 10 torches, 50 feet of hempen rope',
@@ -515,35 +399,154 @@ const createInitialCharacters = async () => {
             ideals: 'Justice must be served',
             bonds: 'I must protect those who cannot protect themselves',
             flaws: 'I cannot turn down a drink',
-            features: 'Lay on Hands, Divine Sense'
-        }, {
-            strength: true,
-            constitution: true
-        }, {
-            history: true,
-            intimidation: true,
-            perception: true,
-            religion: true,
-            survival: true
-        }, {
-            lightArmor: true,
-            mediumArmor: true,
-            heavyArmor: true,
-            shields: true
-        }, {
-            simpleMeleeWeapons: true,
-            martialMeleeWeapons: true,
-            simpleRangedWeapons: true,
-            martialRangedWeapons: true,
-        }, {
-            dwarvish: true
-        }, {
-            masonTools: true
-        }, {
-            landVehicles: true
+            features: {
+                species: [
+                    'Stonecunning'
+                ],
+                class: [
+                    'Lay on Hands',
+                    'Divine Sense'
+                ]
+            }
         });
 
-        console.log(characterOne);
+        const characterTwo = await createCharacter({
+            userId: 2,
+            campaignId: 2,
+            name: 'Thyri Littleflower',
+            level: 13,
+            experience: 168970,
+            species: 'elf',
+            class: 'druid',
+            subclass: 'circle of the land',
+            alignment: 'chaotic-good',
+            background: 'escaped research relic',
+            age: 314,
+            height: '5 feet, 11 inches',
+            weight: 150,
+            eyes: 'yellow',
+            hair: 'deep mahogany',
+            skin: 'silvery',
+            strength: 13,
+            dexterity: 13,
+            constitution: 14,
+            intelligence: 13,
+            wisdom: 13,
+            charisma: 14,
+            proficiencies: {
+                savingThrows: [
+                    'intelligence',
+                    'wisdom'
+                ],
+                skills: [
+                    'animal_handling',
+                    'perception',
+                    'survival'
+                ],
+                armor: [
+                    'light',
+                    'medium',
+                    'shields'
+                ],
+                weapons: [
+                    'club',
+                    'dagger',
+                    'dart',
+                    'javelin',
+                    'mace',
+                    'quarterstaff',
+                    'scimitar',
+                    'sickle',
+                    'sling',
+                    'spear'
+                ],
+                langauges: [
+                    'common',
+                    'celestial',
+                    'druidic',
+                    'elvish'
+                ]
+            },
+            armorClass: 14,
+            maxHitPoints: 96,
+            currentHitPoints: 96,
+            temporaryHitPoints: 5,
+            totalHitDice: {
+                'd8': 13
+            },
+            currentHitDice: {
+                'd8': 13
+            },
+            attacks: {
+                attacks: [
+                    {
+                        name: 'Quarterstaff (One handed)',
+                        type: 'simple melee',
+                        damage: '1d6',
+                        damageType: 'bludgeoning'
+                    }, {
+                        name: 'Quarterstaff (Two handed)',
+                        type: 'simple melee',
+                        damage: '1d8',
+                        damageType: 'bludgeoning'
+                    }, {
+                        name: 'Produce Flame',
+                        type: 'spell',
+                        damage: {
+                            1: '1d8',
+                            5: '2d8',
+                            11: '3d8',
+                            17: '4d8'
+                        },
+                        damageType: 'fire'
+                    }
+                ]
+            },
+            spells: {
+                spells: [
+                    {
+                        name: 'Produce Flame',
+                        level: 'cantrip',
+                        castingTime: '1 action',
+                        range: 'self',
+                        components: ['v', 's'],
+                        duration: '10 minutes',
+                        school: 'conjuration',
+                        attack: 'ranged',
+                        damageType: 'fire',
+                        description: 'A flickering flame appears in your hand...'
+                    }
+                ]
+            },
+            copper: 7,
+            silver: 1,
+            etherium: 1,
+            gold: 408,
+            platinum: 160,
+            equipment: 'Druidic Focus, Waterskin, Quarterstaff, Backpack, Bedroll, Potion of Thunder Resistance, Scroll of Tidal Wave',
+            personalityTraits: 'Distracted, gentle unless provoked vision-centric, intuitive',
+            ideals: 'To locate healing serum for a mother she lost years ago. To ensure the well being of young living things, distrusts organization or for-profit ideals.',
+            bonds: 'Fascination for all living things. A great sense for justice/balance.',
+            flaws: 'Extremely distanced from reality when visions/nightmares of old experimentation take hold.',
+            features: {
+                species: [
+                    'fey ancestry', 
+                    'trance'
+                ],
+                class: [
+                    'natural recovery',
+                    'Nature\'s ward'
+                ],
+                feats: [
+                    'Lucky'
+                ]
+            }
+        });
+
+        console.log([
+            characterOne,
+            characterTwo
+        ]);
 
         console.log('Finished creating characters!');
     } catch (error) {
