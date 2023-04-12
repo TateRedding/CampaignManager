@@ -27,7 +27,7 @@ router.use(async (req, res, next) => {
 });
 
 const campaignsRouter = require('./campaigns');
-router.use('/campaignsRouter', campaignsRouter);
+router.use('/campaigns', campaignsRouter);
 
 const charactersRouter = require('./characters');
 router.use('/characters', charactersRouter);
