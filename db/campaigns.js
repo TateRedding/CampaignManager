@@ -1,5 +1,5 @@
 const client = require('./index');
-const { attachMessagesToCampaigns } = require('./messages');
+const { attachMessagesToCampaigns, getMessagesByCampaign } = require('./messages');
 const { createRow, getRowById } = require('./utils');
 
 const createCampaign = async ({ ...fields }) => {
@@ -12,11 +12,11 @@ const getCampaignById = async (id) => {
             SELECT campaigns.*, users.username AS "creatorName"
             FROM campaigns
             JOIN users
-                ON campaigns."creatorId"=users.id;
-            WHERE campaigns.id=${id}
+                ON campaigns."creatorId"=users.id
+            WHERE campaigns.id=${id};
         `);
         if (campaign) {
-            attachMessagesToCampaigns([campaign]);
+            campaign.messages = await getMessagesByCampaign(campaign.id);
         };
         return campaign;
     } catch (error) {
@@ -32,7 +32,6 @@ const getAllCampaigns = async () => {
             JOIN users
                 ON campaigns."creatorId"=users.id;
         `);
-        await attachMessagesToCampaigns(campaigns);
         return campaigns
     } catch (error) {
         console.error(error);
@@ -51,5 +50,6 @@ const getAllPublicCampaigns = async () => {
 
 module.exports = {
     createCampaign,
+    getCampaignById,
     getAllPublicCampaigns
 };

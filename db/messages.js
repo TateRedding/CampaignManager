@@ -18,18 +18,8 @@ const getMessagesByCampaign = async (campaignId) => {
     };
 };
 
-const attachMessagesToCampaigns = async (campaigns) => {
-    try {
-        for (let i = 0; i < campaigns.length; i++) {
-            const messages = await getMessagesByCampaign(campaigns[i].id);
-            campaigns[i].messages = messages;
-        };
-    } catch (error) {
-        console.error(error);
-    };
-};
 
 module.exports = {
     createMessage,
-    attachMessagesToCampaigns
+    getMessagesByCampaign
 };
