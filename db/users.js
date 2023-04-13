@@ -1,6 +1,6 @@
 const client = require('./index');
 const bcrypt = require('bcrypt');
-const { createRow, getRowById } = require('./utils');
+const { createRow } = require('./utils');
 
 const createUser = async ({ ...fields }) => {
     return await createRow('users', fields);
@@ -26,7 +26,11 @@ const getUserById = async (id) => {
             FROM users
             WHERE id=${id}
         `);
-        return user;
+        if (user) {
+            delete user.password;
+            return user;
+        };
+        return null;
     } catch (error) {
         console.error(error);
     };
@@ -46,6 +50,25 @@ const getUserByUsername = async (username) => {
     };
 };
 
+const getUsersLookingForGroup = async () => {
+    try {
+        const { rows: users } = await client.query(`
+            SELECT *
+            FROM users
+            WHERE "lookingForGroup"=true;
+        `);
+        if (users) {
+            users.map(user => delete user.password);
+            return users;
+        };
+        return null;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
-    createUser
+    createUser,
+    getUserById,
+    getUsersLookingForGroup
 };

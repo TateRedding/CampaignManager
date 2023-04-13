@@ -1,7 +1,7 @@
 const client = require('./index');
 const { getMessagesByCampaign } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
-const { createRow, getRowById } = require('./utils');
+const { createRow } = require('./utils');
 
 const createCampaign = async ({ ...fields }) => {
     return await createRow('campaigns', fields);

@@ -1,5 +1,5 @@
 const client = require('./index');
-const { createRow, getRowById } = require('./utils');
+const { createRow } = require('./utils');
 
 const createCharacter = async ({ ...fields }) => {
     return await createRow('characters', fields);
