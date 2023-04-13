@@ -1,5 +1,6 @@
 const client = require('./index');
-const { attachMessagesToCampaigns, getMessagesByCampaign } = require('./messages');
+const { getMessagesByCampaign } = require('./messages');
+const { getUserCampaignsByCampaignId } = require('./user_campaigns');
 const { createRow, getRowById } = require('./utils');
 
 const createCampaign = async ({ ...fields }) => {
@@ -16,6 +17,7 @@ const getCampaignById = async (id) => {
             WHERE campaigns.id=${id};
         `);
         if (campaign) {
+            campaign.players = await getUserCampaignsByCampaignId(campaign.id);
             campaign.messages = await getMessagesByCampaign(campaign.id);
         };
         return campaign;
@@ -32,7 +34,12 @@ const getAllCampaigns = async () => {
             JOIN users
                 ON campaigns."creatorId"=users.id;
         `);
-        return campaigns
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].players = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
+        return campaigns;
     } catch (error) {
         console.error(error);
     };
