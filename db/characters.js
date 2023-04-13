@@ -10,7 +10,7 @@ const getCharacterById = async (id) => {
         const { rows: [character] } = await client.query(`
             SELECT *
             FROM characters
-            WHERE id=${id}
+            WHERE id=${id};
         `);
         return character;
     } catch (error) {
@@ -18,7 +18,21 @@ const getCharacterById = async (id) => {
     };
 };
 
+const getAllPublicCharacters = async () => {
+    try {
+        const { rows: characters } = await client.query(`
+            SELECT *
+            FROM characters
+            WHERE public=true;
+        `);
+        return characters;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
     createCharacter,
-    getCharacterById
+    getCharacterById,
+    getAllPublicCharacters
 };

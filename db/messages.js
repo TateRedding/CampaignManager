@@ -10,7 +10,7 @@ const getMessagesByCampaign = async (campaignId) => {
         const { rows: messages } = await client.query(`
             SELECT *
             FROM messages
-            WHERE "campaignId"=${campaignId}
+            WHERE "campaignId"=${campaignId};
         `);
         return messages;
     } catch (error) {

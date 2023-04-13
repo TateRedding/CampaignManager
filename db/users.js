@@ -24,7 +24,7 @@ const getUserById = async (id) => {
         const { rows: [user] } = await client.query(`
             SELECT *
             FROM users
-            WHERE id=${id}
+            WHERE id=${id};
         `);
         if (user) {
             delete user.password;
@@ -41,7 +41,7 @@ const getUserByUsername = async (username) => {
         const { rows: [user] } = await client.query(`
             SELECT *
             FROM users
-            WHERE username='${username}'
+            WHERE username='${username}';
         `);
         delete user.password;
         return user;
