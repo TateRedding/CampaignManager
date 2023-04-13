@@ -35,9 +35,6 @@ router.use('/characters', charactersRouter);
 const messagesRouter = require('./messages');
 router.use('/messages', messagesRouter);
 
-const proficienciesRouter = require('./proficiencies');
-router.use('/proficiencies', proficienciesRouter);
-
 const userCampaignsRouter = require('./userCampaigns');
 router.use('/user_campaigns', userCampaignsRouter);
 

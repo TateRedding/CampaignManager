@@ -55,8 +55,29 @@ const getAllPublicCampaigns = async () => {
     };
 };
 
+const getCampaignsByUser = async (user) => {
+    try {
+        const { rows: campaigns } = await client.query(`
+            SELECT campaigns.*
+            FROM campaigns
+            JOIN user_campaigns
+                ON user_campaigns."campaignId"=campaigns.id
+            WHERE user_campaigns."userId"=${user.id};
+        `);
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].players = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
+        return campaigns;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
     createCampaign,
     getCampaignById,
-    getAllPublicCampaigns
+    getAllPublicCampaigns,
+    getCampaignsByUser
 };
