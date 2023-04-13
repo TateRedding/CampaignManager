@@ -16,6 +16,25 @@ const createRow = async (table, fields) => {
     };
 };
 
+const updateRow = async (table, id, fields) => {
+    const setString = Object.keys(fields).map((key, index) => `"${key}"=$${index + 1}`).join(', ');
+    if (!setString.length) {
+        return;
+    };
+    try {
+        const { rows: [row] } = await client.query(`
+            UPDATE ${table}
+            SET ${setString}
+            WHERE id=${id}
+            RETURNING *;
+        `, Object.values(fields));
+        return row;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
-    createRow
+    createRow,
+    updateRow
 };
