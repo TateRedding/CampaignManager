@@ -12,10 +12,9 @@ app.use(bodyParser.json());
 const cors = require('cors');
 app.use(cors());
 
-// Uncomment when connecting front end
-// const path = require('path');
-// app.use('/dist', express.static(path.join(__dirname, 'dist')));
-// app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+const path = require('path');
+app.use('/dist', express.static(path.join(__dirname, 'dist')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 const apiRouter = require('./api/index');
 app.use('/api', apiRouter);
