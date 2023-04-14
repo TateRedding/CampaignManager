@@ -2,16 +2,26 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login";
+import Register from "./Register";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(window.localStorage.getItem('fitness-tracker-token'));
+
+    const TOKEN_NAME = 'campaignManagerLoginToken';
 
     return (
         <>
             <main>
                 <Routes>
-                    <Route path="/login" element={
+                    <Route path='/login' element={
                         <Login
+                            TOKEN_NAME={TOKEN_NAME}
+                            setIsLoggedIn={setIsLoggedIn}
+                        />}
+                    />
+                    <Route path='/register' element={
+                        <Register
+                            TOKEN_NAME={TOKEN_NAME}
                             setIsLoggedIn={setIsLoggedIn}
                         />}
                     />
@@ -21,7 +31,7 @@ const App = () => {
     );
 };
 
-const container = document.getElementById("root");
+const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
     <HashRouter>

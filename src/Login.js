@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ TOKEN_NAME, setIsLoggedIn }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [invalidLogin, setInvalidLogin] = useState(false);
@@ -11,6 +11,7 @@ const Login = ({ setIsLoggedIn }) => {
 
     const logIn = async (event) => {
         event.preventDefault();
+        
         if (username && password) {
             setInvalidLogin(false);
             try {
@@ -21,7 +22,7 @@ const Login = ({ setIsLoggedIn }) => {
                 if (response.data.error === 'IncorrectCredentialsError') {
                     setInvalidLogin(true);
                 } else {
-                    window.localStorage.setItem('campaignManagerLoginToken', response.data.token);
+                    window.localStorage.setItem(TOKEN_NAME, response.data.token);
                     setIsLoggedIn(true);
                     setUsername('');
                     setPassword('');
@@ -47,6 +48,7 @@ const Login = ({ setIsLoggedIn }) => {
                         className="form-control"
                         id="username"
                         value={username}
+                        required
                         onChange={(event) => setUsername(event.target.value)}>
                     </input>
                 </div>
@@ -57,14 +59,15 @@ const Login = ({ setIsLoggedIn }) => {
                         className="form-control"
                         id="password"
                         value={password}
+                        required
                         onChange={(event) => setPassword(event.target.value)}>
                     </input>
                 </div>
-                <p>Don't have an account yet? <Link to='/register'>Click here!</Link></p>
+                <p>Don't have an account yet? <Link to="/register">Click here!</Link></p>
                 <button type="submit" className="btn btn-primary">Log In</button>
             </form>
         </>
-    )
-}
+    );
+};
 
 export default Login;

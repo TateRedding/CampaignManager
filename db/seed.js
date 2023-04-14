@@ -46,7 +46,7 @@ const createTables = async () => {
                 email VARCHAR(150) NOT NULL,
                 active BOOLEAN DEFAULT true,
                 "lookingForGroup" BOOLEAN DEFAULT false,
-                firstname VARCHAR(100),
+                "firstName" VARCHAR(100),
                 surname VARCHAR(100),
                 location VARCHAR(100),
                 bio TEXT
@@ -147,7 +147,7 @@ const createInitialUsers = async () => {
             username: 'tredding',
             password: 'password1234',
             email: 'tateredding@gmail.com',
-            firstname: 'Tate',
+            firstName: 'Tate',
             bio: 'I am the creator of this website!'
         });
 
@@ -155,7 +155,7 @@ const createInitialUsers = async () => {
             username: 'peaseblossom',
             password: 'myhusbandisamazing',
             email: 'ninasemail@gmail.com',
-            firstname: 'Nina',
+            firstName: 'Nina',
             location: 'Fort Collins, CO'
         });
 
@@ -164,7 +164,7 @@ const createInitialUsers = async () => {
             password: 'beefboi55',
             email: 'daviswells@gmail.com',
             lookingForGroup: true,
-            firstname: 'Davis',
+            firstName: 'Davis',
             surname: 'Wells',
             location: 'The Regional'
         });
