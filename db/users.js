@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt');
 const { createRow } = require('./utils');
 
 const createUser = async ({ ...fields }) => {
+    fields.password = await bcrypt.hash(fields.password, 10);
     return await createRow('users', fields);
 };
 
-const getUser = async ({ username, password }) => {
+const getUser = async (username, password) => {
     try {
-        const user = getUserByUsername(username);
-        if (user && bcrypt.compare(password, user.password)) {
+        const user = await getUserByUsername(username);
+        if (user && await bcrypt.compare(password, user.password)) {
             delete user.password;
             return user;
         };
@@ -43,7 +44,6 @@ const getUserByUsername = async (username) => {
             FROM users
             WHERE username='${username}';
         `);
-        delete user.password;
         return user;
     } catch (error) {
         console.error(error);
@@ -69,6 +69,7 @@ const getUsersLookingForGroup = async () => {
 
 module.exports = {
     createUser,
+    getUser,
     getUserById,
     getUserByUsername,
     getUsersLookingForGroup

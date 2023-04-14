@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getAllPublicCampaigns, getCampaignById, getCampaignsByUser } = require('../db/campaigns');
-const { getUserByUsername } = require('../db/users');
+const { getUserById } = require('../db/users');
 const { updateRow } = require('../db/utils');
 
 router.get('/', async (req, res) => {
@@ -23,9 +23,9 @@ router.get('/:campaignId', async (req, res) => {
     };
 });
 
-router.get('/user/:username', async (req, res) => {
+router.get('/user/:userId', async (req, res) => {
     try {
-        const user = await getUserByUsername(req.params.username);
+        const user = await getUserById(req.params.userId);
         const campaigns = await getCampaignsByUser(user);
         res.send(campaigns);
     } catch (error) {

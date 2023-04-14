@@ -145,7 +145,7 @@ const createInitialUsers = async () => {
 
         const userOne = await createUser({
             username: 'tredding',
-            password: '12345',
+            password: 'password1234',
             email: 'tateredding@gmail.com',
             firstname: 'Tate',
             bio: 'I am the creator of this website!'
@@ -153,7 +153,7 @@ const createInitialUsers = async () => {
 
         const userTwo = await createUser({
             username: 'peaseblossom',
-            password: '12345',
+            password: 'myhusbandisamazing',
             email: 'ninasemail@gmail.com',
             firstname: 'Nina',
             location: 'Fort Collins, CO'
@@ -161,7 +161,7 @@ const createInitialUsers = async () => {
 
         const userThree = await createUser({
             username: 'DavisTheButcher',
-            password: '12345',
+            password: 'beefboi55',
             email: 'daviswells@gmail.com',
             lookingForGroup: true,
             firstname: 'Davis',
