@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
+import NewCampaign from "./NewCampaign";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(window.localStorage.getItem('fitness-tracker-token'));
@@ -25,6 +26,9 @@ const App = () => {
                             setIsLoggedIn={setIsLoggedIn}
                         />}
                     />
+                    <Route path='/campaigns/new' element={
+                        <NewCampaign />
+                    } />
                 </Routes>
             </main>
         </>

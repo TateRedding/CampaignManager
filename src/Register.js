@@ -62,7 +62,7 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
             }
             <form autoComplete="off" onSubmit={register}>
                 <div className="mb-3">
-                    <label htmlFor="username" className="form-label">Username</label>
+                    <label htmlFor="username" className="form-label">Username *</label>
                     <input
                         className="form-control"
                         id="username"
@@ -72,7 +72,7 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                     </input>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Password</label>
+                    <label htmlFor="password" className="form-label">Password *</label>
                     <input
                         type="password"
                         className="form-control"
@@ -87,7 +87,7 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                     </span>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="password-confirm" className="form-label" aria-labelledby="passwords-must-match">Confirm Password</label>
+                    <label htmlFor="password-confirm" className="form-label" aria-labelledby="passwords-must-match">Confirm Password *</label>
                     <input
                         type="password"
                         className="form-control"
@@ -103,7 +103,7 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                     }
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email</label>
+                    <label htmlFor="email" className="form-label">Email *</label>
                     <input
                         className="form-control"
                         id="email"

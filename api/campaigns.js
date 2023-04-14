@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllPublicCampaigns, getCampaignById, getCampaignsByUser } = require('../db/campaigns');
+const { getAllPublicCampaigns, getCampaignById, getCampaignsByUser, createCampaign } = require('../db/campaigns');
 const { getUserById } = require('../db/users');
 const { updateRow } = require('../db/utils');
+const { requireUser } = require('./utils');
 
 router.get('/', async (req, res) => {
     try {
@@ -28,6 +29,17 @@ router.get('/user/:userId', async (req, res) => {
         const user = await getUserById(req.params.userId);
         const campaigns = await getCampaignsByUser(user);
         res.send(campaigns);
+    } catch (error) {
+        console.error(error);
+    };
+});
+
+router.post('/', requireUser, async (req, res) => {
+    const fields = req.body.fields;
+    fields.creatorId = req.user.id;
+    try {
+        const campaign = await createCampaign(fields);
+        res.send(campaign);
     } catch (error) {
         console.error(error);
     };
