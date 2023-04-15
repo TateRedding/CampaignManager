@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import NewCampaign from "./components/NewCampaign";
+import Profile from "./components/Profile";
 import Register from "./components/Register";
 
 const App = () => {
@@ -21,7 +22,7 @@ const App = () => {
             />
             <main>
                 <Routes>
-                    <Route path='/' element={<Home/>} />
+                    <Route path='/' element={<Home />} />
                     <Route path='/login' element={
                         <Login
                             TOKEN_NAME={TOKEN_NAME}
@@ -36,6 +37,11 @@ const App = () => {
                     />
                     <Route path='/campaigns/new' element={
                         <NewCampaign
+                            TOKEN_NAME={TOKEN_NAME}
+                        />
+                    } />
+                    <Route path='/profile' element={
+                        <Profile
                             TOKEN_NAME={TOKEN_NAME}
                         />
                     } />

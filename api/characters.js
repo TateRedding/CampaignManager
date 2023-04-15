@@ -21,13 +21,4 @@ router.get('/:characterId', async (req, res) => {
     };
 });
 
-router.get('/users/:userId'), async (req, res) => {
-    try {
-        const characters = await getCharacterByUser(req.params.userId);
-        res.send(characters);
-    } catch (error) {
-        console.error(error);
-    };
-};
-
 module.exports = router;

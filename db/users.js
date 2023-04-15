@@ -9,7 +9,11 @@ const createUser = async ({ ...fields }) => {
 
 const getUser = async (username, password) => {
     try {
-        const user = await getUserByUsername(username);
+        const { rows: [user] } = await client.query(`
+            SELECT *
+            FROM users
+            WHERE username='${username}';
+        `);
         if (user && await bcrypt.compare(password, user.password)) {
             delete user.password;
             return user;
@@ -44,6 +48,7 @@ const getUserByUsername = async (username) => {
             FROM users
             WHERE username='${username}';
         `);
+        delete user.password;
         return user;
     } catch (error) {
         console.error(error);

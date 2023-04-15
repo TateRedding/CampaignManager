@@ -1,6 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername } = require('../db/users');
+const { requireUser } = require('./utils');
+const { getCampaignsByUser } = require('../db/campaigns');
+const { getCharactersByUser } = require('../db/characters');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -12,10 +15,49 @@ router.get('/', async (req, res) => {
     };
 });
 
+router.get('/me', requireUser, async (req, res) => {
+    try {
+        const user = await getUserById(req.user.id);
+        res.send(user);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 router.get('/:userId', async (req, res) => {
     try {
         const user = await getUserById(req.params.userId);
         res.send(user);
+    } catch (error) {
+        console.error(error);
+    };
+});
+
+router.get('/:username/campaigns', requireUser, async (req, res) => {
+    const username = req.params.username;
+    try {
+        const user = await getUserByUsername(username);
+        if (req.user && req.user.username === user.username) {
+            const campaigns = await getCampaignsByUser(user);
+            res.send(campaigns);
+        } else {
+            // get public campaigns by user
+        };
+    } catch (error) {
+        console.error(error);
+    };
+});
+
+router.get('/:username/characters', requireUser, async (req, res) => {
+    const username = req.params.username;
+    try {
+        const user = await getUserByUsername(username);
+        if (req.user && req.user.username === user.username) {
+            const characters = await getCharactersByUser(user);
+            res.send(characters);
+        } else {
+            // get public characters by user
+        };
     } catch (error) {
         console.error(error);
     };

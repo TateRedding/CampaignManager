@@ -24,16 +24,6 @@ router.get('/:campaignId', async (req, res) => {
     };
 });
 
-router.get('/user/:userId', async (req, res) => {
-    try {
-        const user = await getUserById(req.params.userId);
-        const campaigns = await getCampaignsByUser(user);
-        res.send(campaigns);
-    } catch (error) {
-        console.error(error);
-    };
-});
-
 router.post('/', requireUser, async (req, res) => {
     const fields = req.body;
     fields.creatorId = req.user.id;
@@ -45,6 +35,7 @@ router.post('/', requireUser, async (req, res) => {
     };
 });
 
+// needs requireUser and validation
 router.patch('/:campaignId', async (req, res) => {
     try {
         const updatedCampaign = await updateRow('campaigns', req.params.campaignId, req.body.data);
