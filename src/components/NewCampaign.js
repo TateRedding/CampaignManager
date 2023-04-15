@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const NewCampaign = ({ TOKEN_NAME, userData }) => {
+const NewCampaign = ({ token }) => {
     const [isPublic, setIsPublic] = useState(true);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -9,8 +9,6 @@ const NewCampaign = ({ TOKEN_NAME, userData }) => {
 
     const createCampaign = async (event) => {
         event.preventDefault();
-
-        console.log(userData);
 
         if (name) {
             const fields = {
@@ -26,7 +24,7 @@ const NewCampaign = ({ TOKEN_NAME, userData }) => {
                 const campaignResponse = await axios.post('/api/campaigns', fields, {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.localStorage.getItem(TOKEN_NAME)}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 if (campaignResponse) {

@@ -2,12 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 
-const Header = ({ TOKEN_NAME, isLoggedIn, setIsLoggedIn }) => {
+const Header = ({ token, setToken }) => {
     const navigate = useNavigate();
 
     const logout = () => {
         window.localStorage.removeItem(TOKEN_NAME);
-        setIsLoggedIn(false);
+        setToken('');
     };
 
     return (
@@ -17,7 +17,7 @@ const Header = ({ TOKEN_NAME, isLoggedIn, setIsLoggedIn }) => {
             <button className="btn btn-primary" onClick={() => navigate('/characters')}>Characters</button>
             <button className="btn btn-primary" onClick={() => navigate('/lfg')}>Looking for Group</button>
             {
-                (isLoggedIn) ?
+                (token) ?
                     <>
                         <button className="btn btn-primary" onClick={() => navigate('/profile')}>My Profile</button>
                         <button className="btn btn-primary" onClick={() => logout()}>Log Out</button>

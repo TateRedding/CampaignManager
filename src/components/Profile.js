@@ -1,7 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const Profile = ({ TOKEN_NAME }) => {
+import CharacterCard from "./CharacterCard";
+import CampaignCard from "./CampaignCard";
+
+const Profile = ({ token }) => {
     const [userData, setUserData] = useState({});
     const [campaignData, setCampaignData] = useState([]);
     const [characterData, setCharacterData] = useState([]);
@@ -11,7 +14,7 @@ const Profile = ({ TOKEN_NAME }) => {
             const user = await axios.get('/api/users/me', {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.localStorage.getItem(TOKEN_NAME)}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             setUserData(user.data);
@@ -26,8 +29,8 @@ const Profile = ({ TOKEN_NAME }) => {
                 const campaigns = await axios.get(`/api/users/${userData.username}/campaigns`, {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.localStorage.getItem(TOKEN_NAME)}`
-                    } 
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 setCampaignData(campaigns.data);
             } catch (error) {
@@ -42,8 +45,8 @@ const Profile = ({ TOKEN_NAME }) => {
                 const characters = await axios.get(`/api/users/${userData.username}/characters`, {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.localStorage.getItem(TOKEN_NAME)}`
-                    } 
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 setCharacterData(characters.data);
             } catch (error) {
@@ -64,7 +67,19 @@ const Profile = ({ TOKEN_NAME }) => {
     // Future task: split characters and campaigns into tabs 
     return (
         <>
-
+            <h1>My Profile</h1>
+            <h2>My Characters</h2>
+            {
+                characterData.map((character, i) => {
+                    return <CharacterCard character={character} key={i} />
+                })
+            }
+            <h2>My Campaigns</h2>
+            {
+                campaignData.map((campaign, i) => {
+                    return <CampaignCard campaign={campaign} key={i} />
+                })
+            }
         </>
     )
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
+const Register = ({ TOKEN_NAME, setToken }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -37,7 +37,7 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                         setUsernameTaken(true);
                     } else {
                         window.localStorage.setItem(TOKEN_NAME, response.data.token)
-                        setIsLoggedIn(true);
+                        setToken(response.data.token);
                         setUsername('');
                         setPassword('');
                         setPasswordConfirm('');

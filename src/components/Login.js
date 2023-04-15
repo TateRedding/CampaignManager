@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Login = ({ TOKEN_NAME, setIsLoggedIn }) => {
+const Login = ({ TOKEN_NAME, setToken }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [invalidLogin, setInvalidLogin] = useState(false);
@@ -23,7 +23,7 @@ const Login = ({ TOKEN_NAME, setIsLoggedIn }) => {
                     setInvalidLogin(true);
                 } else {
                     window.localStorage.setItem(TOKEN_NAME, response.data.token);
-                    setIsLoggedIn(true);
+                    setToken(response.data.token);
                     setUsername('');
                     setPassword('');
                     navigate('/');

@@ -11,14 +11,13 @@ import Register from "./components/Register";
 
 const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
-    const [isLoggedIn, setIsLoggedIn] = useState(window.localStorage.getItem(TOKEN_NAME));
+    const [token, setToken] = useState(window.localStorage.getItem(TOKEN_NAME));
 
     return (
         <>
             <Header
-                TOKEN_NAME={TOKEN_NAME}
-                isLoggedIn={isLoggedIn}
-                setIsLoggedIn={setIsLoggedIn}
+                token={token}
+                setToken={setToken}
             />
             <main>
                 <Routes>
@@ -26,23 +25,23 @@ const App = () => {
                     <Route path='/login' element={
                         <Login
                             TOKEN_NAME={TOKEN_NAME}
-                            setIsLoggedIn={setIsLoggedIn}
+                            setToken={setToken}
                         />}
                     />
                     <Route path='/register' element={
                         <Register
                             TOKEN_NAME={TOKEN_NAME}
-                            setIsLoggedIn={setIsLoggedIn}
+                            setToken={setToken}
                         />}
                     />
                     <Route path='/campaigns/new' element={
                         <NewCampaign
-                            TOKEN_NAME={TOKEN_NAME}
+                            token={token}
                         />
                     } />
                     <Route path='/profile' element={
                         <Profile
-                            TOKEN_NAME={TOKEN_NAME}
+                            token={token}
                         />
                     } />
                 </Routes>
