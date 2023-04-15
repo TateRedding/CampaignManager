@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body.fields;
+    const { username, password } = req.body;
     try {
         if (!username || !password) {
             return;
@@ -69,7 +69,7 @@ router.post('/register', async (req, res) => {
                 message: 'Password must be atleast 8 characters long.'
             });
         } else {
-            const user = await createUser(req.body.fields);
+            const user = await createUser(req.body);
             if (user) {
                 delete user.password
                 const token = jwt.sign({

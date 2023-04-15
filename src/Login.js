@@ -43,21 +43,21 @@ const Login = ({ TOKEN_NAME, setIsLoggedIn }) => {
             }
             <form autoComplete="off" onSubmit={logIn}>
                 <div className="mb-3">
-                    <label htmlFor="username" className="form-label">Username</label>
+                    <label htmlFor="username-login" className="form-label">Username</label>
                     <input
                         className="form-control"
-                        id="username"
+                        id="username-login"
                         value={username}
                         required
                         onChange={(event) => setUsername(event.target.value)}>
                     </input>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Password</label>
+                    <label htmlFor="password-login" className="form-label">Password</label>
                     <input
                         type="password"
                         className="form-control"
-                        id="password"
+                        id="password-login"
                         value={password}
                         required
                         onChange={(event) => setPassword(event.target.value)}>

@@ -55,7 +55,7 @@ const createTables = async () => {
             CREATE TABLE campaigns (
                 id SERIAL PRIMARY KEY,
                 "creatorId" INTEGER REFERENCES users(id) NOT NULL,
-                public BOOLEAN DEFAULT true,
+                "isPublic" BOOLEAN DEFAULT true,
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
                 location VARCHAR(255),
@@ -76,7 +76,7 @@ const createTables = async () => {
                 "recipientId" INTEGER REFERENCES users(id),
                 "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
                 content TEXT NOT NULL,
-                public BOOLEAN DEFAULT true,
+                "isPublic" BOOLEAN DEFAULT true,
                 "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
  
@@ -84,7 +84,7 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
                 "campaignId" INTEGER REFERENCES campaigns(id),
-                public BOOLEAN DEFAULT true,
+                "isPublic" BOOLEAN DEFAULT true,
                 name VARCHAR(100) NOT NULL,
                 level INTEGER DEFAULT 1,
                 experience INTEGER DEFAULT 0,
@@ -191,7 +191,7 @@ const createInitialCampaigns = async () => {
         const campaignTwo = await createCampaign({
             creatorId: 1,
             name: 'The Heroes of Red Larch',
-            public: false,
+            isPublic: false,
             location: 'roll20.com'
         });
 
@@ -299,7 +299,7 @@ const createInitialMessages = async () => {
             recipientId: 1,
             campaignId: 2,
             content: 'This is a private message',
-            public: false
+            isPublic: false
         });
 
         console.log([

@@ -35,7 +35,7 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 router.post('/', requireUser, async (req, res) => {
-    const fields = req.body.fields;
+    const fields = req.body;
     fields.creatorId = req.user.id;
     try {
         const campaign = await createCampaign(fields);

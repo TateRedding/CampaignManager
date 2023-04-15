@@ -28,24 +28,25 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                 location,
             };
 
-            Object.keys(fields).map(key => (fields[key] === '') ? delete fields[key] : null);
+            Object.keys(fields).map(key => (!fields[key]) ? delete fields[key] : null);
 
             try {
-                const response = await axios.post('/api/users/register', { fields });
-                console.log(response);
-                if (response.data.error === 'UsernameTakenError') {
-                    setUsernameTaken(true);
-                } else {
-                    window.localStorage.setItem(TOKEN_NAME, response.data.token)
-                    setIsLoggedIn(true);
-                    setUsername('');
-                    setPassword('');
-                    setPasswordConfirm('');
-                    setEmail('');
-                    setFirstName('');
-                    setSurname('');
-                    setLocation('');
-                    navigate('/');
+                const response = await axios.post('/api/users/register', fields);
+                if (response) {
+                    if (response.data.error === 'UsernameTakenError') {
+                        setUsernameTaken(true);
+                    } else {
+                        window.localStorage.setItem(TOKEN_NAME, response.data.token)
+                        setIsLoggedIn(true);
+                        setUsername('');
+                        setPassword('');
+                        setPasswordConfirm('');
+                        setEmail('');
+                        setFirstName('');
+                        setSurname('');
+                        setLocation('');
+                        navigate('/');
+                    };
                 };
             } catch (error) {
                 console.error(error);
@@ -62,22 +63,22 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
             }
             <form autoComplete="off" onSubmit={register}>
                 <div className="mb-3">
-                    <label htmlFor="username" className="form-label">Username *</label>
+                    <label htmlFor="username-register" className="form-label">Username *</label>
                     <input
                         className="form-control"
-                        id="username"
+                        id="username-register"
                         value={username}
                         required
                         onChange={(event) => setUsername(event.target.value)}>
                     </input>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Password *</label>
+                    <label htmlFor="password-register" className="form-label">Password *</label>
                     <input
                         type="password"
                         className="form-control"
                         aria-labelledby="passwordHelp"
-                        id="password"
+                        id="password-register"
                         value={password}
                         required
                         onChange={(event) => setPassword(event.target.value)}>
@@ -103,10 +104,10 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                     }
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email *</label>
+                    <label htmlFor="email-register" className="form-label">Email *</label>
                     <input
                         className="form-control"
-                        id="email"
+                        id="email-register"
                         value={email}
                         required
                         onChange={(event) => setEmail(event.target.value)}>
@@ -114,29 +115,29 @@ const Register = ({ TOKEN_NAME, setIsLoggedIn }) => {
                 </div>
                 <div className="row g-3 align-items-center">
                     <div className="mb-3 col-auto">
-                        <label htmlFor="first-name" className="form-label">First Name</label>
+                        <label htmlFor="first-name-register" className="form-label">First Name</label>
                         <input
                             className="form-control"
-                            id="first-name"
+                            id="first-name-register"
                             value={firstName}
                             onChange={(event) => setFirstName(event.target.value)}>
                         </input>
                     </div>
                     <div className="mb-3 col-auto">
-                        <label htmlFor="surname" className="form-label">Last Name</label>
+                        <label htmlFor="surname-register" className="form-label">Last Name</label>
                         <input
                             className="form-control"
-                            id="surname"
+                            id="surname-register"
                             value={surname}
                             onChange={(event) => setSurname(event.target.value)}>
                         </input>
                     </div>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="location" className="form-label">Location</label>
+                    <label htmlFor="location-register" className="form-label">Location</label>
                     <input
                         className="form-control"
-                        id="location"
+                        id="location-register"
                         value={location}
                         onChange={(event) => setLocation(event.target.value)}>
                     </input>

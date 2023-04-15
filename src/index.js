@@ -27,7 +27,9 @@ const App = () => {
                         />}
                     />
                     <Route path='/campaigns/new' element={
-                        <NewCampaign />
+                        <NewCampaign
+                            TOKEN_NAME={TOKEN_NAME}
+                        />
                     } />
                 </Routes>
             </main>
