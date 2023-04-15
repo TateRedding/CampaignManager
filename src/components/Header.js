@@ -2,10 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 
-const Header = ({ token, setToken }) => {
+const Header = ({ TOKEN_NAME, token, setToken }) => {
     const navigate = useNavigate();
 
     const logout = () => {
+        navigate('/');
         window.localStorage.removeItem(TOKEN_NAME);
         setToken('');
     };

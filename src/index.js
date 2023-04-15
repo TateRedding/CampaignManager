@@ -16,6 +16,7 @@ const App = () => {
     return (
         <>
             <Header
+                TOKEN_NAME={TOKEN_NAME}
                 token={token}
                 setToken={setToken}
             />

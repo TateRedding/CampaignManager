@@ -2,3 +2,7 @@ main {
     margin: 0 auto;
     width: 80vw;
 }
+
+.card {
+    max-height: 300px;
+}
