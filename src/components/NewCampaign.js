@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const NewCampaign = ({ TOKEN_NAME, userData }) => {
@@ -24,21 +23,19 @@ const NewCampaign = ({ TOKEN_NAME, userData }) => {
             Object.keys(fields).map(key => (key !== 'isPublic' && !fields[key]) ? delete fields[key] : null);
 
             try {
-                const response = await axios.post('/api/campaigns', fields, {
+                const campaignResponse = await axios.post('/api/campaigns', fields, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${window.localStorage.getItem(TOKEN_NAME)}`
                     }
                 });
-                if (response) {
-                    const _response = await axios.post('/api/user_campaigns', {
-                        userId: response.data.creatorId,
-                        campaignId: response.data.id,
+                if (campaignResponse) {
+                    const userCampaignResponse = await axios.post('/api/user_campaigns', {
+                        userId: campaignResponse.data.creatorId,
+                        campaignId: campaignResponse.data.id,
                         isDM: true
                     });
-                    if (_response) {
-                        console.log(response);
-                        console.log(_response);
+                    if (userCampaignResponse) {
                         setIsPublic(true);
                         setName('');
                         setDescription('');

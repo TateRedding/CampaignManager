@@ -1,19 +1,27 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
-import Login from "./Login";
-import Register from "./Register";
-import NewCampaign from "./NewCampaign";
+
+import Header from "./components/Header";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import NewCampaign from "./components/NewCampaign";
+import Register from "./components/Register";
 
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(window.localStorage.getItem('fitness-tracker-token'));
-
     const TOKEN_NAME = 'campaignManagerLoginToken';
+    const [isLoggedIn, setIsLoggedIn] = useState(window.localStorage.getItem(TOKEN_NAME));
 
     return (
         <>
+            <Header
+                TOKEN_NAME={TOKEN_NAME}
+                isLoggedIn={isLoggedIn}
+                setIsLoggedIn={setIsLoggedIn}
+            />
             <main>
                 <Routes>
+                    <Route path='/' element={<Home/>} />
                     <Route path='/login' element={
                         <Login
                             TOKEN_NAME={TOKEN_NAME}

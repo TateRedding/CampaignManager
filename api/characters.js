@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getCharacterById, getAllPublicCharacters } = require('../db/characters');
+const { getCharacterById, getAllPublicCharacters, getCharacterByUser } = require('../db/characters');
 
 router.get('/', async (req, res) => {
     try {
@@ -20,5 +20,14 @@ router.get('/:characterId', async (req, res) => {
         console.error(error);
     };
 });
+
+router.get('/users/:userId'), async (req, res) => {
+    try {
+        const characters = await getCharacterByUser(req.params.userId);
+        res.send(characters);
+    } catch (error) {
+        console.error(error);
+    };
+};
 
 module.exports = router;

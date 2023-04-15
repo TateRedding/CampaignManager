@@ -31,8 +31,22 @@ const getAllPublicCharacters = async () => {
     };
 };
 
+const getCharacterByUser = async (userId) => {
+    try {
+        const { rows: characters } = await client.query(`
+            SELECT *
+            FROM characters
+            WHERE "userId"=${userId}
+        `);
+        return characters;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
     createCharacter,
     getCharacterById,
-    getAllPublicCharacters
+    getAllPublicCharacters,
+    getCharacterByUser
 };
