@@ -18,7 +18,14 @@ router.get('/', async (req, res) => {
 router.get('/:campaignId', async (req, res) => {
     try {
         const campaign = await getCampaignById(req.params.campaignId);
-        res.send(campaign);
+        if (campaign.isPublic || (req.user && campaign.players.filter(player => player.id === req.user.id))) {
+            res.send(campaign);
+        } else {
+            res.send({
+                error: 'UnauthorizedUserError',
+                message: 'You do not have permission to view this campaign!'
+            })
+        }
     } catch (error) {
         console.error(error);
     };

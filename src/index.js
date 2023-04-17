@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
 
+import CampaignPage from "./components/CampaignPage";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import Login from "./components/Login";
@@ -39,6 +40,9 @@ const App = () => {
                         <NewCampaign
                             token={token}
                         />
+                    } />
+                    <Route path='/campaigns/:campaignId' element ={
+                        <CampaignPage />
                     } />
                     <Route path='/profile' element={
                         <Profile

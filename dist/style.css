@@ -3,6 +3,6 @@ main {
     width: 80vw;
 }
 
-.card {
+.card.small {
     max-height: 300px;
 }
