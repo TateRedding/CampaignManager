@@ -85,7 +85,7 @@ const NewCampaign = ({ token }) => {
                         type="checkbox"
                         id="is-public-campaign"
                         checked={isPublic}
-                        onChange={(event) => (event.target.value)}>
+                        onChange={(event) => setIsPublic(event.target.checked)}>
                     </input>
                 </div>
                 <button type="submit" className="btn btn-primary">Start your Journey!</button>

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllPublicCampaigns, getCampaignById, getCampaignsByUser, createCampaign } = require('../db/campaigns');
-const { getUserById } = require('../db/users');
+const { getAllPublicCampaigns, getCampaignById, createCampaign } = require('../db/campaigns');
 const { updateRow } = require('../db/utils');
 const { requireUser } = require('./utils');
 

@@ -41,8 +41,10 @@ const App = () => {
                             token={token}
                         />
                     } />
-                    <Route path='/campaigns/:campaignId' element ={
-                        <CampaignPage />
+                    <Route path='/campaigns/:campaignId' element={
+                        <CampaignPage
+                            token={token}
+                        />
                     } />
                     <Route path='/profile' element={
                         <Profile
