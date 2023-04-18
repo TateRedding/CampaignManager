@@ -8,6 +8,7 @@ import Header from "./components/Header";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import NewCampaign from "./components/NewCampaign";
+import NewCharacter from "./components/NewCharacter";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 
@@ -48,18 +49,6 @@ const App = () => {
             <main>
                 <Routes>
                     <Route path='/' element={<Home />} />
-                    <Route path='/login' element={
-                        <Login
-                            TOKEN_NAME={TOKEN_NAME}
-                            setToken={setToken}
-                        />}
-                    />
-                    <Route path='/register' element={
-                        <Register
-                            TOKEN_NAME={TOKEN_NAME}
-                            setToken={setToken}
-                        />}
-                    />
                     <Route path='/campaigns/new' element={
                         <NewCampaign
                             token={token}
@@ -71,11 +60,28 @@ const App = () => {
                             userData={userData}
                         />
                     } />
+                    <Route path='/characters/new' element={
+                        <NewCharacter
+                            token={token}
+                        />
+                    } />
+                    <Route path='/login' element={
+                        <Login
+                            TOKEN_NAME={TOKEN_NAME}
+                            setToken={setToken}
+                        />}
+                    />
                     <Route path='/profile' element={
                         <Profile
                             token={token}
                         />
                     } />
+                    <Route path='/register' element={
+                        <Register
+                            TOKEN_NAME={TOKEN_NAME}
+                            setToken={setToken}
+                        />}
+                    />
                 </Routes>
             </main>
         </>

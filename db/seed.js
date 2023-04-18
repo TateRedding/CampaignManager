@@ -95,7 +95,7 @@ const createTables = async () => {
                 alignment ALIGNMENT NOT NULL, 
                 background VARCHAR(100) NOT NULL,
                 age INTEGER,
-                height VARCHAR(50),
+                height INTEGER,
                 weight INTEGER,
                 eyes VARCHAR(35),
                 hair VARCHAR(35),
@@ -129,7 +129,7 @@ const createTables = async () => {
                 ideals TEXT,
                 bonds TEXT,
                 flaws TEXT,
-                features JSON
+                features JSON NOT NULL
             );
         `)
         console.log('Finished creating tables!');
@@ -330,7 +330,7 @@ const createInitialCharacters = async () => {
             alignment: 'lawful-good',
             background: 'noble',
             age: 146,
-            height: '3 feet, 5 inches',
+            height: 41,
             weight: 190,
             eyes: 'brown',
             hair: 'reddish brown',
@@ -422,7 +422,7 @@ const createInitialCharacters = async () => {
             alignment: 'chaotic-good',
             background: 'escaped research relic',
             age: 314,
-            height: '5 feet, 11 inches',
+            height: 71,
             weight: 150,
             eyes: 'yellow',
             hair: 'deep mahogany',
