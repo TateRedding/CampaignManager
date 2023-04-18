@@ -5,6 +5,10 @@ const createCharacter = async ({ ...fields }) => {
     return await createRow('characters', fields);
 };
 
+const updateCharacter = async (id, { ...fields }) => {
+    return await updateRow('characters', id, fields);
+};
+
 const getCharacterById = async (id) => {
     try {
         const { rows: [character] } = await client.query(`
@@ -46,6 +50,7 @@ const getCharactersByUser = async (user) => {
 
 module.exports = {
     createCharacter,
+    updateCharacter,
     getCharacterById,
     getAllPublicCharacters,
     getCharactersByUser

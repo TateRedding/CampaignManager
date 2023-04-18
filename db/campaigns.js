@@ -1,10 +1,15 @@
 const client = require('./index');
 const { getMessagesByCampaign } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
+const { updateRow } = require('./utils');
 const { createRow } = require('./utils');
 
 const createCampaign = async ({ ...fields }) => {
     return await createRow('campaigns', fields);
+};
+
+const updateCampaign = async (id, { ...fields }) => {
+    return await updateRow('campaigns', id, fields);
 };
 
 const getCampaignById = async (id) => {
@@ -77,6 +82,7 @@ const getCampaignsByUser = async (user) => {
 
 module.exports = {
     createCampaign,
+    updateCampaign,
     getCampaignById,
     getAllPublicCampaigns,
     getCampaignsByUser

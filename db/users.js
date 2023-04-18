@@ -7,6 +7,10 @@ const createUser = async ({ ...fields }) => {
     return await createRow('users', fields);
 };
 
+const updateUser = async (id, { ...fields }) => {
+    return await updateRow('users', id, fields);
+};
+
 const getUser = async (username, password) => {
     try {
         const { rows: [user] } = await client.query(`
@@ -74,6 +78,7 @@ const getUsersLookingForGroup = async () => {
 
 module.exports = {
     createUser,
+    updateUser,
     getUser,
     getUserById,
     getUserByUsername,

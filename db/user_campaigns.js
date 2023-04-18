@@ -5,6 +5,33 @@ const createUserCampaign = async ({ ...fields }) => {
     return await createRow('user_campaigns', fields);
 };
 
+const updateUserCampaign = async (id, isDM) => {
+    try {
+        const { rows: [userCampaign] } = await client.query(`
+            UPDATE user_campaigns
+            SET "isDM"=${isDM}
+            WHERE id=${id}
+            RETURNING *;
+        `);
+        return userCampaign;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+const deleteUserCampaign = async (id) => {
+    try {
+        const { rows: [userCampaign] } = await client.query(`
+            DELETE FROM user_campaigns
+            WHERE id=${id}
+            RETURNING *;
+        `);
+        return userCampaign;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 const getUserCampaignsByCampaignId = async (id) => {
     try {
         const { rows: userCampaigns } = await client.query(`
@@ -22,5 +49,7 @@ const getUserCampaignsByCampaignId = async (id) => {
 
 module.exports = {
     createUserCampaign,
+    updateUserCampaign,
+    deleteUserCampaign,
     getUserCampaignsByCampaignId
 };
