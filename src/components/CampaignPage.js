@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const CampaignPage = ({ token }) => {
+const CampaignPage = ({ token, userData }) => {
     const [campaign, setCampaign] = useState({});
     const [content, setContent] = useState('');
     const [isPublic, setIsPublic] = useState(true);
@@ -96,7 +96,9 @@ const CampaignPage = ({ token }) => {
                                         <option value={0}>Select Recipient</option>
                                         {
                                             campaign.players.map((player, i) => {
-                                                return <option key={i} value={player.id}>{player.username}</option>
+                                                if (player.username !== userData.username) {
+                                                    return <option key={i} value={player.id}>{player.username}</option>
+                                                }
                                             })
                                         }
                                     </select>

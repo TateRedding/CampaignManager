@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
+import axios from "axios";
 
 import CampaignPage from "./components/CampaignPage";
 import Header from "./components/Header";
@@ -13,6 +14,29 @@ import Register from "./components/Register";
 const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
     const [token, setToken] = useState(window.localStorage.getItem(TOKEN_NAME));
+    const [userData, setUserData] = useState({});
+
+    const getUserData = async () => {
+        if (token) {
+            try {
+                const response = await axios.get(`/api/users/jwt/${token}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setUserData(response.data);
+            } catch (error) {
+                console.error(error);
+            };
+        } else {
+            setUserData({});
+        }
+    };
+
+    useEffect(() => {
+        getUserData();
+    }, [token]);
 
     return (
         <>
@@ -44,6 +68,7 @@ const App = () => {
                     <Route path='/campaigns/:campaignId' element={
                         <CampaignPage
                             token={token}
+                            userData={userData}
                         />
                     } />
                     <Route path='/profile' element={

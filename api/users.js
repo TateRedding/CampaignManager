@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const { JWTS } = process.env;
 const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername } = require('../db/users');
 const { requireUser } = require('./utils');
 const { getCampaignsByUser } = require('../db/campaigns');
@@ -34,7 +35,7 @@ router.get('/:userId', async (req, res) => {
 });
 
 router.get('/:username/campaigns', requireUser, async (req, res) => {
-    const username = req.params.username;
+    const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
         if (req.user && req.user.username === user.username) {
@@ -49,7 +50,7 @@ router.get('/:username/campaigns', requireUser, async (req, res) => {
 });
 
 router.get('/:username/characters', requireUser, async (req, res) => {
-    const username = req.params.username;
+    const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
         if (req.user && req.user.username === user.username) {
@@ -57,6 +58,20 @@ router.get('/:username/characters', requireUser, async (req, res) => {
             res.send(characters);
         } else {
             // get public characters by user
+        };
+    } catch (error) {
+        console.error(error);
+    };
+});
+
+router.get('/jwt/:token', requireUser, async (req, res) => {
+    console.log('here');
+    const { token } = req.params
+    try {
+        const { id } = jwt.verify(token, JWTS);
+        const user = await getUserById(id);
+        if (user) {
+            res.send(user);
         };
     } catch (error) {
         console.error(error);
