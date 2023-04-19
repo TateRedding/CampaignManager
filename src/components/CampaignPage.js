@@ -11,8 +11,10 @@ const CampaignPage = ({ token, userData }) => {
 
     const getCampaignData = async () => {
         try {
-            const _campaign = await axios.get(`/api/campaigns/${campaignId}`);
-            setCampaign(_campaign.data);
+            const response = await axios.get(`/api/campaigns/${campaignId}`);
+            if (!response.data.error) {
+                setCampaign(response.data);
+            };
         } catch (error) {
             console.error(error);
         };
@@ -63,50 +65,55 @@ const CampaignPage = ({ token, userData }) => {
         <div className="card">
             <div className="card-body">
                 <pre>{JSON.stringify(campaign, null, 2)}</pre>
-                <form autoComplete="off" onSubmit={sendMessage}>
-                    <div className="mb-3">
-                        <label htmlFor="campaign-message" className="form-label">Message</label>
-                        <input
-                            className="form-control"
-                            id="campaign-message"
-                            value={content}
-                            required
-                            onChange={(event) => setContent(event.target.value)} >
-                        </input>
-                    </div>
-                    <div className="row g-3 align-items-center">
-                        <div className="mb-3 col-auto">
-                            <label htmlFor="is-public-message" className="form-check-label">Private</label>
-                            <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id="is-public-message"
-                                checked={!isPublic}
-                                onChange={(event) => setIsPublic(!event.target.checked)}>
-                            </input>
-                        </div>
-                        {
-                            (isPublic) ?
-                                null :
+                {
+                    (Object.keys(campaign).length) ?
+                        <form autoComplete="off" onSubmit={sendMessage}>
+                            <div className="mb-3">
+                                <label htmlFor="campaign-message" className="form-label">Message</label>
+                                <input
+                                    className="form-control"
+                                    id="campaign-message"
+                                    value={content}
+                                    required
+                                    onChange={(event) => setContent(event.target.value)} >
+                                </input>
+                            </div>
+
+                            <div className="row g-3 align-items-center">
                                 <div className="mb-3 col-auto">
-                                    <select className="mb-3 form-select col-auto"
-                                        aria-label="Select recipient"
-                                        defaultValue={0}
-                                        onChange={(event) => setRecipientId(event.target.value)}>
-                                        <option value={0}>Select Recipient</option>
-                                        {
-                                            campaign.players.map((player, i) => {
-                                                if (player.username !== userData.username) {
-                                                    return <option key={i} value={player.id}>{player.username}</option>
-                                                }
-                                            })
-                                        }
-                                    </select>
+                                    <label htmlFor="is-public-message" className="form-check-label">Private</label>
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="is-public-message"
+                                        checked={!isPublic}
+                                        onChange={(event) => setIsPublic(!event.target.checked)}>
+                                    </input>
                                 </div>
-                        }
-                    </div>
-                    <button type="submit" className="btn btn-primary">Send</button>
-                </form>
+                                {
+                                    (isPublic) ?
+                                        null :
+                                        <div className="mb-3 col-auto">
+                                            <select className="mb-3 form-select col-auto"
+                                                aria-label="Select recipient"
+                                                defaultValue={0}
+                                                onChange={(event) => setRecipientId(event.target.value)}>
+                                                <option value={0}>Select Recipient</option>
+                                                {
+                                                    campaign.players.map((player, i) => {
+                                                        if (player.username !== userData.username) {
+                                                            return <option key={i} value={player.id}>{player.username}</option>
+                                                        }
+                                                    })
+                                                }
+                                            </select>
+                                        </div>
+                                }
+                            </div>
+                            <button type="submit" className="btn btn-primary">Send</button>
+                        </form> :
+                        null
+                }
             </div>
         </div>
     );

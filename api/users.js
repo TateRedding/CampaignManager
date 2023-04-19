@@ -64,20 +64,6 @@ router.get('/:username/characters', requireUser, async (req, res) => {
     };
 });
 
-router.get('/jwt/:token', requireUser, async (req, res) => {
-    console.log('here');
-    const { token } = req.params
-    try {
-        const { id } = jwt.verify(token, JWTS);
-        const user = await getUserById(id);
-        if (user) {
-            res.send(user);
-        };
-    } catch (error) {
-        console.error(error);
-    };
-});
-
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {

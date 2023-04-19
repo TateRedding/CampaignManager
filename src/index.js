@@ -20,7 +20,7 @@ const App = () => {
     const getUserData = async () => {
         if (token) {
             try {
-                const response = await axios.get(`/api/users/jwt/${token}`, {
+                const response = await axios.get(`/api/users/me`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
