@@ -34,7 +34,21 @@ const updateRow = async (table, id, fields) => {
     };
 };
 
+const getRowById = async (table, id) => {
+    try {
+        const { rows: [row] } = await client.query(`
+            SELECT *
+            FROM ${table}
+            WHERE id=${id}
+        `);
+        return row;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
     createRow,
-    updateRow
+    updateRow,
+    getRowById
 };

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requireUser } = require('./utils');
 
-const { getCharacterById, getAllPublicCharacters, getCharacterByUser, createCharacter } = require('../db/characters');
+const { getCharacterById, getAllPublicCharacters, createCharacter, updateCharacter } = require('../db/characters');
 
 router.get('/', async (req, res) => {
     try {
@@ -28,6 +28,25 @@ router.post('/', requireUser, async (req, res) => {
     try {
         const character = await createCharacter(fields);
         res.send(character);
+    } catch (error) {
+        console.error(error);
+    };
+});
+
+router.patch('/:characterId', requireUser, async (req, res) => {
+    const { characterId } = req.params;
+    try {
+        const character = await getCharacterById(characterId);
+        if (character.userId === req.user.id) {
+            const updatedCharacter = await updateCharacter(characterId, { ...req.body });
+            res.send(updatedCharacter);
+        } else {
+            res.status(403);
+            res.send({
+                error: 'UnauthorizedUpdateError',
+                message: `User ${req.user.username} does not have permission to edit ${character.name}!`
+            });
+        };
     } catch (error) {
         console.error(error);
     };

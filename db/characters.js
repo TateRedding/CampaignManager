@@ -1,22 +1,25 @@
 const client = require('./index');
-const { createRow } = require('./utils');
+const { createRow, updateRow, getRowById } = require('./utils');
 
 const createCharacter = async ({ ...fields }) => {
-    return await createRow('characters', fields);
+    try {
+        return await createRow('characters', fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const updateCharacter = async (id, { ...fields }) => {
-    return await updateRow('characters', id, fields);
+    try {
+        return await updateRow('characters', id, fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const getCharacterById = async (id) => {
     try {
-        const { rows: [character] } = await client.query(`
-            SELECT *
-            FROM characters
-            WHERE id=${id};
-        `);
-        return character;
+        return await getRowById('characters', id);
     } catch (error) {
         console.error(error);
     };

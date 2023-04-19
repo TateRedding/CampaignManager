@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { JWTS } = process.env;
-const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername } = require('../db/users');
+const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername, updateUser } = require('../db/users');
 const { requireUser } = require('./utils');
 const { getCampaignsByUser } = require('../db/campaigns');
 const { getCharactersByUser } = require('../db/characters');
@@ -142,6 +142,25 @@ router.post('/register', async (req, res) => {
                 });
             }
         }
+    } catch (error) {
+        console.error(error);
+    };
+});
+
+router.patch(':userId', requireUser, async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await getUserById(userId);
+        if (user.id === req.user.id) {
+            const updatedUser = await updateUser(userId, { ...req.body });
+            res.send(updatedUser);
+        } else {
+            res.status(403);
+            res.send({
+                error: 'UnauthorizedUpdateError',
+                message: `You can only update your own profile information!`
+            });
+        };
     } catch (error) {
         console.error(error);
     };

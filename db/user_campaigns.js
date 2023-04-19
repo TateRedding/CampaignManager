@@ -1,8 +1,12 @@
 const client = require('./index');
-const { createRow } = require('./utils');
+const { createRow, getRowById } = require('./utils');
 
 const createUserCampaign = async ({ ...fields }) => {
-    return await createRow('user_campaigns', fields);
+    try {
+        return await createRow('user_campaigns', fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const updateUserCampaign = async (id, isDM) => {
@@ -32,6 +36,14 @@ const deleteUserCampaign = async (id) => {
     };
 };
 
+const getUserCampaignById = async (id) => {
+    try {
+        return getRowById('user_campaigns', id);
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 const getUserCampaignsByCampaignId = async (id) => {
     try {
         const { rows: userCampaigns } = await client.query(`
@@ -51,5 +63,6 @@ module.exports = {
     createUserCampaign,
     updateUserCampaign,
     deleteUserCampaign,
+    getUserCampaignById,
     getUserCampaignsByCampaignId
 };

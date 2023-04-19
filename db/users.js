@@ -1,14 +1,22 @@
 const client = require('./index');
 const bcrypt = require('bcrypt');
-const { createRow } = require('./utils');
+const { createRow, updateRow, getRowById } = require('./utils');
 
 const createUser = async ({ ...fields }) => {
-    fields.password = await bcrypt.hash(fields.password, 10);
-    return await createRow('users', fields);
+    try {
+        fields.password = await bcrypt.hash(fields.password, 10);
+        return await createRow('users', fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const updateUser = async (id, { ...fields }) => {
-    return await updateRow('users', id, fields);
+    try {
+        return await updateRow('users', id, fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const getUser = async (username, password) => {
@@ -30,11 +38,7 @@ const getUser = async (username, password) => {
 
 const getUserById = async (id) => {
     try {
-        const { rows: [user] } = await client.query(`
-            SELECT *
-            FROM users
-            WHERE id=${id};
-        `);
+        const user = getRowById('users', id);
         if (user) {
             delete user.password;
             return user;

@@ -1,8 +1,12 @@
 const client = require('./index');
-const { createRow } = require('./utils');
+const { createRow, getRowById } = require('./utils');
 
 const createMessage = async ({ ...fields }) => {
-    return await createRow('messages', fields);
+    try {
+        return await createRow('messages', fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const updateMessage = async (id, content) => {
@@ -21,12 +25,15 @@ const updateMessage = async (id, content) => {
 
 const deleteMessage = async (id) => {
     try {
-        const { rows: [message] } = await client.query(`
-            DELETE FROM messages
-            WHERE id=${id}
-            RETURNING *;
-        `);
-        return message;
+        return await getRowById('messages', id);
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+const getMessageById = async (id) => {
+    try {
+        return await getRowById('messages', id)
     } catch (error) {
         console.error(error);
     };
@@ -50,5 +57,6 @@ module.exports = {
     createMessage,
     updateMessage,
     deleteMessage,
+    getMessageById,
     getMessagesByCampaign
 };

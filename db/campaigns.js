@@ -1,15 +1,22 @@
 const client = require('./index');
 const { getMessagesByCampaign } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
-const { updateRow } = require('./utils');
-const { createRow } = require('./utils');
+const { createRow, updateRow } = require('./utils');
 
 const createCampaign = async ({ ...fields }) => {
-    return await createRow('campaigns', fields);
+    try {
+        return await createRow('campaigns', fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const updateCampaign = async (id, { ...fields }) => {
-    return await updateRow('campaigns', id, fields);
+    try {
+        return await updateRow('campaigns', id, fields);
+    } catch (error) {
+        console.error(error);
+    };
 };
 
 const getCampaignById = async (id) => {

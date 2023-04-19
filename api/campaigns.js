@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllPublicCampaigns, getCampaignById, createCampaign } = require('../db/campaigns');
-const { updateRow } = require('../db/utils');
+const { getAllPublicCampaigns, getCampaignById, createCampaign, updateCampaign } = require('../db/campaigns');
 const { requireUser } = require('./utils');
 
 router.get('/', async (req, res) => {
@@ -41,11 +40,20 @@ router.post('/', requireUser, async (req, res) => {
     };
 });
 
-// needs requireUser and validation
-router.patch('/:campaignId', async (req, res) => {
+router.patch('/:campaignId', requireUser, async (req, res) => {
+    const { campaignId } = req.params;
     try {
-        const updatedCampaign = await updateRow('campaigns', req.params.campaignId, req.body.data);
-        res.send(updatedCampaign);
+        const campaign = await getCampaignById(campaignId);
+        if (campaign.creatorId === req.user.id) {
+            const updatedCampaign = await updateCampaign(campaignId, { ...req.body });
+            res.send(updatedCampaign);
+        } else {
+            res.status(403);
+            res.send({
+                error: 'UnauthorizedUpdateError',
+                message: `User ${req.user.username} does not have permission to edit ${campaign.name}!`
+            });
+        };
     } catch (error) {
         console.error(error);
     };
