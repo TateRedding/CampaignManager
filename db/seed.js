@@ -46,6 +46,8 @@ const createTables = async () => {
                 email VARCHAR(150) NOT NULL,
                 active BOOLEAN DEFAULT true,
                 "lookingForGroup" BOOLEAN DEFAULT false,
+                "isAdmin" BOOLEAN DEFAULT false,
+                "avatarURL" text,
                 "firstName" VARCHAR(100),
                 surname VARCHAR(100),
                 location VARCHAR(100),
@@ -57,6 +59,7 @@ const createTables = async () => {
                 "creatorId" INTEGER REFERENCES users(id) NOT NULL,
                 "isPublic" BOOLEAN DEFAULT true,
                 name VARCHAR(255) NOT NULL,
+                "imageURL" TEXT,
                 description TEXT,
                 location VARCHAR(255),
                 "creationDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -147,6 +150,7 @@ const createInitialUsers = async () => {
             username: 'tredding',
             password: 'password1234',
             email: 'tateredding@gmail.com',
+            isAdmin: true,
             firstName: 'Tate',
             bio: 'I am the creator of this website!'
         });
