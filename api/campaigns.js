@@ -8,8 +8,8 @@ router.get('/', async (req, res) => {
     try {
         const campaigns = await getAllPublicCampaigns();
         res.send(campaigns);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
@@ -19,13 +19,14 @@ router.get('/:campaignId', async (req, res) => {
         if (campaign.isPublic || (req.user && campaign.players.filter(player => player.id === req.user.id))) {
             res.send(campaign);
         } else {
+            res.status(403);
             res.send({
                 error: 'UnauthorizedUserError',
                 message: 'You do not have permission to view this campaign!'
-            })
-        }
-    } catch (error) {
-        console.error(error);
+            });
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
@@ -35,8 +36,8 @@ router.post('/', requireUser, async (req, res) => {
     try {
         const campaign = await createCampaign(fields);
         res.send(campaign);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
@@ -54,8 +55,8 @@ router.patch('/:campaignId', requireUser, async (req, res) => {
                 message: `User ${req.user.username} does not have permission to edit ${campaign.name}!`
             });
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 

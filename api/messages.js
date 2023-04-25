@@ -9,8 +9,8 @@ router.post('/', requireUser, async (req, res) => {
     try {
         const message = await createMessage(fields);
         res.send(message);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
@@ -25,12 +25,12 @@ router.patch('/:messageId', requireUser, async (req, res) => {
         } else {
             res.status(403);
             res.send({
-                error: 'UnauthorizedUpdateError',
+                name: 'UnauthorizedUpdateError',
                 message: `User ${req.user.username} does not have permission to edit message with id ${message.id}!`
             });
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 

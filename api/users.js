@@ -7,34 +7,34 @@ const { getCampaignsByUser } = require('../db/campaigns');
 const { getCharactersByUser } = require('../db/characters');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const users = await getUsersLookingForGroup();
         res.send(users);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.get('/me', requireUser, async (req, res) => {
+router.get('/me', requireUser, async (req, res, next) => {
     try {
         const user = await getUserById(req.user.id);
         res.send(user);
-    } catch (error) {
-        console.error(error);
-    }
-});
-
-router.get('/:userId', async (req, res) => {
-    try {
-        const user = await getUserById(req.params.userId);
-        res.send(user);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.get('/:username/campaigns', requireUser, async (req, res) => {
+router.get('/:userId', async (req, res, next) => {
+    try {
+        const user = await getUserById(req.params.userId);
+        res.send(user);
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+router.get('/:username/campaigns', requireUser, async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
@@ -44,12 +44,12 @@ router.get('/:username/campaigns', requireUser, async (req, res) => {
         } else {
             // get public campaigns by user
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.get('/:username/characters', requireUser, async (req, res) => {
+router.get('/:username/characters', requireUser, async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
@@ -59,12 +59,12 @@ router.get('/:username/characters', requireUser, async (req, res) => {
         } else {
             // get public characters by user
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
     try {
         if (!username || !password) {
@@ -84,17 +84,18 @@ router.post('/login', async (req, res) => {
                 user
             });
         } else {
+            res.status(401);
             res.send({
                 error: 'IncorrectCredentialsError',
                 message: 'Username and password do not match!'
             });
         }
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
     const { username, password } = req.body;
     try {
         if (!username || !password) {
@@ -102,12 +103,12 @@ router.post('/register', async (req, res) => {
         };
         const existingUser = await getUserByUsername(username);
         if (existingUser) {
-            res.send({
+            next({
                 error: 'UsernameTakenError',
                 message: 'Username is already taken.'
             });
         } else if (password.length < 8) {
-            res.send({
+            next({
                 error: 'PasswordTooShortError',
                 message: 'Password must be atleast 8 characters long.'
             });
@@ -128,12 +129,12 @@ router.post('/register', async (req, res) => {
                 });
             }
         }
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.patch(':userId', requireUser, async (req, res) => {
+router.patch(':userId', requireUser, async (req, res, next) => {
     const { userId } = req.params;
     try {
         const user = await getUserById(userId);
@@ -147,8 +148,8 @@ router.patch(':userId', requireUser, async (req, res) => {
                 message: `You can only update your own profile information!`
             });
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 

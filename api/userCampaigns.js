@@ -10,8 +10,8 @@ router.post('/', async (req, res) => {
         if (userCampaign) {
             res.send(userCampaign);
         } else {
-            res.send({
-                error: 'UserCampaignError',
+            next({
+                name: 'UserCampaignError',
                 message: 'Could not add user to campaign! Are they already in it?'
             });
         };
@@ -33,12 +33,12 @@ router.patch('/:userCampaignId', requireUser, async (req, res) => {
         } else {
             res.status(403);
             res.send({
-                error: 'UnauthorizedUpdateError',
+                name: 'UnauthorizedUpdateError',
                 message: `User ${req.user.username} does not have permission to change DM status of user with id ${userCampaign.userId}`
             });
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 

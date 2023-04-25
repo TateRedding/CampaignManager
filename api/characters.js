@@ -4,21 +4,21 @@ const { requireUser } = require('./utils');
 
 const { getCharacterById, getAllPublicCharacters, createCharacter, updateCharacter } = require('../db/characters');
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const characters = await getAllPublicCharacters();
         res.send(characters);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.get('/:characterId', async (req, res) => {
+router.get('/:characterId', async (req, res, next) => {
     try {
         const character = await getCharacterById(req.params.characterId);
         res.send(character);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
@@ -28,12 +28,12 @@ router.post('/', requireUser, async (req, res) => {
     try {
         const character = await createCharacter(fields);
         res.send(character);
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.patch('/:characterId', requireUser, async (req, res) => {
+router.patch('/:characterId', requireUser, async (req, res, next) => {
     const { characterId } = req.params;
     try {
         const character = await getCharacterById(characterId);
@@ -43,12 +43,12 @@ router.patch('/:characterId', requireUser, async (req, res) => {
         } else {
             res.status(403);
             res.send({
-                error: 'UnauthorizedUpdateError',
+                name: 'UnauthorizedUpdateError',
                 message: `User ${req.user.username} does not have permission to edit ${character.name}!`
             });
         };
-    } catch (error) {
-        console.error(error);
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
