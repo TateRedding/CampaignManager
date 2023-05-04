@@ -5,7 +5,9 @@ const { createRow, updateRow, getRowById } = require('./utils');
 const createUser = async ({ ...fields }) => {
     try {
         fields.password = await bcrypt.hash(fields.password, 10);
-        return await createRow('users', fields);
+        const user = await createRow('users', fields);
+        delete user.password;
+        return user;
     } catch (error) {
         console.error(error);
     };

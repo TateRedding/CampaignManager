@@ -44,7 +44,9 @@ const createTables = async () => {
                 username VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL,
+                "joinDate" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                 active BOOLEAN DEFAULT true,
+                "deactivationDate" TIMESTAMPTZ,
                 "lookingForGroup" BOOLEAN DEFAULT false,
                 "isAdmin" BOOLEAN DEFAULT false,
                 "avatarURL" text,
@@ -78,6 +80,7 @@ const createTables = async () => {
                 "senderId" INTEGER NOT NULL REFERENCES users(id),
                 "recipientId" INTEGER REFERENCES users(id),
                 "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
+                "isInvitation" BOOLEAN DEFAULT false,
                 content TEXT NOT NULL,
                 "isPublic" BOOLEAN DEFAULT true,
                 "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -306,12 +309,22 @@ const createInitialMessages = async () => {
             isPublic: false
         });
 
+        const messageSix = await createMessage({
+            senderId: 2,
+            recipientId: 3,
+            campaignId: 3,
+            isInvitation: true,
+            content: 'This is an invitation to Davis to join Bee Boop Potato Soup',
+            isPublic: false
+        });
+
         console.log([
             messageOne,
             messageTwo,
             messageThree,
             messageFour,
-            messageFive
+            messageFive,
+            messageSix
         ]);
         console.log('Finished creating messages!');
     } catch (error) {
