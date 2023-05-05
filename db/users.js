@@ -15,13 +15,15 @@ const createUser = async ({ ...fields }) => {
 
 const updateUser = async (id, { ...fields }) => {
     try {
-        return await updateRow('users', id, fields);
+        const user = await updateRow('users', id, fields);
+        delete user.password;
+        return user;
     } catch (error) {
         console.error(error);
     };
 };
 
-const getUser = async (username, password) => {
+const getUser = async ({ username, password }) => {
     try {
         const { rows: [user] } = await client.query(`
             SELECT *

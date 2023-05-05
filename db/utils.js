@@ -10,7 +10,6 @@ const createRow = async (table, fields) => {
                 VALUES (${valuesString})
                 RETURNING *;
             `, Object.values(fields));
-        console.log(result);
         return result;
     } catch (error) {
         console.error(error);

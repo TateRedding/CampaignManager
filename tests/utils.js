@@ -1,11 +1,14 @@
 const faker = require("faker");
 const { createUser } = require("../db/users")
 
-const createFakeUser = async (username = faker.internet.userName()) => {
+const createFakeUser = async ({
+    username = faker.internet.userName(),
+    password = faker.internet.password()
+}) => {
     {
         const fakeUserData = {
             username,
-            password: faker.internet.password(),
+            password,
             email: faker.internet.email()
         };
         const user = await createUser(fakeUserData);
@@ -15,8 +18,6 @@ const createFakeUser = async (username = faker.internet.userName()) => {
         return user;
     };
 };
-
-console.log(createFakeUser("Test"));
 
 module.exports = {
     createFakeUser
