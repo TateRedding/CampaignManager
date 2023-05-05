@@ -1,7 +1,7 @@
 const client = require("../../db");
 const faker = require("faker");
-const { updateUser, getUser } = require("../../db/users");
-const { createFakeUser } = require("../utils");
+const { updateUser, getUser, getUserById, getUserByUsername, getUsersLookingForGroup } = require("../../db/users");
+const { createFakeUser, createFakeUserLookingForGroup } = require("../utils");
 
 describe("DB Users", () => {
     describe("createUser", () => {
@@ -82,18 +82,57 @@ describe("DB Users", () => {
             });
             expect(user.password).toBeFalsy();
         });
-
     });
 
     describe("getUserById", () => {
+        it("Gets the user with the given id", async () => {
+            const _user = await createFakeUser({});
+            const user = await getUserById(_user.id);
+            expect(user.id).toBe(_user.id);
+        });
 
+        it("Does NOT return the password", async () => {
+            const _user = await createFakeUser({})
+            const user = await getUserById(_user.id);
+            expect(user.password).toBeFalsy();
+        });
     });
 
     describe("getUserByUsername", () => {
+        it("Gets the user with the given username", async () => {
+            const _user = await createFakeUser({});
+            const user = await getUserByUsername(_user.username);
+            expect(user.username).toBe(_user.username);
+        });
+
+        it("Does NOT return the password", async () => {
+            const _user = await createFakeUser({})
+            const user = await getUserByUsername(_user.username);
+            expect(user.password).toBeFalsy();
+        });
 
     });
 
     describe("getUsersLookingForGroup", () => {
+        it("Returns a list of all users who are looking for a group", async () => {
+            for (let i = 0; i < 3; i++) {
+                await createFakeUserLookingForGroup();
+            };
+            const users = await getUsersLookingForGroup();
+            expect(users.length).toBe(3);
+            expect(users[0].lookingForGroup).toBeTruthy();
+            expect(users[1].lookingForGroup).toBeTruthy();
+            expect(users[2].lookingForGroup).toBeTruthy();
+        });
 
+        it("Does NOT return any passwords", async () => {
+            for (let i = 0; i < 3; i++) {
+                await createFakeUserLookingForGroup();
+            };
+            const users = await getUsersLookingForGroup();
+            expect(users[0].password).toBeFalsy();
+            expect(users[1].password).toBeFalsy();
+            expect(users[2].password).toBeFalsy();
+        });
     });
 });

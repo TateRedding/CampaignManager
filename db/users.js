@@ -42,7 +42,7 @@ const getUser = async ({ username, password }) => {
 
 const getUserById = async (id) => {
     try {
-        const user = getRowById('users', id);
+        const user = await getRowById('users', id);
         if (user) {
             delete user.password;
             return user;

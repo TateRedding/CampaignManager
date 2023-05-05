@@ -19,6 +19,21 @@ const createFakeUser = async ({
     };
 };
 
+const createFakeUserLookingForGroup = async () => {
+    const fakeUserData = {
+        username: faker.internet.userName(),
+        password: faker.internet.password(),
+        email: faker.internet.email(),
+        lookingForGroup: true
+    }
+    const user = await createUser(fakeUserData);
+    if (!user) {
+        throw new Error("createUser didn't return a user");
+    };
+    return user;
+};
+
 module.exports = {
-    createFakeUser
+    createFakeUser,
+    createFakeUserLookingForGroup
 };
