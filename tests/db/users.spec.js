@@ -35,6 +35,7 @@ describe("DB Users", () => {
             const user = await createFakeUser({});
             const username = "Theodore"
             const updatedUser = await updateUser(user.id, { username });
+            expect(updatedUser.id).toBe(user.id);
             expect(updatedUser.username).toBe(username);
         });
 
