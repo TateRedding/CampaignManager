@@ -1,6 +1,6 @@
 const { createFakeUser, createFakeCampaign, createFakeUserCampaign } = require("../utils");
 
-describe("Placeholer Test", () => {
+describe("DB user_campaigns", () => {
     describe("createUserCampaign", () => {
         it("Creates and returns the new user_campaign", async () => {
             const user = await createFakeUser({});
