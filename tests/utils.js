@@ -1,5 +1,6 @@
-const faker = require("faker");
-const { createUser } = require("../db/users")
+const { faker } = require("@faker-js/faker");
+const { createUser } = require("../db/users");
+const { createCampaign } = require("../db/campaigns");
 
 const createFakeUser = async ({
     username = faker.internet.userName(),
@@ -33,7 +34,21 @@ const createFakeUserLookingForGroup = async () => {
     return user;
 };
 
+const createFakeCampaign = async (name = `${faker.word.adjective()} ${faker.word.noun()}`) => {
+    const fakeUser = await createFakeUser({});
+    const fakeCampaignData = {
+        creatorId: fakeUser.id,
+        name
+    };
+    const campaign = await createCampaign(fakeCampaignData);
+    if (!campaign) {
+        throw new Error("createCampaign didn't return a campaign");
+    };
+    return campaign;
+}
+
 module.exports = {
     createFakeUser,
-    createFakeUserLookingForGroup
+    createFakeUserLookingForGroup,
+    createFakeCampaign
 };

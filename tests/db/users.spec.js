@@ -1,5 +1,5 @@
 const client = require("../../db");
-const faker = require("faker");
+const { faker } = require("@faker-js/faker");
 const { updateUser, getUser, getUserById, getUserByUsername, getUsersLookingForGroup } = require("../../db/users");
 const { createFakeUser, createFakeUserLookingForGroup } = require("../utils");
 

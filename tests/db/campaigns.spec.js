@@ -1,9 +1,32 @@
-describe("Placeholer Test", () => {
-    it("Adds the numbers 4 and 5.", async () => {
-        const sum = (num1, num2) => {
-            return num1 + num2;
-        };
-        const result = sum(4, 5)
-        expect(result).toBe(9);
+const { createFakeCampaign } = require("../utils");
+
+describe("DB Campaigns", () => {
+    describe("createCampaign", () => {
+        it("Creates and returns the new campaign", async () => {
+            const name = "Fear and Loathing in The Sword Coast"
+            const campaign = await createFakeCampaign(name);
+            expect(campaign).toBeTruthy();
+            expect(campaign.name).toBe(name);
+        });
+    });
+
+    describe("updateCampaign", () => {
+
+    });
+
+    describe("getCampaignById", () => {
+
+    });
+
+    describe("getAllCampaigns", () => {
+
+    });
+
+    describe("getAllPublicCampaigns", () => {
+
+    });
+
+    describe("getCampaignsByUser", () => {
+
     });
 });
