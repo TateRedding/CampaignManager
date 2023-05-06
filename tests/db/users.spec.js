@@ -1,5 +1,6 @@
 const client = require("../../db");
 const { faker } = require("@faker-js/faker");
+const { objectContaining } = expect;
 const { updateUser, getUser, getUserById, getUserByUsername, getUsersLookingForGroup } = require("../../db/users");
 const { createFakeUser, createFakeUserLookingForGroup } = require("../utils");
 
@@ -35,7 +36,13 @@ describe("DB Users", () => {
             const user = await createFakeUser({});
             const username = "Theodore"
             const updatedUser = await updateUser(user.id, { username });
-            expect(updatedUser.id).toBe(user.id);
+            expect(updatedUser).toEqual(
+                objectContaining({
+                    id: user.id,
+                    email: user.email,
+                    registerDate: user.registerDate
+                })
+            );
             expect(updatedUser.username).toBe(username);
         });
 
@@ -89,7 +96,13 @@ describe("DB Users", () => {
         it("Gets the user with the given id", async () => {
             const _user = await createFakeUser({});
             const user = await getUserById(_user.id);
-            expect(user.id).toBe(_user.id);
+            expect(user).toEqual(
+                objectContaining({
+                    id: _user.id,
+                    username: _user.username,
+                    email: _user.email,
+                })
+            );
         });
 
         it("Does NOT return the password", async () => {
@@ -103,7 +116,13 @@ describe("DB Users", () => {
         it("Gets the user with the given username", async () => {
             const _user = await createFakeUser({});
             const user = await getUserByUsername(_user.username);
-            expect(user.username).toBe(_user.username);
+            expect(user).toEqual(
+                objectContaining({
+                    id: _user.id,
+                    username: _user.username,
+                    email: _user.email,
+                })
+            );
         });
 
         it("Does NOT return the password", async () => {
@@ -121,9 +140,9 @@ describe("DB Users", () => {
             };
             const users = await getUsersLookingForGroup();
             expect(users.length).toBe(3);
-            expect(users[0].lookingForGroup).toBeTruthy();
-            expect(users[1].lookingForGroup).toBeTruthy();
-            expect(users[2].lookingForGroup).toBeTruthy();
+            for (let i = 0; i < users.length; i++) {
+                expect(users[i].lookingForGroup).toBeTruthy();
+            };
         });
 
         it("Does NOT return any passwords", async () => {
@@ -131,9 +150,9 @@ describe("DB Users", () => {
                 await createFakeUserLookingForGroup();
             };
             const users = await getUsersLookingForGroup();
-            expect(users[0].password).toBeFalsy();
-            expect(users[1].password).toBeFalsy();
-            expect(users[2].password).toBeFalsy();
+            for (let i = 0; i < users.length; i++) {
+                expect(users[i].password).toBeFalsy();
+            };
         });
     });
 });

@@ -1,5 +1,6 @@
+const { objectContaining } = expect;
 const { updateCampaign } = require("../../db/campaigns");
-const { createFakeUser, createFakeCampaign } = require("../utils");
+const { createFakeCampaign } = require("../utils");
 
 describe("DB Campaigns", () => {
     describe("createCampaign", () => {
@@ -16,7 +17,13 @@ describe("DB Campaigns", () => {
             const name = "How to Lose a Gnome in 10 days"
             const campaign = await createFakeCampaign({});
             const updatedCampaign = await updateCampaign(campaign.id, { name });
-            expect(updatedCampaign.id).toBe(campaign.id);
+            expect(updatedCampaign).toEqual(
+                objectContaining({
+                    id: campaign.id,
+                    creatorId: campaign.creatorId,
+                    creationDate: campaign.creationDate
+                })
+            );
             expect(updatedCampaign.name).toBe(name);
         });
     });

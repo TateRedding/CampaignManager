@@ -1,3 +1,4 @@
+const { objectContaining } = expect;
 const { createFakeUser, createFakeCampaign, createFakeUserCampaign } = require("../utils");
 
 describe("DB user_campaigns", () => {
@@ -10,8 +11,12 @@ describe("DB user_campaigns", () => {
                 campaignId: campaign.id
             });
             expect(userCampaign).toBeTruthy();
-            expect(userCampaign.userId).toBe(user.id);
-            expect(userCampaign.campaignId).toBe(campaign.id);
+            expect(userCampaign).toEqual(
+                objectContaining({
+                    userId: user.id,
+                    campaignId: campaign.id
+                })
+            );
         });
     });
 });

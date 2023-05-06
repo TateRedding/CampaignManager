@@ -44,7 +44,7 @@ const createTables = async () => {
                 username VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(100) NOT NULL,
                 email VARCHAR(150) NOT NULL,
-                "joinDate" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                "registerDate" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                 active BOOLEAN DEFAULT true,
                 "deactivationDate" TIMESTAMPTZ,
                 "lookingForGroup" BOOLEAN DEFAULT false,
