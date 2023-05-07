@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { JWTS } = process.env;
 const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername, updateUser } = require('../db/users');
 const { requireUser } = require('./utils');
-const { getCampaignsByUser } = require('../db/campaigns');
+const { getCampaignsByUserId } = require('../db/campaigns');
 const { getCharactersByUser } = require('../db/characters');
 const router = express.Router();
 
@@ -39,7 +39,7 @@ router.get('/:username/campaigns', requireUser, async (req, res, next) => {
     try {
         const user = await getUserByUsername(username);
         if (req.user && req.user.username === user.username) {
-            const campaigns = await getCampaignsByUser(user);
+            const campaigns = await getCampaignsByUserId(user.id);
             res.send(campaigns);
         } else {
             // get public campaigns by user

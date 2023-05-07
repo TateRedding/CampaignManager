@@ -128,8 +128,8 @@ describe("DB Users", () => {
             };
             const users = await getUsersLookingForGroup();
             expect(users.length).toBe(3);
-            for (let i = 0; i < users.length; i++) {
-                expect(users[i].lookingForGroup).toBeTruthy();
+            for (let j = 0; j < users.length; j++) {
+                expect(users[j].lookingForGroup).toBeTruthy();
             };
         });
 
@@ -138,8 +138,8 @@ describe("DB Users", () => {
                 await createFakeUserLookingForGroup();
             };
             const users = await getUsersLookingForGroup();
-            for (let i = 0; i < users.length; i++) {
-                expect(users[i].password).toBeFalsy();
+            for (let j = 0; j < users.length; j++) {
+                expect(users[j].password).toBeFalsy();
             };
         });
     });

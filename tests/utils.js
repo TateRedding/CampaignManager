@@ -38,13 +38,18 @@ const createFakeUserLookingForGroup = async () => {
 
 const createFakeCampaign = async ({
     creatorId,
-    name = `${faker.word.adjective()} ${faker.word.noun()}`
+    name = `${faker.word.adjective()} ${faker.word.noun()}`,
+    isPublic = true
 }) => {
     if (!creatorId) {
         const user = await createFakeUser({});
         creatorId = user.id
     };
-    const campaign = await createCampaign({ creatorId, name });
+    const campaign = await createCampaign({
+        creatorId,
+        name,
+        isPublic
+    });
     if (!campaign) {
         throw new Error("createCampaign didn't return a campaign");
     };
@@ -71,14 +76,17 @@ const createFakeUserCampaign = async ({ userId, campaignId }) => {
 
 };
 
-const createFakeCampaignWithUserCampaigns = async (numUsers) => {
+const createFakeCampaignWithUserCampaigns = async (numUsers, creatorId) => {
     if (numUsers <= 0) {
         numUsers = 1
     };
-    const creator = await createFakeUser({});
-    const campaign = await createFakeCampaign({ creatorId: creator.id });
+    if (!creatorId) {
+        const creator = await createFakeUser({});
+        creatorId = creator.id;
+    }
+    const campaign = await createFakeCampaign({ creatorId });
     await createFakeUserCampaign({
-        userId: creator.id,
+        userId: creatorId,
         campaignId: campaign.id
     });
     for (let i = 0; i < numUsers - 1; i++) {
@@ -151,7 +159,7 @@ const createFakeCampaignWithUserCampaignsAndMessages = async (numUsers, numPubli
             senderId: users[senderIdx].userId,
             recipientId: users[recipientIdx].userId,
             campaignId: campaign.id,
-            isPrivate: true,
+            isPublic: false,
         });
         senderIdx++;
         recipientIdx++;

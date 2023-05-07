@@ -1,5 +1,5 @@
 const client = require('./index');
-const { getMessagesByCampaign } = require('./messages');
+const { getMessagesByCampaignId } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
 const { createRow, updateRow } = require('./utils');
 
@@ -29,8 +29,8 @@ const getCampaignById = async (id) => {
             WHERE campaigns.id=${id};
         `);
         if (campaign) {
-            campaign.players = await getUserCampaignsByCampaignId(campaign.id);
-            campaign.messages = await getMessagesByCampaign(campaign.id);
+            campaign.users = await getUserCampaignsByCampaignId(campaign.id);
+            campaign.messages = await getMessagesByCampaignId(campaign.id);
         };
         return campaign;
     } catch (error) {
@@ -38,17 +38,18 @@ const getCampaignById = async (id) => {
     };
 };
 
-const getAllCampaigns = async () => {
+const getAllPublicCampaigns = async () => {
     try {
         const { rows: campaigns } = await client.query(`
             SELECT campaigns.*, users.username AS "creatorName"
             FROM campaigns
             JOIN users
-                ON campaigns."creatorId"=users.id;
+                ON campaigns."creatorId"=users.id
+            WHERE "isPublic"=true;
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
-                campaigns[i].players = await getUserCampaignsByCampaignId(campaigns[i].id)
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
             };
         };
         return campaigns;
@@ -57,28 +58,18 @@ const getAllCampaigns = async () => {
     };
 };
 
-const getAllPublicCampaigns = async () => {
-    try {
-        const allCampaigns = await getAllCampaigns();
-        const publicCampaigns = allCampaigns.filter(campaign => campaign.public);
-        return publicCampaigns;
-    } catch (error) {
-        console.error(error);
-    };
-};
-
-const getCampaignsByUser = async (user) => {
+const getCampaignsByUserId = async (userId) => {
     try {
         const { rows: campaigns } = await client.query(`
             SELECT campaigns.*
             FROM campaigns
             JOIN user_campaigns
                 ON user_campaigns."campaignId"=campaigns.id
-            WHERE user_campaigns."userId"=${user.id};
+            WHERE user_campaigns."userId"=${userId};
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
-                campaigns[i].players = await getUserCampaignsByCampaignId(campaigns[i].id)
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
             };
         };
         return campaigns;
@@ -92,5 +83,5 @@ module.exports = {
     updateCampaign,
     getCampaignById,
     getAllPublicCampaigns,
-    getCampaignsByUser
+    getCampaignsByUserId
 };
