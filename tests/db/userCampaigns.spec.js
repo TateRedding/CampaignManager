@@ -39,7 +39,6 @@ describe("DB user_campaigns", () => {
         it("Only changes the boolean isDM", async () => {
             const userCampaign = await createFakeUserCampaign({});
             const updatedUserCampaign = await updateUserCampaign(userCampaign.id, !userCampaign.isDM);
-            expect(updatedUserCampaign).toBeTruthy();
             expect(updatedUserCampaign).toEqual(
                 objectContaining({
                     userId: userCampaign.userId,

@@ -10,10 +10,11 @@ const createMessage = async ({ ...fields }) => {
 };
 
 const updateMessage = async (id, content) => {
+    content = content.replaceAll("'", "''");
     try {
         const { rows: [message] } = await client.query(`
             UPDATE messages
-            SET content=${content}
+            SET content='${content}'
             WHERE id=${id}
             RETURNING *;
         `);
@@ -25,7 +26,12 @@ const updateMessage = async (id, content) => {
 
 const deleteMessage = async (id) => {
     try {
-        return await getRowById('messages', id);
+        const { rows: [message] } = await client.query(`
+            DELETE FROM messages
+            WHERE id=${id}
+            RETURNING *;
+        `);
+        return message;
     } catch (error) {
         console.error(error);
     };
@@ -39,7 +45,7 @@ const getMessageById = async (id) => {
     };
 };
 
-const getMessagesByCampaign = async (campaignId) => {
+const getMessagesByCampaignId = async (campaignId) => {
     try {
         const { rows: messages } = await client.query(`
             SELECT *
@@ -58,5 +64,5 @@ module.exports = {
     updateMessage,
     deleteMessage,
     getMessageById,
-    getMessagesByCampaign
+    getMessagesByCampaignId
 };
