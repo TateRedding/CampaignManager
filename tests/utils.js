@@ -4,7 +4,7 @@ const { createCampaign } = require("../db/campaigns");
 const { createUserCampaign } = require("../db/user_campaigns");
 
 const createFakeUser = async ({
-    username = faker.internet.userName(),
+    username = faker.datatype.uuid(),
     password = faker.internet.password()
 }) => {
     {
@@ -23,7 +23,7 @@ const createFakeUser = async ({
 
 const createFakeUserLookingForGroup = async () => {
     const fakeUserData = {
-        username: faker.internet.userName(),
+        username: faker.datatype.uuid(),
         password: faker.internet.password(),
         email: faker.internet.email(),
         lookingForGroup: true
@@ -56,7 +56,7 @@ const createFakeUserCampaign = async ({ userId, campaignId }) => {
         userId = user.id;
     };
     if (!campaignId) {
-        const campaign = await createFakeUserCampaign({});
+        const campaign = await createFakeCampaign({});
         campaignId = campaign.id
     };
     const fakeUserCampaign = await createUserCampaign({
@@ -67,12 +67,33 @@ const createFakeUserCampaign = async ({ userId, campaignId }) => {
         throw new Error("createCampaign didn't return a campaign");
     };
     return fakeUserCampaign;
-    
+
 };
+
+const createFakeCampaignWithUserCampaigns = async (numUsers) => {
+    if (numUsers <= 0) {
+        numUsers = 1
+    };
+    const creator = await createFakeUser({});
+    const campaign = await createFakeCampaign({ creatorId: creator.id });
+    await createFakeUserCampaign({
+        userId: creator.id,
+        campaignId: campaign.id
+    });
+    for (let i = 0; i < numUsers-1; i++) {
+        const user = await createFakeUser({});
+        await createFakeUserCampaign({
+            userId: user.id,
+            campaignId: campaign.id
+        });
+    };
+    return campaign;
+}
 
 module.exports = {
     createFakeUser,
     createFakeUserLookingForGroup,
     createFakeCampaign,
-    createFakeUserCampaign
+    createFakeUserCampaign,
+    createFakeCampaignWithUserCampaigns
 };

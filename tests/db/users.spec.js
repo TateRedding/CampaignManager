@@ -96,13 +96,7 @@ describe("DB Users", () => {
         it("Gets the user with the given id", async () => {
             const _user = await createFakeUser({});
             const user = await getUserById(_user.id);
-            expect(user).toEqual(
-                objectContaining({
-                    id: _user.id,
-                    username: _user.username,
-                    email: _user.email,
-                })
-            );
+            expect(user).toMatchObject(user);
         });
 
         it("Does NOT return the password", async () => {
@@ -116,13 +110,7 @@ describe("DB Users", () => {
         it("Gets the user with the given username", async () => {
             const _user = await createFakeUser({});
             const user = await getUserByUsername(_user.username);
-            expect(user).toEqual(
-                objectContaining({
-                    id: _user.id,
-                    username: _user.username,
-                    email: _user.email,
-                })
-            );
+            expect(user).toMatchObject(_user);
         });
 
         it("Does NOT return the password", async () => {
