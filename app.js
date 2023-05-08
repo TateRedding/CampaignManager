@@ -22,13 +22,16 @@ app.use('/api', apiRouter);
 
 app.use('*', (req, res) => {
     res.status(404);
-    res.send({ error: 'route not found' });
+    res.send({
+        name: 'RouteNotFound',
+        message: 'That page does not exist'
+    });
 });
 
 app.use((err, req, res, next) => {
     res.status(500);
     res.send({
-        error: err.name,
+        name: err.name,
         message: err.message
     });
 });

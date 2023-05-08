@@ -25,10 +25,18 @@ router.get('/me', requireUser, async (req, res, next) => {
     };
 });
 
-router.get('/:userId', async (req, res, next) => {
+router.get('/id/:userId', async (req, res, next) => {
+    const { userId } = req.params;
     try {
-        const user = await getUserById(req.params.userId);
-        res.send(user);
+        const user = await getUserById(userId);
+        if (user) {
+            res.send(user);
+        } else {
+            next({
+                name: 'InvalidUserId',
+                message: `No user found with id ${userId}`
+            });
+        };
     } catch ({ name, message }) {
         next({ name, message });
     };

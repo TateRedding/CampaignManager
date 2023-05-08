@@ -26,7 +26,7 @@ const getCampaignById = async (id) => {
             FROM campaigns
             JOIN users
                 ON campaigns."creatorId"=users.id
-            WHERE campaigns.id=${id};
+            WHERE campaigns.id='${id}';
         `);
         if (campaign) {
             campaign.users = await getUserCampaignsByCampaignId(campaign.id);

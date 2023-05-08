@@ -1,40 +1,77 @@
 const { faker } = require("@faker-js/faker");
+const jwt = require("jsonwebtoken");
+const { JWTS = "super_secret" } = process.env;
 const { createUser } = require("../db/users");
 const { createCampaign } = require("../db/campaigns");
 const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user_campaigns");
 const { createMessage } = require("../db/messages");
 const { createCharacter } = require("../db/characters");
 
-const createFakeUser = async ({
-    username = faker.datatype.uuid(),
-    password = faker.internet.password()
-}) => {
-    {
-        const fakeUserData = {
-            username,
-            password,
-            email: faker.internet.email()
-        };
-        const user = await createUser(fakeUserData);
-        if (!user) {
-            throw new Error("createUser didn't return a user");
-        };
-        return user;
-    };
+const expectToBeError = (body, name) => {
+    expect(body).toEqual({
+        name,
+        message: expect.any(String)
+    });
 };
 
-const createFakeUserLookingForGroup = async () => {
-    const fakeUserData = {
-        username: faker.datatype.uuid(),
-        password: faker.internet.password(),
-        email: faker.internet.email(),
-        lookingForGroup: true
+const expectNotToBeError = (body) => {
+    expect(body).not.toEqual({
+        name: expect.any(String),
+        message: expect.any(String)
+    });
+};
+
+const expectToMatchObjectWithDates = (firstObject, secondObject) => {
+    for (const key of Object.keys(firstObject)) {
+        if (typeof firstObject[key] === 'object' && Date.parse(firstObject[key])) {
+            firstObject[key] = firstObject[key].toISOString();
+        }
+        if (typeof secondObject[key] === 'object' && Date.parse(secondObject[key])) {
+            secondObject[key] = secondObject[key].toISOString();
+        }
+        expect(firstObject[key]).toEqual(secondObject[key]);
     }
+};
+
+const createFakeUser = async ({
+    username = faker.datatype.uuid(),
+    password = faker.internet.password(),
+    lookingForGroup = false
+}) => {
+    const fakeUserData = {
+        username,
+        password,
+        email: faker.internet.email(),
+        lookingForGroup
+    };
     const user = await createUser(fakeUserData);
     if (!user) {
         throw new Error("createUser didn't return a user");
     };
     return user;
+};
+
+const createFakeUserWithToken = async ({
+    username = faker.datatype.uuid(),
+    password = faker.internet.password(),
+    lookingForGroup = false
+}) => {
+    const user = await createFakeUser({
+        username,
+        password,
+        lookingForGroup
+    });
+    const token = jwt.sign({
+        id: user.id,
+        username: user.username
+    },
+        JWTS,
+        { expiresIn: "1w" }
+    );
+    return {
+        user,
+        token
+    };
 };
 
 const createFakeCampaign = async ({
@@ -229,12 +266,15 @@ const createFakeCharacter = async ({
 };
 
 module.exports = {
+    expectToBeError,
+    expectNotToBeError,
+    expectToMatchObjectWithDates,
     createFakeUser,
-    createFakeUserLookingForGroup,
+    createFakeUserWithToken,
     createFakeCampaign,
     createFakeUserCampaign,
     createFakeCampaignWithUserCampaigns,
     createFakeMessage,
     createFakeCampaignWithUserCampaignsAndMessages,
-    createFakeCharacter
+    createFakeCharacter,
 };

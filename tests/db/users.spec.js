@@ -2,7 +2,7 @@ const client = require("../../db");
 const { faker } = require("@faker-js/faker");
 const { objectContaining } = expect;
 const { updateUser, getUser, getUserById, getUserByUsername, getUsersLookingForGroup } = require("../../db/users");
-const { createFakeUser, createFakeUserLookingForGroup } = require("../utils");
+const { createFakeUser } = require("../utils");
 
 describe("DB Users", () => {
     describe("createUser", () => {
@@ -124,7 +124,7 @@ describe("DB Users", () => {
     describe("getUsersLookingForGroup", () => {
         it("Returns a list of all users who are looking for a group", async () => {
             for (let i = 0; i < 3; i++) {
-                await createFakeUserLookingForGroup();
+                await createFakeUser({ lookingForGroup: true });
             };
             const users = await getUsersLookingForGroup();
             expect(users.length).toBe(3);
@@ -135,12 +135,18 @@ describe("DB Users", () => {
 
         it("Does NOT return any passwords", async () => {
             for (let i = 0; i < 3; i++) {
-                await createFakeUserLookingForGroup();
+                await createFakeUser({ lookingForGroup: true });
             };
             const users = await getUsersLookingForGroup();
             for (let j = 0; j < users.length; j++) {
                 expect(users[j].password).toBeFalsy();
             };
+        });
+
+        it("Does NOT return any users who are not looking for a group", async () => {
+            const _user = await createFakeUser({ lookingForGroup: false });
+            const users = await getUsersLookingForGroup();
+            expect(users.filter(user => user.id === _user.id).length).toBeFalsy();
         });
     });
 });
