@@ -4,7 +4,7 @@ const { createFakeCampaignWithUserCampaignsAndMessages } = require("../utils");
 const { createFakeCampaignWithUserCampaigns } = require("../utils");
 const { createFakeCampaign, createFakeUser } = require("../utils");
 
-describe("DB Campaigns", () => {
+describe("DB campaigns", () => {
     describe("createCampaign", () => {
         it("Creates and returns the new campaign", async () => {
             const name = "Fear and Loathing in The Sword Coast"
@@ -98,6 +98,12 @@ describe("DB Campaigns", () => {
                 expect(campaigns[j].users).toBeTruthy();
             };
             expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBeGreaterThanOrEqual(numCampaigns);
+        });
+
+        it("Does NOT include private campaigns", async () => {
+            const privateCampaign = await createFakeCampaign({ isPublic: false });
+            const campaigns = await getAllPublicCampaigns();
+            expect(campaigns.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
         });
 
     });

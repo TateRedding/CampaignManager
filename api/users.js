@@ -4,7 +4,7 @@ const { JWTS } = process.env;
 const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername, updateUser } = require('../db/users');
 const { requireUser } = require('./utils');
 const { getCampaignsByUserId } = require('../db/campaigns');
-const { getCharactersByUser } = require('../db/characters');
+const { getCharactersByUserId } = require('../db/characters');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -54,7 +54,7 @@ router.get('/:username/characters', requireUser, async (req, res, next) => {
     try {
         const user = await getUserByUsername(username);
         if (req.user && req.user.username === user.username) {
-            const characters = await getCharactersByUser(user);
+            const characters = await getCharactersByUserId(user.id);
             res.send(characters);
         } else {
             // get public characters by user

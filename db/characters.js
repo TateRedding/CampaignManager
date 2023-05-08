@@ -30,7 +30,7 @@ const getAllPublicCharacters = async () => {
         const { rows: characters } = await client.query(`
             SELECT *
             FROM characters
-            WHERE public=true;
+            WHERE "isPublic"=true;
         `);
         return characters;
     } catch (error) {
@@ -38,12 +38,12 @@ const getAllPublicCharacters = async () => {
     };
 };
 
-const getCharactersByUser = async (user) => {
+const getCharactersByUserId = async (userId) => {
     try {
         const { rows: characters } = await client.query(`
             SELECT *
             FROM characters
-            WHERE "userId"=${user.id}
+            WHERE "userId"=${userId}
         `);
         return characters;
     } catch (error) {
@@ -56,5 +56,5 @@ module.exports = {
     updateCharacter,
     getCharacterById,
     getAllPublicCharacters,
-    getCharactersByUser
+    getCharactersByUserId
 };

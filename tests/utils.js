@@ -3,6 +3,7 @@ const { createUser } = require("../db/users");
 const { createCampaign } = require("../db/campaigns");
 const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user_campaigns");
 const { createMessage } = require("../db/messages");
+const { createCharacter } = require("../db/characters");
 
 const createFakeUser = async ({
     username = faker.datatype.uuid(),
@@ -173,6 +174,60 @@ const createFakeCampaignWithUserCampaignsAndMessages = async (numUsers, numPubli
     return campaign;
 };
 
+const createFakeCharacter = async ({
+    userId,
+    campaignId,
+    isPublic = true,
+    name = faker.name.fullName(),
+}) => {
+    const alignments = [
+        'lawful-good',
+        'neutral-good',
+        'chaotic-good',
+        'lawful-neutral',
+        'true-neutral',
+        'chaotic-neutral',
+        'lawful-evil',
+        'neutral-evil',
+        'chaotic-evil'
+    ];
+    const randInt = (max, min) => {
+        if (!min) {
+            min = 0;
+        };
+        return Math.floor(Math.random() * (max - min)) + min;
+    };
+    if (!userId) {
+        const user = await createFakeUser({});
+        userId = user.id;
+    };
+    const alignment = alignments[randInt(alignments.length)];
+    const fakeCharacterData = {
+        userId,
+        isPublic,
+        name,
+        species: faker.word.noun(),
+        class: faker.word.adjective(),
+        alignment,
+        background: `${faker.word.noun()} ${faker.word.adjective()}`,
+        age: randInt(350, 18),
+        height: randInt(75, 10),
+        weight: randInt(250, 100),
+        eyes: faker.color.human(),
+        hair: faker.color.human(),
+        skin: faker.color.human(),
+        proficiencies: {},
+        totalHitDice: { 'd10': 1 },
+        currentHitDice: { 'd10': 1 },
+        features: {}
+    };
+    if (campaignId) {
+        fakeCharacterData.campaignId = campaignId;
+    };
+    const character = await createCharacter(fakeCharacterData);
+    return character;
+};
+
 module.exports = {
     createFakeUser,
     createFakeUserLookingForGroup,
@@ -180,5 +235,6 @@ module.exports = {
     createFakeUserCampaign,
     createFakeCampaignWithUserCampaigns,
     createFakeMessage,
-    createFakeCampaignWithUserCampaignsAndMessages
+    createFakeCampaignWithUserCampaignsAndMessages,
+    createFakeCharacter
 };
