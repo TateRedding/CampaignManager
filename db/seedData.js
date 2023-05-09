@@ -60,6 +60,7 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 "creatorId" INTEGER REFERENCES users(id) NOT NULL,
                 "isPublic" BOOLEAN DEFAULT true,
+                "lookingForPlayers" BOOLEAN DEFAULT false,
                 name VARCHAR(255) NOT NULL,
                 "imageURL" TEXT,
                 description TEXT,

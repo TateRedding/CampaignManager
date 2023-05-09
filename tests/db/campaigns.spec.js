@@ -1,5 +1,5 @@
 const { objectContaining } = expect;
-const { updateCampaign, getCampaignById, getAllPublicCampaigns, getCampaignsByUserId } = require("../../db/campaigns");
+const { updateCampaign, getCampaignById, getAllPublicCampaigns, getCampaignsByUserId, getPublicCampaignsLookingForPlayers } = require("../../db/campaigns");
 const { createFakeCampaignWithUserCampaignsAndMessages } = require("../utils");
 const { createFakeCampaignWithUserCampaigns } = require("../utils");
 const { createFakeCampaign, createFakeUser } = require("../utils");
@@ -46,7 +46,7 @@ describe("DB campaigns", () => {
 
         it("Includes a list of users from the user_campaigns table", async () => {
             const numUsers = 3;
-            const _campaign = await createFakeCampaignWithUserCampaigns(numUsers);
+            const _campaign = await createFakeCampaignWithUserCampaigns({ numUsers });
             const campaign = await getCampaignById(_campaign.id);
             expect(campaign.users).toBeTruthy();
             expect(campaign.users.length).toBe(numUsers);
@@ -91,7 +91,7 @@ describe("DB campaigns", () => {
             const numUsers = 6;
             const numCampaigns = 3;
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns(numUsers);
+                await createFakeCampaignWithUserCampaigns({ numUsers });
             };
             const campaigns = await getAllPublicCampaigns();
             for (let j = 0; j < campaigns.length; j++) {
@@ -105,7 +105,54 @@ describe("DB campaigns", () => {
             const campaigns = await getAllPublicCampaigns();
             expect(campaigns.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
         });
+    });
 
+    describe("getPublicCampaignsLookingForPlayers", () => {
+        it("Gets a list of all public campaigns that are looking for players", async () => {
+            const numCampaigns = 3;
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaign({ lookingForPlayers: true });
+            };
+            const campaigns = await getPublicCampaignsLookingForPlayers();
+            expect(campaigns).toBeTruthy();
+            expect(campaigns.length).toBeGreaterThanOrEqual(numCampaigns);
+        });
+
+        it("Includes the usernames of the creators, aliased as creatorName", async () => {
+            const numCampaigns = 3;
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaign({ lookingForPlayers: true });
+            };
+            const campaigns = await getPublicCampaignsLookingForPlayers();
+            for (let j = 0; j < campaigns.length; j++) {
+                expect(campaigns[j].creatorName).toBeTruthy();
+            };
+        });
+
+        it("Includes a list of users from the user_campaigns table", async () => {
+            const numUsers = 6;
+            const numCampaigns = 3;
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers, lookingForPlayers: true });
+            };
+            const campaigns = await getPublicCampaignsLookingForPlayers();
+            for (let j = 0; j < campaigns.length; j++) {
+                expect(campaigns[j].users).toBeTruthy();
+            };
+            expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBeGreaterThanOrEqual(numCampaigns);
+        });
+
+        it("Does NOT include private campaigns", async () => {
+            const privateCampaign = await createFakeCampaign({ isPublic: false, lookingForPlayers: true });
+            const campaigns = await getPublicCampaignsLookingForPlayers();
+            expect(campaigns.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
+        });
+
+        it("Does NOT include campaigns that are not looking for players", async () => {
+            const privateCampaign = await createFakeCampaign({ lookingForPlayers: false });
+            const campaigns = await getPublicCampaignsLookingForPlayers();
+            expect(campaigns.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
+        });
     });
 
     describe("getCampaignsByUserId", () => {
@@ -113,7 +160,7 @@ describe("DB campaigns", () => {
             const numCampaigns = 3;
             const creator = await createFakeUser({});
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns(1, creator.id);
+                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: creator.id });
             };
             const campaigns = await getCampaignsByUserId(creator.id);
             expect(campaigns).toBeTruthy();
@@ -125,7 +172,7 @@ describe("DB campaigns", () => {
             const numUsers = 4;
             const creator = await createFakeUser({});
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns(numUsers, creator.id);
+                await createFakeCampaignWithUserCampaigns({ numUsers, creatorId: creator.id });
             };
             const campaigns = await getCampaignsByUserId(creator.id);
             for (let j = 0; j < campaigns.length; j++) {

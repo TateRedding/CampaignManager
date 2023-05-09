@@ -52,4 +52,18 @@ describe("/api/users", () => {
             expectToBeError(response.body, 'InvalidUserId');
         });
     });
+
+    describe("GET /api/users/username/:username", () => {
+        it("Sends back the data of the user with the given username", async () => {
+            const user = await createFakeUser({});
+            const response = await request(app).get(`/api/users/username/${user.username}`);
+            expectToMatchObjectWithDates(response.body, user);
+        });
+
+        it("Returns a relevant error if no user is found", async () => {
+            const response = await request(app).get('/api/users/username/Jeffers');
+            expect(response.status).toBe(500);
+            expectToBeError(response.body, 'InvalidUsername');
+        });
+    });
 });

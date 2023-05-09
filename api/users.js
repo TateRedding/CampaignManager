@@ -42,6 +42,23 @@ router.get('/id/:userId', async (req, res, next) => {
     };
 });
 
+router.get('/username/:username', async (req, res, next) => {
+    const { username } = req.params;
+    try {
+        const user = await getUserByUsername(username);
+        if (user) {
+            res.send(user);
+        } else {
+            next({
+                name: 'InvalidUsername',
+                message: `No user found with username ${username}`
+            });
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
 router.get('/:username/campaigns', requireUser, async (req, res, next) => {
     const { username } = req.params;
     try {
