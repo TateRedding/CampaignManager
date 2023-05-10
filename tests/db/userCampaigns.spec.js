@@ -1,7 +1,17 @@
 const { objectContaining } = expect;
 const client = require("../../db");
-const { updateUserCampaign, deleteUserCampaign, getUserCampaignById, getUserCampaignsByCampaignId } = require("../../db/user_campaigns");
-const { createFakeUser, createFakeCampaign, createFakeUserCampaign, createFakeCampaignWithUserCampaigns } = require("../utils");
+const {
+    updateUserCampaign,
+    deleteUserCampaign,
+    getUserCampaignById,
+    getUserCampaignsByCampaignId
+} = require("../../db/user_campaigns");
+const {
+    createFakeUser,
+    createFakeCampaign,
+    createFakeUserCampaign,
+    createFakeCampaignWithUserCampaigns
+} = require("../utils");
 
 describe("DB user_campaigns", () => {
     describe("createUserCampaign", () => {

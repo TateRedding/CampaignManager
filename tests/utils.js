@@ -119,7 +119,8 @@ const createFakeUserCampaign = async ({ userId, campaignId }) => {
 const createFakeCampaignWithUserCampaigns = async ({
     numUsers,
     creatorId,
-    lookingForPlayers = false
+    lookingForPlayers = false,
+    isPublic = true
 }) => {
     if (numUsers <= 0 || numUsers === undefined) {
         numUsers = 1
@@ -128,7 +129,11 @@ const createFakeCampaignWithUserCampaigns = async ({
         const creator = await createFakeUser({});
         creatorId = creator.id;
     }
-    const campaign = await createFakeCampaign({ creatorId, lookingForPlayers });
+    const campaign = await createFakeCampaign({
+        creatorId,
+        lookingForPlayers,
+        isPublic
+    });
     await createFakeUserCampaign({
         userId: creatorId,
         campaignId: campaign.id

@@ -1,8 +1,18 @@
 const { faker } = require("@faker-js/faker");
 const { objectContaining } = expect;
 const client = require("../../db");
-const { updateMessage, getMessageById, deleteMessage, getMessagesByCampaignId } = require("../../db/messages");
-const { createFakeUser, createFakeCampaign, createFakeMessage, createFakeCampaignWithUserCampaignsAndMessages } = require("../utils");
+const {
+    updateMessage,
+    getMessageById,
+    deleteMessage,
+    getMessagesByCampaignId
+} = require("../../db/messages");
+const {
+    createFakeUser,
+    createFakeCampaign,
+    createFakeMessage,
+    createFakeCampaignWithUserCampaignsAndMessages
+} = require("../utils");
 
 describe("DB messages", () => {
     describe("createMessage", () => {

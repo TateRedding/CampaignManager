@@ -1,6 +1,14 @@
 const { objectContaining } = expect;
-const { updateCharacter, getCharacterById, getAllPublicCharacters, getCharactersByUserId } = require("../../db/characters");
-const { createFakeCharacter, createFakeUser } = require("../utils");
+const {
+    updateCharacter,
+    getCharacterById,
+    getAllPublicCharacters,
+    getCharactersByUserId
+} = require("../../db/characters");
+const {
+    createFakeUser,
+    createFakeCharacter
+} = require("../utils");
 
 describe("DB characters", () => {
     describe("createCharacter", () => {

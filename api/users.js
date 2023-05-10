@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { JWTS } = process.env;
 const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername, updateUser } = require('../db/users');
 const { requireUser } = require('./utils');
-const { getCampaignsByUserId } = require('../db/campaigns');
+const { getCampaignsByUserId, getPublicCampaignsByUserId } = require('../db/campaigns');
 const { getCharactersByUserId } = require('../db/characters');
 const router = express.Router();
 
@@ -59,7 +59,7 @@ router.get('/username/:username', async (req, res, next) => {
     };
 });
 
-router.get('/:username/campaigns', requireUser, async (req, res, next) => {
+router.get('/:username/campaigns', async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
@@ -67,14 +67,15 @@ router.get('/:username/campaigns', requireUser, async (req, res, next) => {
             const campaigns = await getCampaignsByUserId(user.id);
             res.send(campaigns);
         } else {
-            // get public campaigns by user
+            const campaigns = await getPublicCampaignsByUserId(user.id);
+            res.send(campaigns);
         };
     } catch ({ name, message }) {
         next({ name, message });
     };
 });
 
-router.get('/:username/characters', requireUser, async (req, res, next) => {
+router.get('/:username/characters', async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);

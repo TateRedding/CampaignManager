@@ -99,11 +99,33 @@ const getCampaignsByUserId = async (userId) => {
     };
 };
 
+const getPublicCampaignsByUserId = async (userId) => {
+    try {
+        const { rows: campaigns } = await client.query(`
+            SELECT campaigns.*
+            FROM campaigns
+            JOIN user_campaigns
+                ON user_campaigns."campaignId"=campaigns.id
+            WHERE campaigns."isPublic"=true
+            AND user_campaigns."userId"=${userId};
+        `);
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
+        return campaigns;
+    } catch (error) {
+        console.error(error);
+    };
+}
+
 module.exports = {
     createCampaign,
     updateCampaign,
     getCampaignById,
     getAllPublicCampaigns,
     getPublicCampaignsLookingForPlayers,
-    getCampaignsByUserId
+    getCampaignsByUserId,
+    getPublicCampaignsByUserId
 };

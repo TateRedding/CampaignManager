@@ -1,7 +1,13 @@
 const client = require("../../db");
 const { faker } = require("@faker-js/faker");
 const { objectContaining } = expect;
-const { updateUser, getUser, getUserById, getUserByUsername, getUsersLookingForGroup } = require("../../db/users");
+const {
+    updateUser,
+    getUser,
+    getUserById,
+    getUserByUsername,
+    getUsersLookingForGroup
+} = require("../../db/users");
 const { createFakeUser } = require("../utils");
 
 describe("DB Users", () => {
