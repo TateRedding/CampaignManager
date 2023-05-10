@@ -236,7 +236,6 @@ describe("DB campaigns", () => {
                 isPublic: false
             })
             const campaigns = await getPublicCampaignsByUserId(creator.id);
-            expect(campaigns).toBeTruthy();
             expect(campaigns.length).toBe(numPublicCampaigns);
             expect(campaigns.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
         });

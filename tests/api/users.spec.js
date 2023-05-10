@@ -5,7 +5,8 @@ const {
     expectNotToBeError,
     expectToMatchObjectWithDates,
     createFakeUser,
-    createFakeUserWithToken
+    createFakeUserWithToken,
+    createFakeCharacter
 } = require("../utils");
 const { createFakeCampaignWithUserCampaigns } = require("../utils");
 
@@ -124,6 +125,52 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/:username/characters", () => {
+        it("Returns a list of public and private characters if username provided is that of the logged in user", async () => {
+            const numPublicCharacters = 3;
+            const numPrivateCharacters = 2;
+            const { user, token } = await createFakeUserWithToken({});
+            for (let i = 0; i < numPublicCharacters; i++) {
+                await createFakeCharacter({ userId: user.id, isPublic: true });
+            };
+            for (let j = 0; j < numPrivateCharacters; j++) {
+                await createFakeCharacter({ userId: user.id, isPublic: false });
+            };
+            const response = await request(app)
+                .get(`/api/users/${user.username}/characters`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(response.body.length).toBe(numPublicCharacters + numPrivateCharacters);
+        });
+
+        it("Returns a list of public characters if username provided is not that of the logged in user, or no user is logged in", async () => {
+            const numCharacters = 3;
+            const user = await createFakeUser({});
+            const { token } = await createFakeUserWithToken({});
+            for (let i = 0; i < numCharacters; i++) {
+                await createFakeCharacter({ userId: user.id });
+            };
+            const noLoginResponse = await request(app).get(`/api/users/${user.username}/characters`);
+            const loggedInResponse = await request(app)
+                .get(`/api/users/${user.username}/characters`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.body.length).toBe(numCharacters);
+            expect(loggedInResponse.body.length).toBe(numCharacters);
+        });
+
+        it("Does NOT return private characters if username provided is not that of the logged in user, or no user is logged in", async () => {
+            const numPublicCharacters = 3;
+            const user = await createFakeUser({});
+            const { token } = await createFakeUserWithToken({});
+            for (let i = 0; i < numPublicCharacters; i++) {
+                await createFakeCharacter({ userId: user.id, isPublic: true });
+            };
+            const privateCharacter = await createFakeCharacter({ userId: user.id, isPublic: false })
+            const noLoginResponse = await request(app).get(`/api/users/${user.username}/characters`);
+            const loggedInResponse = await request(app)
+                .get(`/api/users/${user.username}/characters`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.body.filter(character => character.id === privateCharacter.id).length).toBeFalsy();
+            expect(loggedInResponse.body.filter(character => character.id === privateCharacter.id).length).toBeFalsy();
+        });
 
     });
 

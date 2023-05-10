@@ -1,10 +1,17 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { JWTS } = process.env;
-const { createUser, getUserById, getUsersLookingForGroup, getUser, getUserByUsername, updateUser } = require('../db/users');
+const {
+    createUser,
+    updateUser,
+    getUser,
+    getUserById,
+    getUserByUsername,
+    getUsersLookingForGroup
+} = require('../db/users');
 const { requireUser } = require('./utils');
 const { getCampaignsByUserId, getPublicCampaignsByUserId } = require('../db/campaigns');
-const { getCharactersByUserId } = require('../db/characters');
+const { getCharactersByUserId, getPublicCharactersByUserId } = require('../db/characters');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -83,7 +90,8 @@ router.get('/:username/characters', async (req, res, next) => {
             const characters = await getCharactersByUserId(user.id);
             res.send(characters);
         } else {
-            // get public characters by user
+            const characters = await getPublicCharactersByUserId(user.id);
+            res.send(characters);
         };
     } catch ({ name, message }) {
         next({ name, message });

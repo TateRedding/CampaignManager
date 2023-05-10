@@ -3,7 +3,8 @@ const {
     updateCharacter,
     getCharacterById,
     getAllPublicCharacters,
-    getCharactersByUserId
+    getCharactersByUserId,
+    getPublicCharactersByUserId
 } = require("../../db/characters");
 const {
     createFakeUser,
@@ -63,15 +64,43 @@ describe("DB characters", () => {
     });
 
     describe("getCharactersByUserId", () => {
-        it("Gets a list of characters with a given userId", async () => {
-            const numCharacters = 3;
+        it("Gets a list of public and private characters with a given userId", async () => {
+            const numPublicCharacters = 3;
+            const numPrivateCharacters = 2;
             const user = await createFakeUser({});
-            for (let i = 0; i < numCharacters; i++) {
-                await createFakeCharacter({ userId: user.id });
+            for (let i = 0; i < numPublicCharacters; i++) {
+                await createFakeCharacter({ userId: user.id, isPublic: true });
+            };
+            for (let j = 0; j < numPrivateCharacters; j++) {
+                await createFakeCharacter({ userId: user.id, isPublic: false });
             };
             const characters = await getCharactersByUserId(user.id);
             expect(characters).toBeTruthy();
+            expect(characters.length).toBe(numPublicCharacters + numPrivateCharacters);
+        });
+    });
+
+    describe("getPublicCharactersByUserId", () => {
+        it("Gets a list of public characters with a given userId", async () => {
+            const numCharacters = 3;
+            const user = await createFakeUser({});
+            for (let i = 0; i < numCharacters; i++) {
+                await createFakeCharacter({ userId: user.id, isPublic: true });
+            };
+            const characters = await getPublicCharactersByUserId(user.id);
+            expect(characters).toBeTruthy();
             expect(characters.length).toBe(numCharacters);
         });
-    })
+
+        it("Does NOT include private characters", async () => {
+            const numPublicCharacters = 3;
+            const user = await createFakeUser({});
+            for (let i = 0; i < numPublicCharacters; i++) {
+                await createFakeCharacter({ userId: user.id, isPublic: true });
+            };
+            const privateCharacter = await createFakeCharacter({ userId: user.id, isPublic: false });
+            const characters = await getPublicCharactersByUserId(user.id);
+            expect(characters.filter(character => character.id === privateCharacter.id).length).toBeFalsy();
+        });
+    });
 });

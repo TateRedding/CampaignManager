@@ -118,7 +118,7 @@ const getPublicCampaignsByUserId = async (userId) => {
     } catch (error) {
         console.error(error);
     };
-}
+};
 
 module.exports = {
     createCampaign,

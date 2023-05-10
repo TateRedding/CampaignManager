@@ -43,9 +43,23 @@ const getCharactersByUserId = async (userId) => {
         const { rows: characters } = await client.query(`
             SELECT *
             FROM characters
-            WHERE "userId"=${userId}
+            WHERE "userId"=${userId};
         `);
         return characters;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+const getPublicCharactersByUserId = async (userId) => {
+    try {
+        const { rows: campaigns } = await client.query(`
+            SELECT *
+            FROM characters
+            WHERE "isPublic"=true
+            AND "userId"=${userId};
+        `);
+        return campaigns;
     } catch (error) {
         console.error(error);
     };
@@ -56,5 +70,6 @@ module.exports = {
     updateCharacter,
     getCharacterById,
     getAllPublicCharacters,
-    getCharactersByUserId
+    getCharactersByUserId,
+    getPublicCharactersByUserId
 };
