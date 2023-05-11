@@ -1,6 +1,6 @@
 const { faker } = require("@faker-js/faker");
 const jwt = require("jsonwebtoken");
-const { JWTS = "super_secret" } = process.env;
+const { JWTS } = process.env;
 const { createUser } = require("../db/users");
 const { createCampaign } = require("../db/campaigns");
 const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user_campaigns");
@@ -36,12 +36,14 @@ const expectToMatchObjectWithDates = (firstObject, secondObject) => {
 const createFakeUser = async ({
     username = faker.datatype.uuid(),
     password = faker.internet.password(),
+    isAdmin = false,
     lookingForGroup = false
 }) => {
     const fakeUserData = {
         username,
         password,
         email: faker.internet.email(),
+        isAdmin,
         lookingForGroup
     };
     const user = await createUser(fakeUserData);
@@ -54,11 +56,13 @@ const createFakeUser = async ({
 const createFakeUserWithToken = async ({
     username = faker.datatype.uuid(),
     password = faker.internet.password(),
+    isAdmin = false,
     lookingForGroup = false
 }) => {
     const user = await createFakeUser({
         username,
         password,
+        isAdmin,
         lookingForGroup
     });
     const token = jwt.sign({

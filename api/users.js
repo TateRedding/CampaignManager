@@ -1,9 +1,11 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { JWTS } = process.env;
 const {
     createUser,
     updateUser,
+    deactivateUser,
     getUser,
     getUserById,
     getUserByUsername,
@@ -104,14 +106,15 @@ router.post('/login', async (req, res, next) => {
         if (!username || !password) {
             return;
         };
-        const user = await getUser(username, password)
+        const user = await getUser({ username, password })
         if (user) {
             const token = jwt.sign({
                 id: user.id,
                 username
-            }, process.env.JWTS, {
+            }, JWTS, {
                 expiresIn: '1w'
             });
+            delete user.password;
             res.send({
                 message: 'Login succesful!',
                 token,
@@ -120,7 +123,7 @@ router.post('/login', async (req, res, next) => {
         } else {
             res.status(401);
             res.send({
-                error: 'IncorrectCredentialsError',
+                name: 'IncorrectCredentialsError',
                 message: 'Username and password do not match!'
             });
         }
@@ -138,12 +141,12 @@ router.post('/register', async (req, res, next) => {
         const existingUser = await getUserByUsername(username);
         if (existingUser) {
             next({
-                error: 'UsernameTakenError',
+                name: 'UsernameTakenError',
                 message: 'Username is already taken.'
             });
         } else if (password.length < 8) {
             next({
-                error: 'PasswordTooShortError',
+                name: 'PasswordTooShortError',
                 message: 'Password must be atleast 8 characters long.'
             });
         } else {
@@ -153,7 +156,7 @@ router.post('/register', async (req, res, next) => {
                 const token = jwt.sign({
                     id: user.id,
                     username
-                }, process.env.JWTS, {
+                }, JWTS, {
                     expiresIn: '1w'
                 });
                 res.send({
@@ -168,8 +171,14 @@ router.post('/register', async (req, res, next) => {
     };
 });
 
-router.patch(':userId', requireUser, async (req, res, next) => {
+router.patch('/:userId', requireUser, async (req, res, next) => {
     const { userId } = req.params;
+    if (req.body.username) {
+        delete req.body.username;
+    };
+    if (req.body.password) {
+        delete req.body.password;
+    };
     try {
         const user = await getUserById(userId);
         if (user.id === req.user.id) {
@@ -178,8 +187,27 @@ router.patch(':userId', requireUser, async (req, res, next) => {
         } else {
             res.status(403);
             res.send({
-                error: 'UnauthorizedUpdateError',
-                message: `You can only update your own profile information!`
+                name: 'UnauthorizedUpdateError',
+                message: 'You can only update your own profile information!'
+            });
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+router.delete("/:userId", requireUser, async (req, res, next) => {
+    const { userId } = req.params;
+    try {
+        const user = await getUserById(userId);
+        if (user.id === req.user.id || req.user.isAdmin) {
+            const user = await deactivateUser(userId);
+            res.send(user);
+        } else {
+            res.status(403);
+            res.send({
+                name: 'UnauthorizedDeleteError',
+                message: "You must be an admin to deactivate someone else's account!"
             });
         };
     } catch ({ name, message }) {

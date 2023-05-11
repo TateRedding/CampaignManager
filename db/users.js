@@ -23,6 +23,20 @@ const updateUser = async (id, { ...fields }) => {
     };
 };
 
+const deactivateUser = async (userId) => {
+    try {
+        const { rows: [user] } = await client.query(`
+            UPDATE users
+            SET "isActive"=false, "deactivationDate"=CURRENT_TIMESTAMP
+            WHERE id=${userId}
+            RETURNING *;
+        `);
+        return user;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 const getUser = async ({ username, password }) => {
     try {
         const { rows: [user] } = await client.query(`
@@ -91,6 +105,7 @@ const getUsersLookingForGroup = async () => {
 module.exports = {
     createUser,
     updateUser,
+    deactivateUser,
     getUser,
     getUserById,
     getUserByUsername,
