@@ -114,6 +114,8 @@ describe("/api/users", () => {
             expect(loggedInResponse.body.length).toBe(numCampaigns);
         });
 
+        // Returns a list of public and private characters is logged in user is an admin
+
         it("Does NOT return private campaigns if username provided is not that of the logged in user, or no user is logged in", async () => {
             const numPublicCampaigns = 3;
             const user = await createFakeUser({});
@@ -147,6 +149,8 @@ describe("/api/users", () => {
                 .set("Authorization", `Bearer ${token}`);
             expect(response.body.length).toBe(numPublicCharacters + numPrivateCharacters);
         });
+
+        // Returns a list of public and private characters is logged in user is an admin
 
         it("Returns a list of public characters if username provided is not that of the logged in user, or no user is logged in", async () => {
             const numCharacters = 3;

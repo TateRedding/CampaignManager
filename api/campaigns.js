@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
-const { getAllPublicCampaigns, getCampaignById, createCampaign, updateCampaign } = require('../db/campaigns');
+const {
+    createCampaign,
+    updateCampaign,
+    getCampaignById,
+    getAllPublicCampaigns,
+} = require('../db/campaigns');
 const { requireUser } = require('./utils');
 
 router.get('/', async (req, res) => {
