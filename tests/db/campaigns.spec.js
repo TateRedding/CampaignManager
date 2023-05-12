@@ -62,16 +62,21 @@ describe("DB campaigns", () => {
             expect(campaign.users.length).toBe(numUsers);
         });
 
-        it("Includes a list of messages (public and private) from the messages table", async () => {
+        it("Includes a list of messages from the messages table if a userId is provided", async () => {
             const numUsers = 4;
-            const numPublicMessages = 5;
-            const numPrivateMessages = 3;
-            const _campaign = await createFakeCampaignWithUserCampaignsAndMessages(numUsers, numPublicMessages, numPrivateMessages);
-            const campaign = await getCampaignById(_campaign.id);
+            const numPublicMessages = 10;
+            const _campaign = await createFakeCampaignWithUserCampaignsAndMessages(numUsers, numPublicMessages);
+            const campaign = await getCampaignById(_campaign.id, _campaign.creatorId);
             expect(campaign.messages).toBeTruthy();
-            expect(campaign.messages.length).toBe(numPublicMessages + numPrivateMessages);
-            expect(campaign.messages.filter(message => message.isPublic).length).toBe(numPublicMessages);
-            expect(campaign.messages.filter(message => !message.isPublic).length).toBe(numPrivateMessages);
+            expect(campaign.messages.length).toBe(numPublicMessages);
+        });
+
+        it("Does NOT include a list of messages if no userId is provided", async () => {
+            const numUsers = 4;
+            const numPublicMessages = 10;
+            const _campaign = await createFakeCampaignWithUserCampaignsAndMessages(numUsers, numPublicMessages);
+            const campaign = await getCampaignById(_campaign.id);
+            expect(campaign.messages).toBeFalsy();
         });
     });
 

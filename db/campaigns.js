@@ -1,5 +1,5 @@
 const client = require('./index');
-const { getMessagesByCampaignId } = require('./messages');
+const { getMessagesByCampaignId, getMessagesByCampaignIdAndUserId } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
 const { createRow, updateRow } = require('./utils');
 
@@ -19,7 +19,7 @@ const updateCampaign = async (id, { ...fields }) => {
     };
 };
 
-const getCampaignById = async (id) => {
+const getCampaignById = async (id, userId) => {
     try {
         const { rows: [campaign] } = await client.query(`
             SELECT campaigns.*, users.username AS "creatorName"
@@ -30,7 +30,9 @@ const getCampaignById = async (id) => {
         `);
         if (campaign) {
             campaign.users = await getUserCampaignsByCampaignId(campaign.id);
-            campaign.messages = await getMessagesByCampaignId(campaign.id);
+            if(userId) {
+                campaign.messages = await getMessagesByCampaignIdAndUserId(campaign.id, userId);
+            };
         };
         return campaign;
     } catch (error) {

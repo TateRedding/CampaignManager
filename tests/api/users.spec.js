@@ -99,6 +99,23 @@ describe("/api/users", () => {
             expect(response.body.length).toBe(numPublicCampaigns + numPrivateCampaigns);
         });
 
+        it("Returns a list of public and private campaigns if logged in user is an admin", async () => {
+            const numPublicCampaigns = 3;
+            const numPrivateCampaigns = 2;
+            const { token } = await createFakeUserWithToken({ isAdmin: true });
+            const user = await createFakeUser({});
+            for (let i = 0; i < numPublicCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: true });
+            };
+            for (let j = 0; j < numPrivateCampaigns; j++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: false });
+            };
+            const response = await request(app)
+                .get(`/api/users/${user.username}/campaigns`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(response.body.length).toBe(numPublicCampaigns + numPrivateCampaigns);
+        });
+
         it("Returns a list of public campaigns if username provided is not that of the logged in user, or no user is logged in", async () => {
             const numCampaigns = 3;
             const user = await createFakeUser({});
@@ -113,8 +130,6 @@ describe("/api/users", () => {
             expect(noLoginResponse.body.length).toBe(numCampaigns);
             expect(loggedInResponse.body.length).toBe(numCampaigns);
         });
-
-        // Returns a list of public and private characters is logged in user is an admin
 
         it("Does NOT return private campaigns if username provided is not that of the logged in user, or no user is logged in", async () => {
             const numPublicCampaigns = 3;
@@ -150,7 +165,22 @@ describe("/api/users", () => {
             expect(response.body.length).toBe(numPublicCharacters + numPrivateCharacters);
         });
 
-        // Returns a list of public and private characters is logged in user is an admin
+        it("Returns a list of public and private characters if logged in user is an admin", async () => {
+            const numPublicCharacters = 3;
+            const numPrivateCharacters = 2;
+            const { token } = await createFakeUserWithToken({ isAdmin: true });
+            const user = await createFakeUser({});
+            for (let i = 0; i < numPublicCharacters; i++) {
+                await createFakeCharacter({ userId: user.id, isPublic: true });
+            };
+            for (let j = 0; j < numPrivateCharacters; j++) {
+                await createFakeCharacter({ userId: user.id, isPublic: false });
+            };
+            const response = await request(app)
+                .get(`/api/users/${user.username}/characters`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(response.body.length).toBe(numPublicCharacters + numPrivateCharacters);
+        });
 
         it("Returns a list of public characters if username provided is not that of the logged in user, or no user is logged in", async () => {
             const numCharacters = 3;
@@ -377,6 +407,14 @@ describe("/api/users", () => {
             expectNotToBeError(response.body);
             expect(response.body.isActive).toBeFalsy();
             expect(response.body.deactivationDate).toBeTruthy();
+        });
+
+        it("Requires the user to be logged in", async () => {
+            const user = await createFakeUser({});
+            const response = await request(app)
+                .delete(`/api/users/${user.id}`)
+            expect(response.status).toBe(401);
+            expectToBeError(response.body, "UnauthorizedError")
         });
 
         it("Returns a relevant error if logged in user is trying to deactivate a different user's account", async () => {

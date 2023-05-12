@@ -60,8 +60,9 @@ describe("/api/campaigns", () => {
         });
 
         // Includes public messages if user is logged in
-        // Does NOT include private messages that are not to or from the logged in user, if logged in user is not an admin
-        // Does NOT include any messages if no user is logged in or logged in user is not in campaign with given id and not an admin
+        // Don't need the following if using the already tested db method
+            // Does NOT include private messages that are not to or from the logged in user
+            // Does NOT include any messages if no user is logged in or logged in user is not in campaign with given id and not an admin
         // Returns a relevant error if the campaign is private and no user is logged in or logged in user is not in camapign
     });
 

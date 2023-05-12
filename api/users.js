@@ -71,7 +71,7 @@ router.get('/:username/campaigns', async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
-        if (req.user && req.user.username === user.username) {
+        if (req.user && (req.user.username === user.username || req.user.isAdmin)) {
             const campaigns = await getCampaignsByUserId(user.id);
             res.send(campaigns);
         } else {
@@ -87,7 +87,7 @@ router.get('/:username/characters', async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
-        if (req.user && req.user.username === user.username) {
+        if (req.user && (req.user.username === user.username || req.user.isAdmin)) {
             const characters = await getCharactersByUserId(user.id);
             res.send(characters);
         } else {

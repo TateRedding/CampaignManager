@@ -58,11 +58,29 @@ const getMessagesByCampaignId = async (campaignId) => {
     };
 };
 
+const getMessagesByCampaignIdAndUserId = async (campaignId, userId) => {
+    try {
+        const { rows: messages } = await client.query(`
+            SELECT *
+            FROM messages
+            WHERE "campaignId"=${campaignId}
+            AND "isPublic"=true
+            OR ("isPublic"=false
+            AND ("senderId"=${userId}
+            OR "recipientId"=${userId}));
+        `)
+        return messages;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 
 module.exports = {
     createMessage,
     updateMessage,
     deleteMessage,
     getMessageById,
-    getMessagesByCampaignId
+    getMessagesByCampaignId,
+    getMessagesByCampaignIdAndUserId
 };
