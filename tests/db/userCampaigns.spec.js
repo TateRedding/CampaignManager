@@ -90,7 +90,7 @@ describe("DB user_campaigns", () => {
     describe("getUserCampaignsByCampaignId", () => {
         it("Gets a list of all user_campaigns with a given campaignId", async () => {
             const numUsers = 4;
-            const campaign = await createFakeCampaignWithUserCampaigns(numUsers);
+            const campaign = await createFakeCampaignWithUserCampaigns({ numUsers });
             const userCampaigns = await getUserCampaignsByCampaignId(campaign.id);
             expect(userCampaigns.length).toBe(numUsers);
         });

@@ -1,3 +1,4 @@
+const { emptyTables } = require('../utils');
 const { objectContaining } = expect;
 const {
     updateCharacter,
@@ -12,6 +13,9 @@ const {
 } = require("../utils");
 
 describe("DB characters", () => {
+
+    beforeEach(async () => emptyTables());
+
     describe("createCharacter", () => {
         it("Creates and returns the new character", async () => {
             const name = "Robi Xenon Li"
@@ -53,7 +57,7 @@ describe("DB characters", () => {
             };
             const characters = await getAllPublicCharacters();
             expect(characters).toBeTruthy();
-            expect(characters.length).toBeGreaterThanOrEqual(numCharacters);
+            expect(characters.length).toBe(numCharacters);
         });
 
         it("Does NOT include private characters", async () => {

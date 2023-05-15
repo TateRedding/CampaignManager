@@ -1,7 +1,11 @@
+const { emptyTables } = require('../utils');
 const request = require("supertest");
 const app = require("../../app");
 
 describe("/api/characters", () => {
+
+    beforeEach(async () => emptyTables());
+    
     describe("GET /api/characters", () => {
         // Returns a list of public and private characters if logged in user is an admin
         // Returns a list of all public characters if no user is logged in or logged in user is not an admin

@@ -45,19 +45,6 @@ const getMessageById = async (id) => {
     };
 };
 
-const getMessagesByCampaignId = async (campaignId) => {
-    try {
-        const { rows: messages } = await client.query(`
-            SELECT *
-            FROM messages
-            WHERE "campaignId"=${campaignId};
-        `);
-        return messages;
-    } catch (error) {
-        console.error(error);
-    };
-};
-
 const getMessagesByCampaignIdAndUserId = async (campaignId, userId) => {
     try {
         const { rows: messages } = await client.query(`
@@ -81,6 +68,5 @@ module.exports = {
     updateMessage,
     deleteMessage,
     getMessageById,
-    getMessagesByCampaignId,
     getMessagesByCampaignIdAndUserId
 };

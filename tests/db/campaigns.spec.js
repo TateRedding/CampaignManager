@@ -1,6 +1,8 @@
+const { emptyTables } = require('../utils');
 const { objectContaining } = expect;
 const {
     updateCampaign,
+    getAllCampaigns,
     getCampaignById,
     getAllPublicCampaigns,
     getPublicCampaignsLookingForPlayers,
@@ -15,6 +17,9 @@ const {
 } = require("../utils");
 
 describe("DB campaigns", () => {
+
+    beforeEach(async () => emptyTables());
+
     describe("createCampaign", () => {
         it("Creates and returns the new campaign", async () => {
             const name = "Fear and Loathing in The Sword Coast"
@@ -37,6 +42,46 @@ describe("DB campaigns", () => {
                 })
             );
             expect(updatedCampaign.name).toBe(name);
+        });
+    });
+
+    describe("getAllCampaigns", () => {
+        it("Gets a list of all public and private campaigns", async () => {
+            const numPublicCampaigns = 3;
+            const numPrivateCampaigns = 3;
+            for (let i = 0; i < numPublicCampaigns; i++) {
+                await createFakeCampaign({ isPublic: true });
+            };
+            for (let i = 0; i < numPrivateCampaigns; i++) {
+                await createFakeCampaign({ isPublic: false });
+            };
+            const campaigns = await getAllCampaigns();
+            expect(campaigns).toBeTruthy();
+            expect(campaigns.length).toBe(numPublicCampaigns + numPrivateCampaigns);
+        });
+
+        it("Includes the usernames of the creators, aliased as creatorName", async () => {
+            const numCampaigns = 3;
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaign({});
+            };
+            const campaigns = await getAllCampaigns();
+            for (let j = 0; j < campaigns.length; j++) {
+                expect(campaigns[j].creatorName).toBeTruthy();
+            };
+        });
+
+        it("Includes a list of users from the user_campaigns table", async () => {
+            const numUsers = 6;
+            const numCampaigns = 3;
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers });
+            };
+            const campaigns = await getAllCampaigns();
+            for (let j = 0; j < campaigns.length; j++) {
+                expect(campaigns[j].users).toBeTruthy();
+            };
+            expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBe(numCampaigns);
         });
     });
 
@@ -88,7 +133,7 @@ describe("DB campaigns", () => {
             };
             const campaigns = await getAllPublicCampaigns();
             expect(campaigns).toBeTruthy();
-            expect(campaigns.length).toBeGreaterThanOrEqual(numCampaigns);
+            expect(campaigns.length).toBe(numCampaigns);
         });
 
         it("Includes the usernames of the creators, aliased as creatorName", async () => {
@@ -112,7 +157,7 @@ describe("DB campaigns", () => {
             for (let j = 0; j < campaigns.length; j++) {
                 expect(campaigns[j].users).toBeTruthy();
             };
-            expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBeGreaterThanOrEqual(numCampaigns);
+            expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBe(numCampaigns);
         });
 
         it("Does NOT include private campaigns", async () => {
@@ -130,7 +175,7 @@ describe("DB campaigns", () => {
             };
             const campaigns = await getPublicCampaignsLookingForPlayers();
             expect(campaigns).toBeTruthy();
-            expect(campaigns.length).toBeGreaterThanOrEqual(numCampaigns);
+            expect(campaigns.length).toBe(numCampaigns);
         });
 
         it("Includes the usernames of the creators, aliased as creatorName", async () => {
@@ -154,7 +199,7 @@ describe("DB campaigns", () => {
             for (let j = 0; j < campaigns.length; j++) {
                 expect(campaigns[j].users).toBeTruthy();
             };
-            expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBeGreaterThanOrEqual(numCampaigns);
+            expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBe(numCampaigns);
         });
 
         it("Does NOT include private campaigns", async () => {

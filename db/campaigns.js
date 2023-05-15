@@ -1,5 +1,5 @@
 const client = require('./index');
-const { getMessagesByCampaignId, getMessagesByCampaignIdAndUserId } = require('./messages');
+const { getMessagesByCampaignIdAndUserId } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
 const { createRow, updateRow } = require('./utils');
 
@@ -14,6 +14,25 @@ const createCampaign = async ({ ...fields }) => {
 const updateCampaign = async (id, { ...fields }) => {
     try {
         return await updateRow('campaigns', id, fields);
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+const getAllCampaigns = async () => {
+    try {
+        const { rows: campaigns } = await client.query(`
+            SELECT campaigns.*, users.username AS "creatorName"
+            FROM campaigns
+            JOIN users
+                ON campaigns."creatorId"=users.id
+        `);
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
+        return campaigns;
     } catch (error) {
         console.error(error);
     };
@@ -125,6 +144,7 @@ const getPublicCampaignsByUserId = async (userId) => {
 module.exports = {
     createCampaign,
     updateCampaign,
+    getAllCampaigns,
     getCampaignById,
     getAllPublicCampaigns,
     getPublicCampaignsLookingForPlayers,

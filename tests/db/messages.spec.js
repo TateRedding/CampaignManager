@@ -5,7 +5,6 @@ const {
     updateMessage,
     getMessageById,
     deleteMessage,
-    getMessagesByCampaignId,
     getMessagesByCampaignIdAndUserId
 } = require("../../db/messages");
 const {
@@ -86,16 +85,6 @@ describe("DB messages", () => {
         });
     });
 
-    describe("getMessagesByCampaignId", () => {
-        it("Gets a list of all messages with a given campaignId", async () => {
-            const numPublicMessages = 6;
-            const numPrivateMessages = 2;
-            const campaign = await createFakeCampaignWithUserCampaignsAndMessages(4, numPublicMessages, numPrivateMessages);
-            const messages = await getMessagesByCampaignId(campaign.id);
-            expect(messages.length).toBe(numPublicMessages + numPrivateMessages);
-        });
-    });
-
     describe("getMessagesByCampaignIdAndUserId", () => {
         it("Gets a list of all public messages with a given campaignId", async () => {
             const numPublicMessages = 4;
@@ -104,7 +93,7 @@ describe("DB messages", () => {
             expect(messages.length).toBe(numPublicMessages);
         });
 
-        it("Gets the private messages where the given userId is that of the messages senderId", async () => {
+        it("Gets the private messages where the given userId is that of the message's senderId", async () => {
             const numPrivateMessages = 10;
             const campaign = await createFakeCampaignWithUserCampaignsAndMessages(4, 0, numPrivateMessages);
             const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);
@@ -112,7 +101,7 @@ describe("DB messages", () => {
             expect(messages.filter(message => message.senderId === campaign.creatorId).length).toBeTruthy();
         });
 
-        it("Gets the private messages where the given userId is that of the messages recipientId", async () => {
+        it("Gets the private messages where the given userId is that of the message's recipientId", async () => {
             const numPrivateMessages = 10;
             const campaign = await createFakeCampaignWithUserCampaignsAndMessages(4, 0, numPrivateMessages);
             const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);
@@ -120,7 +109,7 @@ describe("DB messages", () => {
             expect(messages.filter(message => message.recipientId === campaign.creatorId).length).toBeTruthy();
         });
 
-        it("Does NOT return any messages where the given userId is neither that of the messages senderId or recipientId", async () => {
+        it("Does NOT return any messages where the given userId is neither that of the message's senderId or recipientId", async () => {
             const numPrivateMessages = 10;
             const campaign = await createFakeCampaignWithUserCampaignsAndMessages(4, 0, numPrivateMessages);
             const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);

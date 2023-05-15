@@ -10,8 +10,13 @@ const { requireUser } = require('./utils');
 
 router.get('/', async (req, res) => {
     try {
-        const campaigns = await getAllPublicCampaigns();
-        res.send(campaigns);
+        if (req.user && req.user.isAdmin) {
+            const campaigns = await getAllCampaigns();
+            res.send(campaigns);
+        } else {
+            const campaigns = await getAllPublicCampaigns();
+            res.send(campaigns);
+        }
     } catch ({ name, message }) {
         next({ name, message });
     };

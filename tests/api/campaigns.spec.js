@@ -1,31 +1,62 @@
+const { emptyTables } = require('../utils');
 const request = require("supertest");
 const app = require("../../app");
 const { objectContaining } = expect;
-const { createFakeCampaign, createFakeCampaignWithUserCampaigns, createFakeCampaignWithUserCampaignsAndMessages } = require("../utils");
+const {
+    createFakeCampaign,
+    createFakeCampaignWithUserCampaigns,
+    createFakeCampaignWithUserCampaignsAndMessages,
+    createFakeUserWithToken
+} = require("../utils");
 
 describe("/api/campaigns", () => {
+
+    beforeEach(async () => emptyTables());
+
     describe("GET /api/campaigns", () => {
-        // Returns a list of public and private campaigns if logged in user is an admin
-        // Returns a list of all public campaigns if no user is logged in or logged in user is not an admin
-        it("Returns a list of all public campaigns", async () => {
+        it("Returns a list of all public campaigns if no user is logged in or logged in user is not an admin", async () => {
+            const { token } = await createFakeUserWithToken({ isAdmin: false });
             const numCampaigns = 3;
             for (let i = 0; i < numCampaigns; i++) {
                 await createFakeCampaign({});
             };
-            const response = await request(app).get("/api/campaigns");
-            expect(response.body).toBeTruthy();
-            expect(response.body.length).toBeGreaterThanOrEqual(numCampaigns);
+            const noLoginResponse = await request(app).get("/api/campaigns");
+            const loggedInResponse = await request(app)
+                .get("/api/campaigns")
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.body).toBeTruthy();
+            expect(noLoginResponse.body.length).toBe(numCampaigns);
+            expect(loggedInResponse.body).toBeTruthy();
+            expect(loggedInResponse.body.length).toBe(numCampaigns);
         });
 
-        // Does NOT return private campaigns if logged in user is not an admin
-        it("Does NOT return private campaigns", async () => {
+        it("Returns a list of public and private campaigns if logged in user is an admin", async () => {
+            const { token } = await createFakeUserWithToken({ isAdmin: true });
             const numPublicCampaigns = 3;
             for (let i = 0; i < numPublicCampaigns; i++) {
                 await createFakeCampaign({ isPublic: true });
             };
             const privateCampaign = await createFakeCampaign({ isPublic: false });
-            const response = await request(app).get("/api/campaigns");
-            expect(response.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
+            const response = await request(app)
+                .get("/api/campaigns")
+                .set("Authorization", `Bearer ${token}`);
+            expect(response.body.length).toBe(numPublicCampaigns + 1);
+            expect(response.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeTruthy();
+        });
+
+        it("Does NOT return private campaigns if no user is logged in or logged in user is not an admin", async () => {
+            const { token } = await createFakeUserWithToken({ isAdmin: false });
+            const numPublicCampaigns = 3;
+            for (let i = 0; i < numPublicCampaigns; i++) {
+                await createFakeCampaign({ isPublic: true });
+            };
+            const privateCampaign = await createFakeCampaign({ isPublic: false });
+            const noLoginResponse = await request(app).get("/api/campaigns");
+            const loggedInResponse = await request(app)
+                .get("/api/campaigns")
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
+            expect(loggedInResponse.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
         });
 
         it("Returns camapigns with users list from user_campaigns table", async () => {
@@ -49,8 +80,8 @@ describe("/api/campaigns", () => {
             );
         });
 
-        // Returns the data for a private campaign if logged in user is the creator of the campaign or in the campaign
-        // Returns the data for a private campaign if logged in user is NOT the creator of the campaign or in the campaign, but is an admin
+        // Returns the data for a private campaign if logged in user is in the campaign
+        // Returns the data for a private campaign if logged in user is NOT in the campaign, but is an admin
 
         it("Includes a list of users from the user_camapigns table", async () => {
             const numUsers = 4;
@@ -59,10 +90,7 @@ describe("/api/campaigns", () => {
             expect(response.body.users.length).toBe(numUsers);
         });
 
-        // Includes public messages if user is logged in
-        // Don't need the following if using the already tested db method
-            // Does NOT include private messages that are not to or from the logged in user
-            // Does NOT include any messages if no user is logged in or logged in user is not in campaign with given id and not an admin
+        // Includes list of messages if user is logged in
         // Returns a relevant error if the campaign is private and no user is logged in or logged in user is not in camapign
     });
 

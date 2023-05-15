@@ -1,3 +1,4 @@
+const client = require('../db/index');
 const { faker } = require("@faker-js/faker");
 const jwt = require("jsonwebtoken");
 const { JWTS } = process.env;
@@ -6,6 +7,16 @@ const { createCampaign } = require("../db/campaigns");
 const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user_campaigns");
 const { createMessage } = require("../db/messages");
 const { createCharacter } = require("../db/characters");
+
+const emptyTables = async () => {
+    await client.query(`
+        DELETE FROM user_campaigns;
+        DELETE FROM messages;
+        DELETE FROM characters;
+        DELETE FROM campaigns;
+        DELETE FROM users;
+    `)
+};
 
 const expectToBeError = (body, name) => {
     expect(body).toEqual({
@@ -281,6 +292,7 @@ const createFakeCharacter = async ({
 };
 
 module.exports = {
+    emptyTables,
     expectToBeError,
     expectNotToBeError,
     expectToMatchObjectWithDates,
