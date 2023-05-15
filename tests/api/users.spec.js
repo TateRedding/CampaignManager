@@ -1,3 +1,4 @@
+const { emptyTables } = require('../utils');
 const request = require("supertest");
 const client = require("../../db");
 const bcrypt = require('bcrypt');
@@ -18,6 +19,9 @@ const {
 const { createFakeCampaignWithUserCampaigns } = require("../utils");
 
 describe("/api/users", () => {
+
+    beforeEach(async () => emptyTables());
+
     describe("GET /api/users", () => {
         it("Returns a list of all users with lookingForGroup set to true", async () => {
             const numUsers = 3;
@@ -26,7 +30,7 @@ describe("/api/users", () => {
             }
             const response = await request(app).get("/api/users");
             expectNotToBeError(response.body);
-            expect(response.body.length).toBeGreaterThanOrEqual(numUsers);
+            expect(response.body.length).toBe(numUsers);
         });
 
         it("Does NOT return any users that are not looking for a group", async () => {

@@ -44,14 +44,14 @@ const getUserCampaignById = async (id) => {
     };
 };
 
-const getUserCampaignsByCampaignId = async (id) => {
+const getUserCampaignsByCampaignId = async (campaignId) => {
     try {
         const { rows: userCampaigns } = await client.query(`
             SELECT user_campaigns.id, user_campaigns."userId", users.username AS username, user_campaigns."isDM"
             FROM user_campaigns
             JOIN users
                 ON user_campaigns."userId"=users.id
-            WHERE "campaignId"=${id};
+            WHERE "campaignId"=${campaignId};
         `);
         return userCampaigns;
     } catch (error) {

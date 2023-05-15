@@ -1,8 +1,9 @@
-const { emptyTables } = require('../utils');
+const { emptyTables, expectNotToBeError, expectToMatchObjectWithDates, expectToBeError } = require('../utils');
 const request = require("supertest");
 const app = require("../../app");
 const { objectContaining } = expect;
 const {
+    createFakeUser,
     createFakeCampaign,
     createFakeCampaignWithUserCampaigns,
     createFakeCampaignWithUserCampaignsAndMessages,
@@ -24,9 +25,9 @@ describe("/api/campaigns", () => {
             const loggedInResponse = await request(app)
                 .get("/api/campaigns")
                 .set("Authorization", `Bearer ${token}`);
-            expect(noLoginResponse.body).toBeTruthy();
+            expectNotToBeError(noLoginResponse.body);
             expect(noLoginResponse.body.length).toBe(numCampaigns);
-            expect(loggedInResponse.body).toBeTruthy();
+            expectNotToBeError(loggedInResponse.body);
             expect(loggedInResponse.body.length).toBe(numCampaigns);
         });
 
@@ -40,6 +41,7 @@ describe("/api/campaigns", () => {
             const response = await request(app)
                 .get("/api/campaigns")
                 .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
             expect(response.body.length).toBe(numPublicCampaigns + 1);
             expect(response.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeTruthy();
         });
@@ -55,14 +57,10 @@ describe("/api/campaigns", () => {
             const loggedInResponse = await request(app)
                 .get("/api/campaigns")
                 .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(noLoginResponse.body);
             expect(noLoginResponse.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
+            expectNotToBeError(loggedInResponse.body);
             expect(loggedInResponse.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
-        });
-
-        it("Returns camapigns with users list from user_campaigns table", async () => {
-            await createFakeCampaignWithUserCampaigns({});
-            const response = await request(app).get("/api/campaigns");
-            expect(response.body[0].users).toBeTruthy();
         });
     });
 
@@ -70,7 +68,7 @@ describe("/api/campaigns", () => {
         it("Returns the data for the camapign given a specific id", async () => {
             const campaign = await createFakeCampaign({});
             const response = await request(app).get(`/api/campaigns/${campaign.id}`);
-            expect(response.body).toBeTruthy();
+            expectNotToBeError(response.body);
             expect(response.body).toEqual(
                 objectContaining({
                     id: campaign.id,
@@ -80,18 +78,61 @@ describe("/api/campaigns", () => {
             );
         });
 
-        // Returns the data for a private campaign if logged in user is in the campaign
-        // Returns the data for a private campaign if logged in user is NOT in the campaign, but is an admin
-
-        it("Includes a list of users from the user_camapigns table", async () => {
-            const numUsers = 4;
-            const campaign = await createFakeCampaignWithUserCampaigns({ numUsers });
-            const response = await request(app).get(`/api/campaigns/${campaign.id}`);
-            expect(response.body.users.length).toBe(numUsers);
+        it("Returns the data for a private campaign if logged in user is in the campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const privateCampaign = await createFakeCampaignWithUserCampaigns({ creatorId: user.id, isPublic: false });
+            const response = await request(app)
+                .get(`/api/campaigns/${privateCampaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body).toEqual(
+                objectContaining({
+                    id: privateCampaign.id,
+                    creatorId: privateCampaign.creatorId,
+                    name: privateCampaign.name
+                })
+            );
         });
 
-        // Includes list of messages if user is logged in
-        // Returns a relevant error if the campaign is private and no user is logged in or logged in user is not in camapign
+        it("Returns the data for a private campaign if logged in user is NOT in the campaign, but is an admin", async () => {
+            const user = await createFakeUser({})
+            const { token } = await createFakeUserWithToken({ isAdmin: true });
+            const privateCampaign = await createFakeCampaignWithUserCampaigns({ creatorId: user.id, isPublic: false });
+            const response = await request(app)
+                .get(`/api/campaigns/${privateCampaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body).toEqual(
+                objectContaining({
+                    id: privateCampaign.id,
+                    creatorId: privateCampaign.creatorId,
+                    name: privateCampaign.name
+                })
+            );
+        });
+
+        it("Includes list of messages if logged in user is in the campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers: 4, creatorId: user.id });
+            const response = await request(app)
+                .get(`/api/campaigns/${campaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body.messages).toBeTruthy();
+        });
+
+        it("Returns a relevant error if the campaign is private and no user is logged in or logged in user is not in camapign or an admin", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            console.log(user.id);
+            const campaign = await createFakeCampaignWithUserCampaigns({ isPublic: false });
+            const noLoginResponse = await request(app)
+                .get(`/api/campaigns/${campaign.id}`);
+            const loggedInResponse = await request(app)
+                .get(`/api/campaigns/${campaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectToBeError(noLoginResponse.body, 'UnauthorizedUserError');
+            expectToBeError(loggedInResponse.body, 'UnauthorizedUserError');
+        });
     });
 
     describe("POST /api/campaigns", () => {

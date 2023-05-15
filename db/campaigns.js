@@ -49,7 +49,7 @@ const getCampaignById = async (id, userId) => {
         `);
         if (campaign) {
             campaign.users = await getUserCampaignsByCampaignId(campaign.id);
-            if(userId) {
+            if(userId && campaign.users.filter(user => user.userId === userId).length) {
                 campaign.messages = await getMessagesByCampaignIdAndUserId(campaign.id, userId);
             };
         };

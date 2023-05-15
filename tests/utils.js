@@ -1,6 +1,7 @@
 const client = require('../db/index');
 const { faker } = require("@faker-js/faker");
 const jwt = require("jsonwebtoken");
+require('dotenv').config();
 const { JWTS } = process.env;
 const { createUser } = require("../db/users");
 const { createCampaign } = require("../db/campaigns");
@@ -143,7 +144,7 @@ const createFakeCampaignWithUserCampaigns = async ({
     if (!creatorId) {
         const creator = await createFakeUser({});
         creatorId = creator.id;
-    }
+    };
     const campaign = await createFakeCampaign({
         creatorId,
         lookingForPlayers,
@@ -196,14 +197,19 @@ const createFakeMessage = async ({
     return message;
 };
 
-const createFakeCampaignWithUserCampaignsAndMessages = async (numUsers, numPublicMessages, numPrivateMessages) => {
+const createFakeCampaignWithUserCampaignsAndMessages = async ({
+    numUsers,
+    numPublicMessages = 0,
+    numPrivateMessages = 0,
+    creatorId
+}) => {
     if (numPrivateMessages > 0 && numUsers <= 1) {
         numUsers = 2;
     };
     if (numUsers <= 0) {
         numUsers = 1;
     };
-    const campaign = await createFakeCampaignWithUserCampaigns({ numUsers });
+    const campaign = await createFakeCampaignWithUserCampaigns({ numUsers, creatorId });
     const users = await getUserCampaignsByCampaignId(campaign.id);
     let senderIdx = 0;
     for (let i = 0; i < numPublicMessages; i++) {
