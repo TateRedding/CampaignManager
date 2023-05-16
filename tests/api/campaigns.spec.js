@@ -1,5 +1,6 @@
 const { emptyTables, expectNotToBeError, expectToMatchObjectWithDates, expectToBeError } = require('../utils');
 const request = require("supertest");
+const { faker } = require("@faker-js/faker");
 const app = require("../../app");
 const { objectContaining } = expect;
 const {
@@ -122,21 +123,52 @@ describe("/api/campaigns", () => {
         });
 
         it("Returns a relevant error if the campaign is private and no user is logged in or logged in user is not in camapign or an admin", async () => {
-            const { user, token } = await createFakeUserWithToken({});
-            console.log(user.id);
+            const { token } = await createFakeUserWithToken({});
             const campaign = await createFakeCampaignWithUserCampaigns({ isPublic: false });
             const noLoginResponse = await request(app)
                 .get(`/api/campaigns/${campaign.id}`);
             const loggedInResponse = await request(app)
                 .get(`/api/campaigns/${campaign.id}`)
                 .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.status).toBe(403);
             expectToBeError(noLoginResponse.body, 'UnauthorizedUserError');
+            expect(loggedInResponse.status).toBe(403);
             expectToBeError(loggedInResponse.body, 'UnauthorizedUserError');
         });
     });
 
     describe("POST /api/campaigns", () => {
-        // Returns the data for the newly created campaign
+        it("Returns the data for the newly created campaign, with logged in user's id as creatorId", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const fakeCampaignData = {
+                name: "Hot Strahd",
+                location: faker.location.city()
+            };
+            const response = await request(app)
+                .post("/api/campaigns")
+                .send(fakeCampaignData)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body).toEqual(
+                objectContaining({
+                    creatorId: user.id,
+                    name: fakeCampaignData.name,
+                    location: fakeCampaignData.location
+                })
+            );
+        });
+
+        it("Returns a relevant error if no user is logged in", async () => {
+            const fakeCampaignData = {
+                name: "The Pirates of Neverwinter",
+                location: faker.location.city()
+            };
+            const response = await request(app)
+                .post("/api/campaigns")
+                .send(fakeCampaignData)
+            expect(response.status).toBe(401);
+            expectToBeError(response.body, 'UnauthorizedError');
+        });
     });
 
     describe("PATCH /api/campaigns/:campaignId", () => {

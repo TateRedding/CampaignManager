@@ -46,7 +46,7 @@ const expectToMatchObjectWithDates = (firstObject, secondObject) => {
 };
 
 const createFakeUser = async ({
-    username = faker.datatype.uuid(),
+    username = faker.string.uuid(),
     password = faker.internet.password(),
     isAdmin = false,
     lookingForGroup = false
@@ -66,7 +66,7 @@ const createFakeUser = async ({
 };
 
 const createFakeUserWithToken = async ({
-    username = faker.datatype.uuid(),
+    username = faker.string.uuid(),
     password = faker.internet.password(),
     isAdmin = false,
     lookingForGroup = false
