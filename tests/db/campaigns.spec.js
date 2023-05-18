@@ -318,7 +318,7 @@ describe("DB campaigns", () => {
     });
 
     describe("destroyCampaign", () => {
-        it("Returns the deleted campaign", async () => {
+        it("Returns the data of the deleted campaign", async () => {
             const campaign = await createFakeCampaign({});
             const deletedCampaign = await destroyCampaign(campaign.id);
             expect(deletedCampaign).toBeTruthy();

@@ -3,9 +3,9 @@ const { objectContaining } = expect;
 const {
     updateCharacter,
     getCharacterById,
-    getAllPublicCharacters,
+    getAllCharacters,
     getCharactersByUserId,
-    getPublicCharactersByUserId
+    destroyCharacter,
 } = require("../../db/characters");
 const {
     createFakeUser,
@@ -49,62 +49,44 @@ describe("DB characters", () => {
         });
     });
 
-    describe("getAllPublicCharacters", () => {
-        it("Gets a list of all public characters", async () => {
+    describe("getAllCharacters", () => {
+        it("Gets a list of all characters", async () => {
             const numCharacters = 3;
             for (let i = 0; i < numCharacters; i++) {
                 await createFakeCharacter({});
             };
-            const characters = await getAllPublicCharacters();
+            const characters = await getAllCharacters();
             expect(characters).toBeTruthy();
             expect(characters.length).toBe(numCharacters);
-        });
-
-        it("Does NOT include private characters", async () => {
-            const privateCharacter = await createFakeCharacter({ isPublic: false });
-            const characters = await getAllPublicCharacters();
-            expect(characters.filter(character => character.id === privateCharacter.id).length).toBeFalsy();
         });
     });
 
     describe("getCharactersByUserId", () => {
-        it("Gets a list of public and private characters with a given userId", async () => {
-            const numPublicCharacters = 3;
-            const numPrivateCharacters = 2;
-            const user = await createFakeUser({});
-            for (let i = 0; i < numPublicCharacters; i++) {
-                await createFakeCharacter({ userId: user.id, isPublic: true });
-            };
-            for (let j = 0; j < numPrivateCharacters; j++) {
-                await createFakeCharacter({ userId: user.id, isPublic: false });
-            };
-            const characters = await getCharactersByUserId(user.id);
-            expect(characters).toBeTruthy();
-            expect(characters.length).toBe(numPublicCharacters + numPrivateCharacters);
-        });
-    });
-
-    describe("getPublicCharactersByUserId", () => {
-        it("Gets a list of public characters with a given userId", async () => {
+        it("Gets a list of all characters with a given userId", async () => {
             const numCharacters = 3;
             const user = await createFakeUser({});
             for (let i = 0; i < numCharacters; i++) {
-                await createFakeCharacter({ userId: user.id, isPublic: true });
+                await createFakeCharacter({ userId: user.id });
             };
-            const characters = await getPublicCharactersByUserId(user.id);
+            const characters = await getCharactersByUserId(user.id);
             expect(characters).toBeTruthy();
             expect(characters.length).toBe(numCharacters);
         });
+    });
 
-        it("Does NOT include private characters", async () => {
-            const numPublicCharacters = 3;
-            const user = await createFakeUser({});
-            for (let i = 0; i < numPublicCharacters; i++) {
-                await createFakeCharacter({ userId: user.id, isPublic: true });
-            };
-            const privateCharacter = await createFakeCharacter({ userId: user.id, isPublic: false });
-            const characters = await getPublicCharactersByUserId(user.id);
-            expect(characters.filter(character => character.id === privateCharacter.id).length).toBeFalsy();
+    describe("destroyCharacter", () => {
+        it("Returns the data of the deleted character", async () => {
+            const character = await createFakeCharacter({});
+            const deletedCharacter = await destroyCharacter(character.id);
+            expect(deletedCharacter).toBeTruthy();
+            expect(deletedCharacter).toMatchObject(character);
+        });
+
+        it("Completeley removes the character from the database", async () => {
+            const character = await createFakeCharacter({});
+            await destroyCharacter(character.id);
+            const deletedCharacter = await getCharacterById(character.id);
+            expect(deletedCharacter).toBeFalsy();
         });
     });
 });

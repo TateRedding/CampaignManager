@@ -25,12 +25,11 @@ const getCharacterById = async (id) => {
     };
 };
 
-const getAllPublicCharacters = async () => {
+const getAllCharacters = async () => {
     try {
         const { rows: characters } = await client.query(`
             SELECT *
-            FROM characters
-            WHERE "isPublic"=true;
+            FROM characters;
         `);
         return characters;
     } catch (error) {
@@ -51,15 +50,17 @@ const getCharactersByUserId = async (userId) => {
     };
 };
 
-const getPublicCharactersByUserId = async (userId) => {
+const destroyCharacter = async (id) => {
     try {
-        const { rows: campaigns } = await client.query(`
-            SELECT *
-            FROM characters
-            WHERE "isPublic"=true
-            AND "userId"=${userId};
+        const character = await getCharacterById(id);
+        if (character) {
+            const { rows: [deletedCharacter] } = await client.query(`
+            DELETE FROM characters
+            WHERE id=${id}
+            RETURNING *;
         `);
-        return campaigns;
+            return deletedCharacter;
+        }
     } catch (error) {
         console.error(error);
     };
@@ -69,7 +70,7 @@ module.exports = {
     createCharacter,
     updateCharacter,
     getCharacterById,
-    getAllPublicCharacters,
+    getAllCharacters,
     getCharactersByUserId,
-    getPublicCharactersByUserId
+    destroyCharacter
 };

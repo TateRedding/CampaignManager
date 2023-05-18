@@ -91,7 +91,6 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
                 "campaignId" INTEGER REFERENCES campaigns(id),
-                "isPublic" BOOLEAN DEFAULT true,
                 name VARCHAR(100) NOT NULL,
                 level INTEGER DEFAULT 1,
                 experience INTEGER DEFAULT 0,

@@ -45,6 +45,13 @@ const expectToMatchObjectWithDates = (firstObject, secondObject) => {
     }
 };
 
+const randInt = (max, min) => {
+    if (!min) {
+        min = 0;
+    };
+    return Math.floor(Math.random() * (max - min)) + min;
+};
+
 const createFakeUser = async ({
     username = faker.string.uuid(),
     password = faker.internet.password(),
@@ -251,8 +258,7 @@ const createFakeCampaignWithUserCampaignsAndMessages = async ({
 const createFakeCharacter = async ({
     userId,
     campaignId,
-    isPublic = true,
-    name = faker.name.fullName(),
+    name = faker.person.fullName(),
 }) => {
     const alignments = [
         'lawful-good',
@@ -265,12 +271,6 @@ const createFakeCharacter = async ({
         'neutral-evil',
         'chaotic-evil'
     ];
-    const randInt = (max, min) => {
-        if (!min) {
-            min = 0;
-        };
-        return Math.floor(Math.random() * (max - min)) + min;
-    };
     if (!userId) {
         const user = await createFakeUser({});
         userId = user.id;
@@ -278,7 +278,6 @@ const createFakeCharacter = async ({
     const alignment = alignments[randInt(alignments.length)];
     const fakeCharacterData = {
         userId,
-        isPublic,
         name,
         species: faker.word.noun(),
         class: faker.word.adjective(),
@@ -307,6 +306,7 @@ module.exports = {
     expectToBeError,
     expectNotToBeError,
     expectToMatchObjectWithDates,
+    randInt,
     createFakeUser,
     createFakeUserWithToken,
     createFakeCampaign,
