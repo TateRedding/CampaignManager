@@ -5,7 +5,7 @@ const {
     getCharacterById,
     getAllCharacters,
     getCharactersByUserId,
-    destroyCharacter,
+    deleteCharacter,
 } = require("../../db/characters");
 const {
     createFakeUser,
@@ -74,17 +74,17 @@ describe("DB characters", () => {
         });
     });
 
-    describe("destroyCharacter", () => {
+    describe("deleteCharacter", () => {
         it("Returns the data of the deleted character", async () => {
             const character = await createFakeCharacter({});
-            const deletedCharacter = await destroyCharacter(character.id);
+            const deletedCharacter = await deleteCharacter(character.id);
             expect(deletedCharacter).toBeTruthy();
             expect(deletedCharacter).toMatchObject(character);
         });
 
         it("Completeley removes the character from the database", async () => {
             const character = await createFakeCharacter({});
-            await destroyCharacter(character.id);
+            await deleteCharacter(character.id);
             const deletedCharacter = await getCharacterById(character.id);
             expect(deletedCharacter).toBeFalsy();
         });

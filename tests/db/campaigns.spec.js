@@ -10,7 +10,7 @@ const {
     getPublicCampaignsLookingForPlayers,
     getCampaignsByUserId,
     getPublicCampaignsByUserId,
-    destroyCampaign
+    deleteCampaign
 } = require("../../db/campaigns");
 const {
     createFakeUser,
@@ -317,17 +317,17 @@ describe("DB campaigns", () => {
         });
     });
 
-    describe("destroyCampaign", () => {
+    describe("deleteCampaign", () => {
         it("Returns the data of the deleted campaign", async () => {
             const campaign = await createFakeCampaign({});
-            const deletedCampaign = await destroyCampaign(campaign.id);
+            const deletedCampaign = await deleteCampaign(campaign.id);
             expect(deletedCampaign).toBeTruthy();
             expect(deletedCampaign).toMatchObject(campaign);
         });
 
         it("Completely removes the campaign from the database", async () => {
             const campaign = await createFakeCampaign({});
-            await destroyCampaign(campaign.id);
+            await deleteCampaign(campaign.id);
             const deletedCampaign = await getCampaignById(campaign.id);
             expect(deletedCampaign).toBeFalsy();
 
@@ -335,7 +335,7 @@ describe("DB campaigns", () => {
 
         it("Deletes any associated user_campaigns", async () => {
             const campaign = await createFakeCampaignWithUserCampaigns({ numUsers: 5 });
-            await destroyCampaign(campaign.id);
+            await deleteCampaign(campaign.id);
             const userCampaigns = await getUserCampaignsByCampaignId(campaign.id);
             expect(userCampaigns.length).toBeFalsy();
         });
@@ -345,7 +345,7 @@ describe("DB campaigns", () => {
                 numUsers: 4,
                 numPublicMessages: 10
             });
-            await destroyCampaign(campaign.id);
+            await deleteCampaign(campaign.id);
             const { rows: messages } = await client.query(`
                 SELECT *
                 FROM messages

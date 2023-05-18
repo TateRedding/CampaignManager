@@ -1,9 +1,11 @@
 const express = require('express');
 const { requireUser } = require('./utils');
 const { createMessage, getMessageById, updateMessage } = require('../db/messages');
+const { getCampaignById } = require('../db/campaigns');
+const { deleteMessage } = require('../db/messages');
 const router = express.Router();
 
-router.post('/', requireUser, async (req, res) => {
+router.post('/', requireUser, async (req, res, next) => {
     const fields = req.body;
     fields.senderId = req.user.id;
     try {
@@ -14,7 +16,7 @@ router.post('/', requireUser, async (req, res) => {
     };
 });
 
-router.patch('/:messageId', requireUser, async (req, res) => {
+router.patch('/:messageId', requireUser, async (req, res, next) => {
     const { messageId } = req.params;
     const { content } = req.body;
     try {
@@ -27,6 +29,26 @@ router.patch('/:messageId', requireUser, async (req, res) => {
             res.send({
                 name: 'UnauthorizedUpdateError',
                 message: `User ${req.user.username} does not have permission to edit message with id ${message.id}!`
+            });
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+router.delete('/:messageId', requireUser, async (req, res, next) => {
+    const { messageId } = req.params;
+    try {
+        const message = await getMessageById(messageId);
+        const campaign = await getCampaignById(message.campaignId);
+        if (message.senderId === req.user.id || req.user.id === campaign.creatorId || req.user.isAdmin) {
+            const deletedMessage = await deleteMessage(messageId);
+            res.send(deletedMessage);
+        } else {
+            res.status(403);
+            res.send({
+                name: 'UnauthorizedDeleteError',
+                message: `User ${req.user.username} does not have permission to delete message with id ${message.id}!`
             });
         };
     } catch ({ name, message }) {

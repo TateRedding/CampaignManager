@@ -50,7 +50,7 @@ const getCharactersByUserId = async (userId) => {
     };
 };
 
-const destroyCharacter = async (id) => {
+const deleteCharacter = async (id) => {
     try {
         const character = await getCharacterById(id);
         if (character) {
@@ -72,5 +72,5 @@ module.exports = {
     getCharacterById,
     getAllCharacters,
     getCharactersByUserId,
-    destroyCharacter
+    deleteCharacter
 };

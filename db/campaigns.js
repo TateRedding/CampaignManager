@@ -141,7 +141,7 @@ const getPublicCampaignsByUserId = async (userId) => {
     };
 };
 
-const destroyCampaign = async (id) => {
+const deleteCampaign = async (id) => {
     try {
         const campaign = await getCampaignById(id);
         if (campaign) {
@@ -174,5 +174,5 @@ module.exports = {
     getPublicCampaignsLookingForPlayers,
     getCampaignsByUserId,
     getPublicCampaignsByUserId,
-    destroyCampaign
+    deleteCampaign
 };

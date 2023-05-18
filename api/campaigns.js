@@ -6,7 +6,7 @@ const {
     getAllCampaigns,
     getCampaignById,
     getAllPublicCampaigns,
-    destroyCampaign,
+    deleteCampaign,
 } = require('../db/campaigns');
 const { requireUser } = require('./utils');
 
@@ -87,7 +87,7 @@ router.delete('/:campaignId', requireUser, async (req, res, next) => {
         const campaign = await getCampaignById(campaignId);
         if (campaign) {
             if (campaign.creatorId === req.user.id || req.user.isAdmin) {
-                const deletedCampaign = await destroyCampaign(campaign.id);
+                const deletedCampaign = await deleteCampaign(campaign.id);
                 res.send(deletedCampaign);
             } else {
                 res.status(403);

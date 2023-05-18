@@ -6,7 +6,7 @@ const {
     updateCharacter,
     getCharacterById,
     getAllCharacters,
-    destroyCharacter,
+    deleteCharacter,
 } = require('../db/characters');
 
 router.get('/', async (req, res, next) => {
@@ -62,7 +62,7 @@ router.delete('/:characterId', requireUser, async (req, res, next) => {
     try {
         const character = await getCharacterById(characterId);
         if (character.userId === req.user.id) {
-            const deletedCharacter = await destroyCharacter(characterId);
+            const deletedCharacter = await deleteCharacter(characterId);
             res.send(deletedCharacter);
         } else {
             res.status(403);
