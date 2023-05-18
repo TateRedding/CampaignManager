@@ -112,7 +112,11 @@ const createFakeCampaign = async ({
     return campaign;
 };
 
-const createFakeUserCampaign = async ({ userId, campaignId }) => {
+const createFakeUserCampaign = async ({
+    userId,
+    campaignId,
+    isDM = false
+}) => {
     if (!userId) {
         const user = await createFakeUser({});
         userId = user.id;
@@ -123,7 +127,8 @@ const createFakeUserCampaign = async ({ userId, campaignId }) => {
     };
     const fakeUserCampaign = await createUserCampaign({
         userId,
-        campaignId
+        campaignId,
+        isDM
     });
     if (!fakeUserCampaign) {
         throw new Error("createCampaign didn't return a campaign");
@@ -186,7 +191,7 @@ const createFakeMessage = async ({
     const fakeMessageData = {
         senderId,
         campaignId,
-        content: faker.datatype.string(100),
+        content: faker.string.sample(100),
         isPublic,
         isInvitation
     };

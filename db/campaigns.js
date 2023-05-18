@@ -141,6 +141,30 @@ const getPublicCampaignsByUserId = async (userId) => {
     };
 };
 
+const destroyCampaign = async (id) => {
+    try {
+        const campaign = await getCampaignById(id);
+        if (campaign) {
+            await client.query(`
+                DELETE FROM user_campaigns
+                WHERE "campaignId"=${id};
+            `);
+            await client.query(`
+                DELETE FROM messages
+                WHERE "campaignId"=${id};
+            `);
+            const { rows: [deletedCampaign] } = await client.query(`
+                DELETE FROM campaigns
+                WHERE id=${id}
+                RETURNING *;
+            `);
+            return deletedCampaign;
+        };
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 module.exports = {
     createCampaign,
     updateCampaign,
@@ -149,5 +173,6 @@ module.exports = {
     getAllPublicCampaigns,
     getPublicCampaignsLookingForPlayers,
     getCampaignsByUserId,
-    getPublicCampaignsByUserId
+    getPublicCampaignsByUserId,
+    destroyCampaign
 };

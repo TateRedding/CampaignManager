@@ -6,6 +6,7 @@ const {
     getAllCampaigns,
     getCampaignById,
     getAllPublicCampaigns,
+    destroyCampaign,
 } = require('../db/campaigns');
 const { requireUser } = require('./utils');
 
@@ -33,7 +34,7 @@ router.get('/:campaignId', async (req, res, next) => {
         if (campaign.isPublic ||
             (req.user &&
                 (campaign.users.filter(user => user.userId === req.user.id).length ||
-                req.user.isAdmin))) {
+                    req.user.isAdmin))) {
             res.send(campaign);
         } else {
             res.status(403);
@@ -62,16 +63,40 @@ router.patch('/:campaignId', requireUser, async (req, res, next) => {
     const { campaignId } = req.params;
     try {
         const campaign = await getCampaignById(campaignId);
-        if (campaign.creatorId === req.user.id) {
-            const updatedCampaign = await updateCampaign(campaignId, { ...req.body });
-            res.send(updatedCampaign);
-        } else {
-            res.status(403);
-            res.send({
-                error: 'UnauthorizedUpdateError',
-                message: `User ${req.user.username} does not have permission to edit ${campaign.name}!`
-            });
+        if (campaign) {
+            const userCampaign = campaign.users.filter(user => user.userId === req.user.id)[0]
+            if (campaign.creatorId === req.user.id || (userCampaign && userCampaign.isDM)) {
+                const updatedCampaign = await updateCampaign(campaignId, { ...req.body });
+                res.send(updatedCampaign);
+            } else {
+                res.status(403);
+                res.send({
+                    name: 'UnauthorizedUpdateError',
+                    message: `User ${req.user.username} does not have permission to edit ${campaign.name}!`
+                });
+            };
         };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+router.delete('/:campaignId', requireUser, async (req, res, next) => {
+    const { campaignId } = req.params;
+    try {
+        const campaign = await getCampaignById(campaignId);
+        if (campaign) {
+            if (campaign.creatorId === req.user.id || req.user.isAdmin) {
+                const deletedCampaign = await destroyCampaign(campaign.id);
+                res.send(deletedCampaign);
+            } else {
+                res.status(403);
+                res.send({
+                    name: 'UnauthorizedDeleteError',
+                    message: `User ${req.user.username} does not have permission to delete ${campaign.name}!`
+                });
+            }
+        }
     } catch ({ name, message }) {
         next({ name, message });
     };

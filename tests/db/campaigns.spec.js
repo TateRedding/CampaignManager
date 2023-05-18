@@ -1,5 +1,7 @@
 const { emptyTables } = require('../utils');
 const { objectContaining } = expect;
+const { getUserCampaignsByCampaignId } = require('../../db/user_campaigns');
+const client = require('../../db');
 const {
     updateCampaign,
     getAllCampaigns,
@@ -7,7 +9,8 @@ const {
     getAllPublicCampaigns,
     getPublicCampaignsLookingForPlayers,
     getCampaignsByUserId,
-    getPublicCampaignsByUserId
+    getPublicCampaignsByUserId,
+    destroyCampaign
 } = require("../../db/campaigns");
 const {
     createFakeUser,
@@ -311,6 +314,44 @@ describe("DB campaigns", () => {
                 expect(campaigns[j].users).toBeTruthy();
                 expect(campaigns[j].users.length).toBe(numUsers);
             };
+        });
+    });
+
+    describe("destroyCampaign", () => {
+        it("Returns the deleted campaign", async () => {
+            const campaign = await createFakeCampaign({});
+            const deletedCampaign = await destroyCampaign(campaign.id);
+            expect(deletedCampaign).toBeTruthy();
+            expect(deletedCampaign).toMatchObject(campaign);
+        });
+
+        it("Completely removes the campaign from the database", async () => {
+            const campaign = await createFakeCampaign({});
+            await destroyCampaign(campaign.id);
+            const deletedCampaign = await getCampaignById(campaign.id);
+            expect(deletedCampaign).toBeFalsy();
+
+        });
+
+        it("Deletes any associated user_campaigns", async () => {
+            const campaign = await createFakeCampaignWithUserCampaigns({ numUsers: 5 });
+            await destroyCampaign(campaign.id);
+            const userCampaigns = await getUserCampaignsByCampaignId(campaign.id);
+            expect(userCampaigns.length).toBeFalsy();
+        });
+
+        it("Deletes any associated messages", async () => {
+            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({
+                numUsers: 4,
+                numPublicMessages: 10
+            });
+            await destroyCampaign(campaign.id);
+            const { rows: messages } = await client.query(`
+                SELECT *
+                FROM messages
+                WHERE "campaignId"=${campaign.id};
+            `);
+            expect(messages.length).toBeFalsy();
         });
     });
 });

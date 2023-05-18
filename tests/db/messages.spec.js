@@ -36,7 +36,7 @@ describe("DB messages", () => {
     describe("updateMessage", () => {
         it("Updates and returns the updated message", async () => {
             const message = await createFakeMessage({});
-            const content = faker.datatype.string(50);
+            const content = faker.string.sample(50);
             const updatedMessage = await updateMessage(message.id, content);
             expect(updatedMessage).toBeTruthy();
             expect(updatedMessage.content).toBe(content);
@@ -44,7 +44,7 @@ describe("DB messages", () => {
 
         it("Only updates the content of the message", async () => {
             const message = await createFakeMessage({});
-            const content = faker.datatype.string(50);
+            const content = faker.string.sample(50);
             const updatedMessage = await updateMessage(message.id, content);
             expect(updatedMessage).toEqual(
                 objectContaining({

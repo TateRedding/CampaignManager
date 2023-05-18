@@ -1,14 +1,18 @@
-const { emptyTables, expectNotToBeError, expectToMatchObjectWithDates, expectToBeError } = require('../utils');
 const request = require("supertest");
 const { faker } = require("@faker-js/faker");
 const app = require("../../app");
 const { objectContaining } = expect;
 const {
+    emptyTables,
+    expectToBeError,
+    expectNotToBeError,
     createFakeUser,
     createFakeCampaign,
+    createFakeUserCampaign,
     createFakeCampaignWithUserCampaigns,
     createFakeCampaignWithUserCampaignsAndMessages,
-    createFakeUserWithToken
+    createFakeUserWithToken,
+    expectToMatchObjectWithDates
 } = require("../utils");
 
 describe("/api/campaigns", () => {
@@ -172,16 +176,90 @@ describe("/api/campaigns", () => {
     });
 
     describe("PATCH /api/campaigns/:campaignId", () => {
-        // Returns the data of the updated camapign
-        // Returns a relevant error if no user is logged in
-        // Returns a relevant error if logged in user is not the creator or DM of a campaign
+        it("Returns the data of the updated campaign if logged in user is the creator of the campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({ creatorId: user.id });
+            const newName = "Fake Data: A Fake News Tale";
+            const response = await request(app)
+                .patch(`/api/campaigns/${campaign.id}`)
+                .send({ name: newName })
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body.name).toBe(newName);
+        });
 
+        it("Returns the data of the updated campaign if logged in user is the DM of the campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({});
+            await createFakeUserCampaign({
+                userId: user.id,
+                campaignId: campaign.id,
+                isDM: true
+            });
+            const newName = "James and the Giant Tankard of Ale";
+            const response = await request(app)
+                .patch(`/api/campaigns/${campaign.id}`)
+                .send({ name: newName })
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body.name).toBe(newName);
+        });
+
+        it("Returns a relevant error if no user is logged in or logged in user is not the creator or DM of the campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({});
+            await createFakeUserCampaign({
+                userId: user.id,
+                campaignId: campaign.id,
+                isDM: false
+            });
+            const newName = "This will never be used!";
+            const noLoginResponse = await request(app)
+                .patch(`/api/campaigns/${campaign.id}`)
+                .send({ name: newName })
+            const loggedInResponse = await request(app)
+                .patch(`/api/campaigns/${campaign.id}`)
+                .send({ name: newName })
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.status).toBe(401);
+            expectToBeError(noLoginResponse.body, 'UnauthorizedError');
+            expect(loggedInResponse.status).toBe(403);
+            expectToBeError(loggedInResponse.body, 'UnauthorizedUpdateError');
+        });
     });
 
     describe("DELETE /api/campaigns/:campaignId", () => {
-        // Returns the data of the deleted campaign if logged in user is the creator of the camapign
-        // Retruns the data of the deleted campaign if logged in user is NOt the creator of the campaign, but is an admin
-        // Returns a relevant error if no user is logged in
-        // Returns a relevant error if logged in user is not the creator of the campaign
+        it("Returns the data of the deleted campaign if logged in user is the creator of the camapign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({ creatorId: user.id });
+            const response = await request(app)
+                .delete(`/api/campaigns/${campaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expectToMatchObjectWithDates(response.body, campaign);
+        });
+
+        it("Returns the data of the deleted campaign if logged in user is NOT the creator of the campaign, but is an admin", async () => {
+            const { token } = await createFakeUserWithToken({ isAdmin: true });
+            const campaign = await createFakeCampaign({});
+            const response = await request(app)
+                .delete(`/api/campaigns/${campaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expectToMatchObjectWithDates(response.body, campaign);
+        });
+
+        it("Returns a relevant error if no user is logged in, or logged in user is not the creator of the campaign or an admin", async () => {
+            const { token } = await createFakeUserWithToken({ isAdmin: false });
+            const campaign = await createFakeCampaign({});
+            const noLoginResponse = await request(app).delete(`/api/campaigns/${campaign.id}`);
+            const loggedInResponse = await request(app)
+                .delete(`/api/campaigns/${campaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.status).toBe(401);
+            expectToBeError(noLoginResponse.body, 'UnauthorizedError');
+            expect(loggedInResponse.status).toBe(403);
+            expectToBeError(loggedInResponse.body, 'UnauthorizedDeleteError');
+        });
     });
 });
