@@ -1,5 +1,5 @@
 const { objectContaining } = expect;
-const client = require("../../db");
+const client = require("../../db/client");
 const {
     updateUserCampaign,
     deleteUserCampaign,

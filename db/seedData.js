@@ -1,4 +1,4 @@
-const client = require('./index');
+const client = require('./client');
 const { createUser } = require('./users');
 const { createCampaign } = require('./campaigns');
 const { createUserCampaign } = require('./user_campaigns');
@@ -574,7 +574,6 @@ const createInitialCharacters = async () => {
 
 const rebuildDB = async () => {
     try {
-        client.connect();
         await dropTables();
         await createTables();
         await createInitialUsers();

@@ -26,19 +26,10 @@ router.use(async (req, res, next) => {
     };
 });
 
-const campaignsRouter = require('./campaigns');
-router.use('/campaigns', campaignsRouter);
-
-const charactersRouter = require('./characters');
-router.use('/characters', charactersRouter);
-
-const messagesRouter = require('./messages');
-router.use('/messages', messagesRouter);
-
-const userCampaignsRouter = require('./user_campaigns');
-router.use('/user_campaigns', userCampaignsRouter);
-
-const usersRouter = require('./users');
-router.use('/users', usersRouter);
+router.use('/campaigns', require('./campaigns'));
+router.use('/characters', require('./characters'));
+router.use('/messages', require('./messages'));
+router.use('/user_campaigns', require('./user_campaigns'));
+router.use('/users', require('./users'));
 
 module.exports = router;

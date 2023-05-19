@@ -1,4 +1,4 @@
-const client = require('./index');
+const client = require('./client');
 const { getMessagesByCampaignIdAndUserId } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
 const { createRow, updateRow } = require('./utils');

@@ -1,4 +1,4 @@
-const client = require('./index');
+const client = require('./client');
 const { createRow, getRowById } = require('./utils');
 
 const createMessage = async ({ ...fields }) => {

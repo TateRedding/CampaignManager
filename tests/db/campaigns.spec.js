@@ -1,7 +1,7 @@
 const { emptyTables } = require('../utils');
 const { objectContaining } = expect;
 const { getUserCampaignsByCampaignId } = require('../../db/user_campaigns');
-const client = require('../../db');
+const client = require('../../db/client');
 const {
     updateCampaign,
     getAllCampaigns,

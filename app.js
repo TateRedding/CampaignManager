@@ -36,4 +36,7 @@ app.use((err, req, res, next) => {
     });
 });
 
+const client = require('./db/client');
+client.connect();
+
 module.exports = app;

@@ -2,13 +2,13 @@ const request = require("supertest");
 const app = require("../../app");
 const { faker } = require("@faker-js/faker");
 const {
+    expectToBeError,
+    expectNotToBeError,
+    expectToMatchObjectWithDates,
+    createFakeUser,
     createFakeUserWithToken,
     createFakeCampaign,
-    expectNotToBeError,
-    createFakeUser,
-    expectToBeError,
     createFakeMessage,
-    expectToMatchObjectWithDates
 } = require("../utils");
 
 describe("/api/messages", () => {
@@ -56,7 +56,7 @@ describe("/api/messages", () => {
         });
 
         it("Returns a relevant error if no user is logged in or logged in user is not the sender of the message", async () => {
-            const user = await createFakeMessage({});
+            const user = await createFakeUser({});
             const { token } = await createFakeUserWithToken({});
             const message = await createFakeMessage({ senderId: user.id });
             const newContent = "Crap! That was supposed to be a private message...";

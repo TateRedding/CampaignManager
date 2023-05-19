@@ -1,4 +1,4 @@
-const client = require('./index');
+const client = require('./client');
 const bcrypt = require('bcrypt');
 const { createRow, updateRow, getRowById } = require('./utils');
 

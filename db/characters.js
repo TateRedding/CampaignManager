@@ -1,4 +1,4 @@
-const client = require('./index');
+const client = require('./client');
 const { createRow, updateRow, getRowById } = require('./utils');
 
 const createCharacter = async ({ ...fields }) => {

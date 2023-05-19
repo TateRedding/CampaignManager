@@ -12,7 +12,7 @@ const {
 } = require('../db/users');
 const { requireUser } = require('./utils');
 const { getCampaignsByUserId, getPublicCampaignsByUserId } = require('../db/campaigns');
-const { getCharactersByUserId, getPublicCharactersByUserId } = require('../db/characters');
+const { getCharactersByUserId } = require('../db/characters');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -87,13 +87,10 @@ router.get('/:username/characters', async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
-        if (req.user && (req.user.username === user.username || req.user.isAdmin)) {
+        if (user) {
             const characters = await getCharactersByUserId(user.id);
             res.send(characters);
-        } else {
-            const characters = await getPublicCharactersByUserId(user.id);
-            res.send(characters);
-        };
+        }
     } catch ({ name, message }) {
         next({ name, message });
     };

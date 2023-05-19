@@ -1,4 +1,4 @@
-const client = require('../db/index');
+const client = require('../db/client');
 const { faker } = require("@faker-js/faker");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();

@@ -1,4 +1,4 @@
-const client = require('./index');
+const client = require('./client');
 
 const createRow = async (table, fields) => {
     const keys = Object.keys(fields);

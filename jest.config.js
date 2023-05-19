@@ -3,4 +3,4 @@ module.exports = {
     globalSetup: './tests/setup.js',
     globalTeardown: './tests/tearDown.js',
     forceExit: true
-};
+  };  
