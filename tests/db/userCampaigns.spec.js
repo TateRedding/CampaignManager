@@ -4,7 +4,8 @@ const {
     updateUserCampaign,
     deleteUserCampaign,
     getUserCampaignById,
-    getUserCampaignsByCampaignId
+    getUserCampaignsByCampaignId,
+    getUserCampaignByUserIdAndCamapignId
 } = require("../../db/user_campaigns");
 const {
     createFakeUser,
@@ -101,6 +102,20 @@ describe("DB user_campaigns", () => {
             for (let i = 0; i < userCampaigns.length; i++) {
                 expect(userCampaigns[i].username).toBeTruthy();
             };
+        });
+    });
+
+    describe("getUserCampaignByUserIdAndCamapignId", () => {
+        it("Returns the user_campaign with a given userId and campaignId", async () => {
+            const user = await createFakeUser({});
+            const campaign = await createFakeCampaign({});
+            const _userCamapign = await createFakeUserCampaign({
+                userId: user.id,
+                campaignId: campaign.id
+            });
+            const userCampaign = await getUserCampaignByUserIdAndCamapignId(user.id, campaign.id);
+            expect(userCampaign).toBeTruthy();
+            expect(userCampaign).toMatchObject(_userCamapign);
         });
     });
 });

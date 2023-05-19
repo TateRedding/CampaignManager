@@ -35,7 +35,7 @@ router.use('/characters', charactersRouter);
 const messagesRouter = require('./messages');
 router.use('/messages', messagesRouter);
 
-const userCampaignsRouter = require('./userCampaigns');
+const userCampaignsRouter = require('./user_campaigns');
 router.use('/user_campaigns', userCampaignsRouter);
 
 const usersRouter = require('./users');

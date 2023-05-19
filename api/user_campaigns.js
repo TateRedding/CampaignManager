@@ -1,26 +1,35 @@
 const express = require('express');
-const { createUserCampaign, getUserCampaignById } = require('../db/user_campaigns');
+const {
+    createUserCampaign,
+    getUserCampaignById,
+    getUserCampaignByUserIdAndCamapignId
+} = require('../db/user_campaigns');
 const { getCampaignById } = require('../db/campaigns');
 const { requireUser } = require('./utils');
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', requireUser, async (req, res, next) => {
+    const fields = req.body;
+    fields.userId = req.user.id;
     try {
-        const userCampaign = await createUserCampaign(req.body);
-        if (userCampaign) {
-            res.send(userCampaign);
-        } else {
-            next({
-                name: 'UserCampaignError',
-                message: 'Could not add user to campaign! Are they already in it?'
-            });
-        };
-    } catch (error) {
-        console.error(error);
+        if (fields.campaignId) {
+            const _userCampaign = await getUserCampaignByUserIdAndCamapignId(fields.userId, fields.campaignId);
+            if (!_userCampaign) {
+                const userCampaign = await createUserCampaign(fields);
+                res.send(userCampaign);
+            } else {
+                next({
+                    name: 'UserCampaignError',
+                    message: 'Could not add user to campaign! User may already be in campaign.'
+                });
+            };
+        }
+    } catch ({ name, message }) {
+        next({ name, message });
     };
 });
 
-router.patch('/:userCampaignId', requireUser, async (req, res) => {
+router.patch('/:userCampaignId', requireUser, async (req, res, next) => {
     const { userCampaignId } = req.params;
     const { isDM } = req.body;
     try {

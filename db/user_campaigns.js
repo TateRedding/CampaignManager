@@ -59,10 +59,25 @@ const getUserCampaignsByCampaignId = async (campaignId) => {
     };
 };
 
+const getUserCampaignByUserIdAndCamapignId = async (userId, campaignId) => {
+    try {
+        const { rows: [userCampaign] } = await client.query(`
+            SELECT *
+            FROM user_campaigns
+            WHERE "userId"=${userId}
+            AND "campaignId"=${campaignId};
+        `);
+        return userCampaign;
+    } catch (error) {
+        console.error(error);
+    };
+}
+
 module.exports = {
     createUserCampaign,
     updateUserCampaign,
     deleteUserCampaign,
     getUserCampaignById,
-    getUserCampaignsByCampaignId
+    getUserCampaignsByCampaignId,
+    getUserCampaignByUserIdAndCamapignId
 };

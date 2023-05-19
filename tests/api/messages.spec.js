@@ -14,10 +14,9 @@ const {
 describe("/api/messages", () => {
     describe("POST /api/messages", () => {
         it("Returns the data of the newly created message", async () => {
-            const { user, token } = await createFakeUserWithToken({});
+            const { token } = await createFakeUserWithToken({});
             const campaign = await createFakeCampaign({});
             const fakeMessageData = {
-                senderId: user.id,
                 campaignId: campaign.id,
                 content: faker.string.sample(100)
             };
@@ -30,10 +29,8 @@ describe("/api/messages", () => {
         });
 
         it("Returns a relevant error if no user is logged in", async () => {
-            const user = await createFakeUser({});
             const campaign = await createFakeCampaign({});
             const fakeMessageData = {
-                senderId: user.id,
                 campaignId: campaign.id,
                 content: faker.string.sample(100)
             };
