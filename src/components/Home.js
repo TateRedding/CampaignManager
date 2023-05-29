@@ -18,7 +18,7 @@ const Home = ({ campaignData, userData }) => {
                 </div>
             </div>
             {
-                campaignData ?
+                Object.keys(userData).length && campaignData.length ?
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title text-center">Your Campaigns</h5>

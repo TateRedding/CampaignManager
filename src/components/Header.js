@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
+
+    const navigate = useNavigate();
 
     const logout = () => {
         window.localStorage.removeItem(TOKEN_NAME);
