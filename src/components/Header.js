@@ -23,7 +23,7 @@ const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
                     <div className="collapse navbar-collapse" id="cmNavbar">
                         <ul className="navbar-nav me-auto mb-2 mb-sm-0">
                             <li className="nav-item">
-                                <Link className="nav-link" to="/home">
+                                <Link className="nav-link" to="/">
                                     <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Home</span>
                                 </Link>
                             </li>

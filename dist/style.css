@@ -1,6 +1,6 @@
 main {
     margin: 0 auto;
-    width: 80vw;
+    width: 75vw;
 }
 
 .avatar {
@@ -10,4 +10,10 @@ main {
 
 .card.small {
     max-height: 300px;
+}
+
+@media (max-width: 576px) {
+    main {
+        width: 95vw;
+    }
 }

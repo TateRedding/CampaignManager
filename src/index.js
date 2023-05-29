@@ -4,12 +4,12 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 
-import CampaignPage from "./components/CampaignPage";
+import CampaignPage from "./components/Campaigns/CampaignPage";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import Login from "./components/Login";
-import NewCampaign from "./components/NewCampaign";
-import NewCharacter from "./components/NewCharacter";
+import NewCampaign from "./components/Campaigns/NewCampaign";
+import NewCharacter from "./components/Characters/NewCharacter";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 

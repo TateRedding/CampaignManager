@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import CharacterCard from "./CharacterCard";
-import CampaignCard from "./CampaignCard";
+import CharacterCard from "./Characters/CharacterCard";
+import CampaignCard from "./Campaigns/CampaignCard";
 
 const Profile = ({ token }) => {
     const [userData, setUserData] = useState({});
