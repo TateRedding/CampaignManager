@@ -117,7 +117,6 @@ router.post('/login', async (req, res, next) => {
                 user
             });
         } else {
-            res.status(401);
             res.send({
                 name: 'IncorrectCredentialsError',
                 message: 'Username and password do not match!'

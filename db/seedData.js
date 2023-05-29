@@ -67,30 +67,10 @@ const createTables = async () => {
                 location VARCHAR(255),
                 "creationDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
-
-            CREATE TABLE user_campaigns (
-                id SERIAL PRIMARY KEY,
-                "userId" INTEGER NOT NULL REFERENCES users(id),
-                "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
-                "isDM" BOOLEAN DEFAULT FALSE,
-                UNIQUE ("userId", "campaignId")
-            );
-
-            CREATE TABLE messages (
-                id SERIAL PRIMARY KEY,
-                "senderId" INTEGER NOT NULL REFERENCES users(id),
-                "recipientId" INTEGER REFERENCES users(id),
-                "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
-                "isInvitation" BOOLEAN DEFAULT false,
-                content TEXT NOT NULL,
-                "isPublic" BOOLEAN DEFAULT true,
-                "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-            );
  
             CREATE TABLE characters (
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
-                "campaignId" INTEGER REFERENCES campaigns(id),
                 name VARCHAR(100) NOT NULL,
                 level INTEGER DEFAULT 1,
                 experience INTEGER DEFAULT 0,
@@ -136,6 +116,26 @@ const createTables = async () => {
                 bonds TEXT,
                 flaws TEXT,
                 features JSON NOT NULL
+            );
+
+            CREATE TABLE user_campaigns (
+                id SERIAL PRIMARY KEY,
+                "userId" INTEGER NOT NULL REFERENCES users(id),
+                "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
+                "isDM" BOOLEAN DEFAULT FALSE,
+                "characterId" INTEGER REFERENCES characters(id),
+                UNIQUE ("userId", "campaignId")
+            );
+
+            CREATE TABLE messages (
+                id SERIAL PRIMARY KEY,
+                "senderId" INTEGER NOT NULL REFERENCES users(id),
+                "recipientId" INTEGER REFERENCES users(id),
+                "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
+                "isInvitation" BOOLEAN DEFAULT false,
+                content TEXT NOT NULL,
+                "isPublic" BOOLEAN DEFAULT true,
+                "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         `)
         console.log('Finished creating tables!');
@@ -215,131 +215,12 @@ const createInitialCampaigns = async () => {
     };
 };
 
-const createInitialUserCampaigns = async () => {
-    try {
-        console.log('Creating user-campaigns...');
-
-        const userCampaignOne = await createUserCampaign({
-            userId: 1,
-            campaignId: 1,
-            isDM: true
-        });
-
-        const userCampaignTwo = await createUserCampaign({
-            userId: 2,
-            campaignId: 1
-        });
-
-        const userCampaignThree = await createUserCampaign({
-            userId: 3,
-            campaignId: 1
-        });
-
-        const userCampaignFour = await createUserCampaign({
-            userId: 1,
-            campaignId: 2,
-            isDM: true
-        });
-
-        const userCampaignFive = await createUserCampaign({
-            userId: 2,
-            campaignId: 2
-        });
-
-        const userCampaignSix = await createUserCampaign({
-            userId: 2,
-            campaignId: 3,
-            isDM: true
-        });
-
-        const userCampaignSeven = await createUserCampaign({
-            userId: 1,
-            campaignId: 3
-        });
-
-        console.log([
-            userCampaignOne,
-            userCampaignTwo,
-            userCampaignThree,
-            userCampaignFour,
-            userCampaignFive,
-            userCampaignSix,
-            userCampaignSeven
-        ]);
-        console.log('Finished creating user-campaigns');
-    } catch (error) {
-        console.log('Error creating user-campaigns!');
-        console.error(error);
-    };
-};
-
-const createInitialMessages = async () => {
-    try {
-        console.log('Creating messages...');
-
-        const messageOne = await createMessage({
-            senderId: 1,
-            campaignId: 1,
-            content: 'How does this Sunday at 6pm work for the next session?'
-        });
-
-        const messageTwo = await createMessage({
-            senderId: 2,
-            campaignId: 1,
-            content: 'Sign me up!',
-        });
-
-        const messageThree = await createMessage({
-            senderId: 3,
-            campaignId: 1,
-            content: 'Sunday works great!'
-        });
-
-        const messageFour = await createMessage({
-            senderId: 1,
-            campaignId: 2,
-            content: 'This is a public message'
-        });
-
-        const messageFive = await createMessage({
-            senderId: 2,
-            recipientId: 1,
-            campaignId: 2,
-            content: 'This is a private message',
-            isPublic: false
-        });
-
-        const messageSix = await createMessage({
-            senderId: 2,
-            recipientId: 3,
-            campaignId: 3,
-            isInvitation: true,
-            content: 'This is an invitation to Davis to join Bee Boop Potato Soup',
-            isPublic: false
-        });
-
-        console.log([
-            messageOne,
-            messageTwo,
-            messageThree,
-            messageFour,
-            messageFive,
-            messageSix
-        ]);
-        console.log('Finished creating messages!');
-    } catch (error) {
-        console.log('Error creating messages!');
-        console.error(error);
-    };
-};
-
 const createInitialCharacters = async () => {
     try {
         console.log('Creating characters...');
 
         const characterOne = await createCharacter({
             userId: 1,
-            campaignId: 3,
             name: 'Tredd Fargrim',
             species: 'dwarf',
             subspecies: 'mountain dwarf',
@@ -429,7 +310,6 @@ const createInitialCharacters = async () => {
 
         const characterTwo = await createCharacter({
             userId: 2,
-            campaignId: 2,
             name: 'Thyri Littleflower',
             level: 13,
             experience: 168970,
@@ -572,15 +452,135 @@ const createInitialCharacters = async () => {
     };
 };
 
+const createInitialUserCampaigns = async () => {
+    try {
+        console.log('Creating user-campaigns...');
+
+        const userCampaignOne = await createUserCampaign({
+            userId: 1,
+            campaignId: 1,
+            isDM: true
+        });
+
+        const userCampaignTwo = await createUserCampaign({
+            userId: 2,
+            campaignId: 1
+        });
+
+        const userCampaignThree = await createUserCampaign({
+            userId: 3,
+            campaignId: 1
+        });
+
+        const userCampaignFour = await createUserCampaign({
+            userId: 1,
+            campaignId: 2,
+            isDM: true
+        });
+
+        const userCampaignFive = await createUserCampaign({
+            userId: 2,
+            campaignId: 2,
+            characterId: 2
+        });
+
+        const userCampaignSix = await createUserCampaign({
+            userId: 2,
+            campaignId: 3,
+            isDM: true
+        });
+
+        const userCampaignSeven = await createUserCampaign({
+            userId: 1,
+            campaignId: 3,
+            characterId: 1
+        });
+
+        console.log([
+            userCampaignOne,
+            userCampaignTwo,
+            userCampaignThree,
+            userCampaignFour,
+            userCampaignFive,
+            userCampaignSix,
+            userCampaignSeven
+        ]);
+        console.log('Finished creating user-campaigns');
+    } catch (error) {
+        console.log('Error creating user-campaigns!');
+        console.error(error);
+    };
+};
+
+const createInitialMessages = async () => {
+    try {
+        console.log('Creating messages...');
+
+        const messageOne = await createMessage({
+            senderId: 1,
+            campaignId: 1,
+            content: 'How does this Sunday at 6pm work for the next session?'
+        });
+
+        const messageTwo = await createMessage({
+            senderId: 2,
+            campaignId: 1,
+            content: 'Sign me up!',
+        });
+
+        const messageThree = await createMessage({
+            senderId: 3,
+            campaignId: 1,
+            content: 'Sunday works great!'
+        });
+
+        const messageFour = await createMessage({
+            senderId: 1,
+            campaignId: 2,
+            content: 'This is a public message'
+        });
+
+        const messageFive = await createMessage({
+            senderId: 2,
+            recipientId: 1,
+            campaignId: 2,
+            content: 'This is a private message',
+            isPublic: false
+        });
+
+        const messageSix = await createMessage({
+            senderId: 2,
+            recipientId: 3,
+            campaignId: 3,
+            isInvitation: true,
+            content: 'This is an invitation to Davis to join Bee Boop Potato Soup',
+            isPublic: false
+        });
+
+        console.log([
+            messageOne,
+            messageTwo,
+            messageThree,
+            messageFour,
+            messageFive,
+            messageSix
+        ]);
+        console.log('Finished creating messages!');
+    } catch (error) {
+        console.log('Error creating messages!');
+        console.error(error);
+    };
+};
+
 const rebuildDB = async () => {
     try {
         await dropTables();
         await createTables();
         await createInitialUsers();
         await createInitialCampaigns();
+        await createInitialCharacters();
         await createInitialUserCampaigns();
         await createInitialMessages();
-        await createInitialCharacters();
     } catch (error) {
         console.error(error);
     };

@@ -225,7 +225,6 @@ describe("/api/users", () => {
                     username: fakeUserData.username,
                     password: "wrongpassword"
                 });
-            expect(response.status).toBe(401);
             expectToBeError(response.body, "IncorrectCredentialsError");
         });
     });

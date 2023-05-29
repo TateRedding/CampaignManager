@@ -19,7 +19,7 @@ const Login = ({ TOKEN_NAME, setToken }) => {
                     username,
                     password
                 });
-                if (response.data.error === 'IncorrectCredentialsError') {
+                if (response.data.name === 'IncorrectCredentialsError') {
                     setInvalidLogin(true);
                 } else {
                     window.localStorage.setItem(TOKEN_NAME, response.data.token);

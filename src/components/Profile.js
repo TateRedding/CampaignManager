@@ -5,67 +5,10 @@ import { useNavigate } from "react-router-dom";
 import CharacterCard from "./Characters/CharacterCard";
 import CampaignCard from "./Campaigns/CampaignCard";
 
-const Profile = ({ token }) => {
-    const [userData, setUserData] = useState({});
-    const [campaignData, setCampaignData] = useState([]);
-    const [characterData, setCharacterData] = useState([]);
+const Profile = ({ campaignData, characterData }) => {
+    
 
     const navigate = useNavigate();
-
-    const getUserData = async () => {
-        try {
-            const user = await axios.get('/api/users/me', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            setUserData(user.data);
-        } catch (error) {
-            console.error(error);
-        };
-    };
-
-    const getCampaignData = async () => {
-        if (userData.username) {
-            try {
-                const campaigns = await axios.get(`/api/users/${userData.username}/campaigns`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setCampaignData(campaigns.data);
-            } catch (error) {
-                console.error(error);
-            };
-        };
-    };
-
-    const getCharacterData = async () => {
-        if (userData.username) {
-            try {
-                const characters = await axios.get(`/api/users/${userData.username}/characters`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setCharacterData(characters.data);
-            } catch (error) {
-                console.error(error);
-            };
-        };
-    };
-
-    useEffect(() => {
-        getUserData();
-    }, []);
-
-    useEffect(() => {
-        getCampaignData();
-        getCharacterData();
-    }, [userData]);
 
     // Future task: split characters and campaigns into tabs 
     return (
