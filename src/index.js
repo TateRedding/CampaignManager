@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 
 import CampaignPage from "./components/CampaignPage";
 import Header from "./components/Header";
@@ -14,7 +15,7 @@ import Register from "./components/Register";
 
 const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
-    const [token, setToken] = useState(window.localStorage.getItem(TOKEN_NAME));
+    const [token, setToken] = useState('');
     const [userData, setUserData] = useState({});
 
     const getUserData = async () => {
@@ -38,6 +39,18 @@ const App = () => {
     useEffect(() => {
         getUserData();
     }, [token]);
+
+    useEffect(() => {
+        const token = window.localStorage.getItem(TOKEN_NAME);
+        if (token) {
+            const user = jwt_decode(token);
+            if (Date.now() > user.exp * 1000) {
+                window.localStorage.removeItem(TOKEN_NAME);
+            } else {
+                setToken(token);
+            };
+        };
+    }, []);
 
     return (
         <>

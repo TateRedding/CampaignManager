@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
 
@@ -9,11 +10,10 @@ const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
 
     return (
         <header>
-            <nav className="navbar navbar-expand-sm bg-body-tertiary">
+            <nav className="navbar navbar-expand-sm bg-body-tertiary mb-3">
                 <div className="container-fluid">
                     <button
                         className="navbar-toggler"
-                        type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#cmNavbar"
                         aria-expanded="false"
@@ -23,13 +23,19 @@ const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
                     <div className="collapse navbar-collapse" id="cmNavbar">
                         <ul className="navbar-nav me-auto mb-2 mb-sm-0">
                             <li className="nav-item">
-                                <a className="nav-link" href="/#/home">Home</a>
+                                <Link className="nav-link" to="/home">
+                                    <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Home</span>
+                                </Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="/#/characters">Characters</a>
+                                <Link className="nav-link" to="/characters">
+                                    <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Characters</span>
+                                </Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="/#/campaigns">Campaigns</a>
+                                <Link className="nav-link" to="/campaigns">
+                                    <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Campaigns</span>
+                                </Link>
                             </li>
                         </ul>
                         <ul className="navbar-nav d-flex me-1">
@@ -41,17 +47,41 @@ const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
                                     {
                                         (token) ?
                                             <>
-                                                <li><a className="dropdown-item" href="/profile">{userData.username}</a></li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/profile">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">{userData.username}</span>
+                                                    </Link>
+                                                </li>
                                                 <li><hr className="dropdown-divider" /></li>
-                                                <li><a className="dropdown-item" href="/">My Campaigns</a></li>
-                                                <li><a className="dropdown-item" href="/">My Characters</a></li>
-                                                <li><a className="dropdown-item" href="/">Invites</a></li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">My Campaigns</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">My Characters</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Invites</span>
+                                                    </Link>
+                                                </li>
                                                 <li><hr className="dropdown-divider" /></li>
                                                 <li><button className="dropdown-item" onClick={() => logout()}>Sign Out</button></li>
                                             </> :
                                             <>
-                                                <li><a className="dropdown-item" href="/login">Sign In</a></li>
-                                                <li><a className="dropdown-item" href="/register">Register</a></li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/login">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Sign In</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/register">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Register</span>
+                                                    </Link>
+                                                </li>
                                             </>
                                     }
                                 </ul>
