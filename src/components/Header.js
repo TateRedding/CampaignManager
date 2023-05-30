@@ -43,7 +43,7 @@ const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
                         <ul className="navbar-nav d-flex me-1">
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img className="avatar" src="../images/default_avatar.png" alt="Avatar" />
+                                    <img className="avatar-sm" src="../images/default_avatar.png" alt="Avatar" />
                                 </a>
                                 <ul className="dropdown-menu dropdown-menu-end">
                                     {
