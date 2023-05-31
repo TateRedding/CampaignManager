@@ -17,8 +17,25 @@ main {
     max-height: 300px;
 }
 
+.player-card-header > h6:last-of-type {
+    margin-left: 1rem;
+}
+
 @media (max-width: 576px) {
     main {
         width: 95vw;
+    }
+
+    .player-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .player-card-header > .divider {
+        display: none;
+    }
+
+    .player-card-header > h6:last-of-type {
+        margin-left: 0;
     }
 }

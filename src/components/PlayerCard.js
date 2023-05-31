@@ -15,13 +15,13 @@ const PlayerCard = ({ player }) => {
                     />
                 </div>
                 <div className="flex-grow-1">
-                    <div className="d-flex align-items-end">
+                    <div className="player-card-header d-flex">
                         {
                             player.location ?
                                 <>
                                     <h5 className="card-title me-3">{player.username}</h5>
-                                    <h6>|</h6>
-                                    <h6 className="ms-3">{player.location}</h6>
+                                    <h6 className="divider">|</h6>
+                                    <h6>{player.location}</h6>
                                 </>
                                 :
                                 <h5 className="card-title">{player.username}</h5>
@@ -37,7 +37,7 @@ const PlayerCard = ({ player }) => {
                     <div className="d-flex">
                         <div className="ms-auto">
                             <button className="btn btn-success me-3" onClick={() => console.log("send message")}>Send invite</button>
-                            <button className="btn btn-primary" onClick={() => navigate(`/u/${player.username}`)}>{player.username}'s Profile</button>
+                            <button className="btn btn-primary" onClick={() => navigate(`/u/${player.username}`)}>View Profile</button>
                         </div>
                     </div>
                 </div>

@@ -7,8 +7,8 @@ const CampaignHomeCard = ({ campaign, userData }) => {
     const userCampaign = campaign.users.find(user => user.userId === userData.id);
 
     return (
-        <div className="card flex-grow-1 w-25 m-3">
-            <div className="card-body d-flex flex-column align-items-center">
+        <div className="card m-3" style={{ width: "400px" }}>
+            <div className="card-body d-flex flex-column align-items-center text-center">
                 <h5 className="card-title">{campaign.name}</h5>
                 <p className="card-text">
                     {
