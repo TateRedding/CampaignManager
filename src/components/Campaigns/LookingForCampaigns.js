@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 
-import CampaignCard from "./Campaigns/CampaignCard";
+import CampaignCard from "./CampaignCard";
 
-const LookingForCampaigns = () => {
+const LookingForCampaigns = ({ userId }) => {
     const [campaigns, setCampaigns] = useState([]);
 
     useEffect(() => {
@@ -21,7 +21,13 @@ const LookingForCampaigns = () => {
     return (
         <>
             {
-                campaigns.map(campaign => <CampaignCard campaign={campaign} key={campaign.id} />)
+                campaigns.map(campaign => {
+                    return <CampaignCard
+                        campaign={campaign}
+                        userId={userId}
+                        key={campaign.id}
+                    />
+                })
             }
         </>
     );

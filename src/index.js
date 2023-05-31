@@ -12,8 +12,8 @@ import NewCampaign from "./components/Campaigns/NewCampaign";
 import NewCharacter from "./components/Characters/NewCharacter";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
-import LookingForCampaigns from "./components/LookingForCampaigns";
-import LookingForPlayers from "./components/LookingForPlayers";
+import LookingForCampaigns from "./components/Campaigns/LookingForCampaigns";
+import LookingForPlayers from "./components/Players/LookingForPlayers";
 
 const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
@@ -132,10 +132,13 @@ const App = () => {
                     />
                     <Route path='/lfg/campaigns' element={
                         <LookingForCampaigns
+                            userId={userData.id}
                         />}
                     />
                     <Route path='/lfg/players' element={
                         <LookingForPlayers
+                            campaignData={campaignData}
+                            userId={userData.id}
                         />}
                     />
                     <Route path='/profile' element={
