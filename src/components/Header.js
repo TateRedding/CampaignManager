@@ -31,11 +31,11 @@ const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link" to="/characters">
-                                    <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Characters</span>
+                                    <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Character Library</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/campaigns">
+                                <Link className="nav-link" to="/lfg/campaigns">
                                     <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Campaigns</span>
                                 </Link>
                             </li>

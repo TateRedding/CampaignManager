@@ -5,7 +5,7 @@ const PlayerCard = ({ player }) => {
     const navigate = useNavigate();
 
     return (
-        <div className="card">
+        <div className="card mb-3">
             <div className="card-body d-flex">
                 <div className="d-flex align-items-center me-3">
                     <img
@@ -15,7 +15,7 @@ const PlayerCard = ({ player }) => {
                     />
                 </div>
                 <div className="flex-grow-1">
-                    <div className="player-card-header d-flex">
+                    <div className="lfg-card-header d-flex">
                         {
                             player.location ?
                                 <>
@@ -41,7 +41,6 @@ const PlayerCard = ({ player }) => {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

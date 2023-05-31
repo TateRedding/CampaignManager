@@ -12,7 +12,7 @@ const Home = ({ campaignData, userData }) => {
                 <div className="card-body d-flex flex-column align-items-center">
                     <h5 className="card-title text-center">Make friends. Play games. Slay Dragons.</h5>
                     <div className="w-100 d-flex justify-content-around">
-                        <button className="btn btn-primary" onClick={() => navigate("/campaigns")}>Find a Campaign</button>
+                        <button className="btn btn-primary" onClick={() => navigate("/lfg/campaigns")}>Find a Campaign</button>
                         <button className="btn btn-primary" onClick={() => navigate("/lfg/players")}>Find Players</button>
                     </div>
                 </div>

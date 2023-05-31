@@ -12,6 +12,7 @@ import NewCampaign from "./components/Campaigns/NewCampaign";
 import NewCharacter from "./components/Characters/NewCharacter";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
+import LookingForCampaigns from "./components/LookingForCampaigns";
 import LookingForPlayers from "./components/LookingForPlayers";
 
 const App = () => {
@@ -129,9 +130,14 @@ const App = () => {
                             setToken={setToken}
                         />}
                     />
+                    <Route path='/lfg/campaigns' element={
+                        <LookingForCampaigns
+                        />}
+                    />
                     <Route path='/lfg/players' element={
                         <LookingForPlayers
-                        />} />
+                        />}
+                    />
                     <Route path='/profile' element={
                         <Profile
                             campaignData={campaignData}
