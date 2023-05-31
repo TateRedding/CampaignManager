@@ -149,24 +149,26 @@ const createInitialUsers = async () => {
     try {
         console.log('Creating users...');
 
-        const userOne = await createUser({
+        const users = [];
+
+        users.push(await createUser({
             username: 'tredding',
             password: 'password1234',
             email: 'tateredding@gmail.com',
             isAdmin: true,
             firstName: 'Tate',
             bio: 'I am the creator of this website!'
-        });
+        }));
 
-        const userTwo = await createUser({
+        users.push(await createUser({
             username: 'peaseblossom',
             password: 'myhusbandisamazing',
             email: 'ninasemail@gmail.com',
             firstName: 'Nina',
             location: 'Fort Collins, CO'
-        });
+        }));
 
-        const userThree = await createUser({
+        users.push(await createUser({
             username: 'DavisTheButcher',
             password: 'beefboi55',
             email: 'daviswells@gmail.com',
@@ -174,9 +176,9 @@ const createInitialUsers = async () => {
             firstName: 'Davis',
             surname: 'Wells',
             location: 'The Regional'
-        });
+        }));
 
-        console.log([userOne, userTwo, userThree]);
+        console.log(users);
         console.log('Finished creating users!')
     } catch (error) {
         console.log('Error creating users!');
@@ -188,26 +190,35 @@ const createInitialCampaigns = async () => {
     try {
         console.log('Creating campaigns...');
 
-        const campaignOne = await createCampaign({
+        const campaigns = [];
+
+        campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'Curse of Strahd with the FoCo Squad',
             description: 'A (mostly) RAW in person Curse of Strahd campaign.',
             location: 'Fort Collins, CO'
-        });
+        }));
 
-        const campaignTwo = await createCampaign({
+        campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'The Heroes of Red Larch',
             isPublic: false,
-            location: 'roll20.com'
-        });
+            location: 'roll20.net'
+        }));
 
-        const campaignThree = await createCampaign({
+        campaigns.push(await createCampaign({
             creatorId: 2,
             name: 'Bee Boop Potato Soup'
-        });
+        }));
 
-        console.log([campaignOne, campaignTwo, campaignThree]);
+        campaigns.push(await createCampaign({
+            creatorId: 1,
+            name: 'Empty Campaign',
+            isPublic: true,
+            location: 'roll20.net'
+        }));
+
+        console.log(campaigns);
         console.log('Finished creating campaigns!');
     } catch (error) {
         console.log('Error creating campaigns!');
@@ -219,7 +230,9 @@ const createInitialCharacters = async () => {
     try {
         console.log('Creating characters...');
 
-        const characterOne = await createCharacter({
+        const characters = [];
+
+        characters.push(await createCharacter({
             userId: 1,
             name: 'Tredd Fargrim',
             species: 'dwarf',
@@ -306,9 +319,9 @@ const createInitialCharacters = async () => {
                     'Divine Sense'
                 ]
             }
-        });
+        }));
 
-        const characterTwo = await createCharacter({
+        characters.push(await createCharacter({
             userId: 2,
             name: 'Thyri Littleflower',
             level: 13,
@@ -438,13 +451,9 @@ const createInitialCharacters = async () => {
                     'Lucky'
                 ]
             }
-        });
+        }));
 
-        console.log([
-            characterOne,
-            characterTwo
-        ]);
-
+        console.log(characters);
         console.log('Finished creating characters!');
     } catch (error) {
         console.log('Error creating characters!');
@@ -456,55 +465,55 @@ const createInitialUserCampaigns = async () => {
     try {
         console.log('Creating user-campaigns...');
 
-        const userCampaignOne = await createUserCampaign({
+        const userCampaigns = [];
+
+        userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 1,
             isDM: true
-        });
+        }));
 
-        const userCampaignTwo = await createUserCampaign({
+        userCampaigns.push(await createUserCampaign({
             userId: 2,
             campaignId: 1
-        });
+        }));
 
-        const userCampaignThree = await createUserCampaign({
+        userCampaigns.push(await createUserCampaign({
             userId: 3,
             campaignId: 1
-        });
+        }));
 
-        const userCampaignFour = await createUserCampaign({
+        userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 2,
             isDM: true
-        });
+        }));
 
-        const userCampaignFive = await createUserCampaign({
+        userCampaigns.push(await createUserCampaign({
             userId: 2,
             campaignId: 2,
             characterId: 2
-        });
+        }));
 
-        const userCampaignSix = await createUserCampaign({
+        userCampaigns.push(await createUserCampaign({
             userId: 2,
             campaignId: 3,
             isDM: true
-        });
+        }));
 
-        const userCampaignSeven = await createUserCampaign({
+        userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 3,
             characterId: 1
-        });
+        }));
 
-        console.log([
-            userCampaignOne,
-            userCampaignTwo,
-            userCampaignThree,
-            userCampaignFour,
-            userCampaignFive,
-            userCampaignSix,
-            userCampaignSeven
-        ]);
+        userCampaigns.push(await createUserCampaign({
+            userId: 1,
+            campaignId: 4,
+            isDM: true
+        }));
+
+        console.log(userCampaigns);
         console.log('Finished creating user-campaigns');
     } catch (error) {
         console.log('Error creating user-campaigns!');
@@ -516,55 +525,59 @@ const createInitialMessages = async () => {
     try {
         console.log('Creating messages...');
 
-        const messageOne = await createMessage({
+        const messages = [];
+
+        messages.push(await createMessage({
             senderId: 1,
             campaignId: 1,
             content: 'How does this Sunday at 6pm work for the next session?'
-        });
+        }));
 
-        const messageTwo = await createMessage({
+        messages.push(await createMessage({
             senderId: 2,
             campaignId: 1,
             content: 'Sign me up!',
-        });
+        }));
 
-        const messageThree = await createMessage({
+        messages.push(await createMessage({
             senderId: 3,
             campaignId: 1,
             content: 'Sunday works great!'
-        });
+        }));
 
-        const messageFour = await createMessage({
+        messages.push(await createMessage({
             senderId: 1,
             campaignId: 2,
             content: 'This is a public message'
-        });
+        }));
 
-        const messageFive = await createMessage({
+        messages.push(await createMessage({
             senderId: 2,
             recipientId: 1,
             campaignId: 2,
             content: 'This is a private message',
             isPublic: false
-        });
+        }));
 
-        const messageSix = await createMessage({
+        messages.push(await createMessage({
             senderId: 2,
             recipientId: 3,
             campaignId: 3,
             isInvitation: true,
             content: 'This is an invitation to Davis to join Bee Boop Potato Soup',
             isPublic: false
-        });
+        }));
 
-        console.log([
-            messageOne,
-            messageTwo,
-            messageThree,
-            messageFour,
-            messageFive,
-            messageSix
-        ]);
+        messages.push(await createMessage({
+            senderId: 3,
+            recipientId: 1,
+            campaignId: 2,
+            isInvitation: true,
+            content: 'This is a request from Davis to join The Heroes of Red Larch',
+            isPublic: false
+        }));
+
+        console.log(messages);
         console.log('Finished creating messages!');
     } catch (error) {
         console.log('Error creating messages!');
