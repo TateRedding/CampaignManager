@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import PlayerCard from "./PlayerCard";
 
-const LookingForPlayers = ({ campaignData, userId }) => {
+const LookingForPlayers = ({ campaignData, token, userId }) => {
     const [players, setPlayers] = useState([]);
 
     useEffect(() => {
@@ -25,6 +25,7 @@ const LookingForPlayers = ({ campaignData, userId }) => {
                     return <PlayerCard
                         player={player}
                         campaignData={campaignData}
+                        token={token}
                         userId={userId}
                         key={player.id}
                     />

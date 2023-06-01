@@ -72,12 +72,19 @@ const App = () => {
         };
     };
 
+    const resetData = () => {
+        setUserData({});
+        setCampaignData([]);
+        setCharacterData([]);
+    };
+
     useEffect(() => {
         const token = window.localStorage.getItem(TOKEN_NAME);
         if (token) {
             const user = jwt_decode(token);
             if (Date.now() > user.exp * 1000) {
                 window.localStorage.removeItem(TOKEN_NAME);
+                resetData();
             } else {
                 setToken(token);
             };
@@ -98,6 +105,7 @@ const App = () => {
             <Header
                 TOKEN_NAME={TOKEN_NAME}
                 token={token}
+                resetData={resetData}
                 setToken={setToken}
                 userData={userData}
             />
@@ -132,12 +140,14 @@ const App = () => {
                     />
                     <Route path='/lfg/campaigns' element={
                         <LookingForCampaigns
+                            token={token}
                             userId={userData.id}
                         />}
                     />
                     <Route path='/lfg/players' element={
                         <LookingForPlayers
                             campaignData={campaignData}
+                            token={token}
                             userId={userData.id}
                         />}
                     />

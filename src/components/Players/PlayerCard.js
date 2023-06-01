@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import InvitationModal from "../InvitationModal";
 
-const PlayerCard = ({ player, campaignData, userId }) => {
+const PlayerCard = ({ player, campaignData, token, userId }) => {
     const navigate = useNavigate();
 
     return (
@@ -38,7 +38,7 @@ const PlayerCard = ({ player, campaignData, userId }) => {
                         }</p>
                         <div className="d-flex">
                             <div className="ms-auto">
-                                <button className="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#invite-modal">Send invite</button>
+                                <button className="btn btn-success me-3" data-bs-toggle="modal" data-bs-target={`#invite-modal-${player.id}`}>Send invite</button>
                                 <button className="btn btn-primary" onClick={() => navigate(`/u/${player.username}`)}>View Profile</button>
                             </div>
                         </div>
@@ -48,6 +48,7 @@ const PlayerCard = ({ player, campaignData, userId }) => {
             <InvitationModal 
                 player={player}
                 campaignData={campaignData}
+                token={token}
                 userId={userId}
             />
         </>

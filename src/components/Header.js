@@ -1,13 +1,14 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const Header = ({ TOKEN_NAME, token, setToken, userData }) => {
+const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
 
     const navigate = useNavigate();
 
     const logout = () => {
         window.localStorage.removeItem(TOKEN_NAME);
         setToken('');
+        resetData();
     };
 
     return (

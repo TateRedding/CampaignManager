@@ -1,6 +1,7 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 
-const InvitationModal = ({ player, campaignData, campaign, userId }) => {
+const InvitationModal = ({ player, campaignData, campaign, token, userId }) => {
     const [selectedCampaignId, setSelectedCampaignId] = useState(0);
     const [message, setMessage] = useState("");
 
@@ -14,7 +15,6 @@ const InvitationModal = ({ player, campaignData, campaign, userId }) => {
 
     const sendInvitation = async () => {
         const messageData = {
-            senderId: userId,
             isInvitation: true,
             content: message,
             isPublic: false
@@ -27,13 +27,24 @@ const InvitationModal = ({ player, campaignData, campaign, userId }) => {
             messageData.recipientId = player.id;
             messageData.campaignId = Number(selectedCampaignId);
         };
-        console.log(messageData);
+
+        const response = await axios.post("/api/messages", messageData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
     };
 
     return (
         <div
             className="modal fade"
-            id="invite-modal"
+            id={
+                campaign ?
+                    `request-modal-${campaign.id}`
+                    :
+                    `invite-modal-${player.id}`
+            }
             data-bs-backdrop="static"
             data-bs-keyboard="false"
             tabIndex="-1"
@@ -70,6 +81,7 @@ const InvitationModal = ({ player, campaignData, campaign, userId }) => {
                                     {
                                         campaignData
                                             .filter(campaign => campaign.creatorId === userId)
+                                            .filter(campaign => !campaign.users.find(userCampaign => userCampaign.userId === player.id))
                                             .map(campaign => <option value={campaign.id} key={campaign.id}>{campaign.name}</option>)
                                     }
                                 </select>

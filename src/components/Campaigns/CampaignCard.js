@@ -2,8 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import InvitationModal from "../InvitationModal";
 
-const CampaignCard = ({ campaign, userId }) => {
+const CampaignCard = ({ campaign, token, userId }) => {
     const navigate = useNavigate();
+
+    const isInCampaign = Boolean(campaign.users.find(userCampaign => userCampaign.userId === userId));
 
     const imageAreaStyle = {
         width: "200px",
@@ -56,15 +58,21 @@ const CampaignCard = ({ campaign, userId }) => {
                         }</p>
                         <div className="d-flex">
                             <div className="ms-auto">
-                            <button className="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#invite-modal">Request to join</button>
+                                {
+                                    isInCampaign ?
+                                        <button className="btn btn-success me-3" disabled>You're already in this campaign!</button>
+                                        :
+                                        <button className="btn btn-success me-3" data-bs-toggle="modal" data-bs-target={`#request-modal-${campaign.id}`}>Request to join</button>
+                                }
                                 <button className="btn btn-primary" onClick={() => navigate(`/campaigns/${campaign.id}`)}>View Details</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <InvitationModal 
+            <InvitationModal
                 campaign={campaign}
+                token={token}
                 userId={userId}
             />
         </>

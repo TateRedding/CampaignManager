@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import CampaignCard from "./CampaignCard";
 
-const LookingForCampaigns = ({ userId }) => {
+const LookingForCampaigns = ({ token, userId }) => {
     const [campaigns, setCampaigns] = useState([]);
 
     useEffect(() => {
@@ -24,6 +24,7 @@ const LookingForCampaigns = ({ userId }) => {
                 campaigns.map(campaign => {
                     return <CampaignCard
                         campaign={campaign}
+                        token={token}
                         userId={userId}
                         key={campaign.id}
                     />
