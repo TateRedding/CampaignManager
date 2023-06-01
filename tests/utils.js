@@ -100,8 +100,7 @@ const createFakeUserWithToken = async ({
 const createFakeCampaign = async ({
     creatorId,
     name = `${faker.word.adjective()} ${faker.word.noun()}`,
-    isPublic = true,
-    lookingForPlayers = false
+    lookingForPlayers = true
 }) => {
     if (!creatorId) {
         const user = await createFakeUser({});
@@ -110,7 +109,6 @@ const createFakeCampaign = async ({
     const campaign = await createCampaign({
         creatorId,
         name,
-        isPublic,
         lookingForPlayers
     });
     if (!campaign) {
@@ -147,8 +145,7 @@ const createFakeUserCampaign = async ({
 const createFakeCampaignWithUserCampaigns = async ({
     numUsers,
     creatorId,
-    lookingForPlayers = false,
-    isPublic = true
+    lookingForPlayers = true,
 }) => {
     if (numUsers <= 0 || numUsers === undefined) {
         numUsers = 1
@@ -160,7 +157,6 @@ const createFakeCampaignWithUserCampaigns = async ({
     const campaign = await createFakeCampaign({
         creatorId,
         lookingForPlayers,
-        isPublic
     });
     await createFakeUserCampaign({
         userId: creatorId,
@@ -230,14 +226,14 @@ const createFakeCampaignWithUserCampaignsAndMessages = async ({
             campaignId: campaign.id
         });
         senderIdx++;
-        if (senderIdx >= users.length - 1) {
+        if (senderIdx >= users.length) {
             senderIdx = 0;
         };
     };
     senderIdx = 0;
     let recipientIdx = 1;
     for (let j = 0; j < numPrivateMessages; j++) {
-        await createFakeMessage({
+         await createFakeMessage({
             senderId: users[senderIdx].userId,
             recipientId: users[recipientIdx].userId,
             campaignId: campaign.id,
@@ -245,10 +241,10 @@ const createFakeCampaignWithUserCampaignsAndMessages = async ({
         });
         senderIdx++;
         recipientIdx++;
-        if (senderIdx >= users.length - 1) {
+        if (senderIdx >= users.length) {
             senderIdx = 0;
         };
-        if (recipientIdx >= users.length - 1) {
+        if (recipientIdx >= users.length) {
             recipientIdx = 0;
         };
     };

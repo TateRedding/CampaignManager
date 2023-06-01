@@ -59,35 +59,14 @@ const getCampaignById = async (id, userId) => {
     };
 };
 
-const getAllPublicCampaigns = async () => {
+const getCampaignsLookingForPlayers = async () => {
     try {
         const { rows: campaigns } = await client.query(`
             SELECT campaigns.*, users.username AS "creatorName"
             FROM campaigns
             JOIN users
                 ON campaigns."creatorId"=users.id
-            WHERE "isPublic"=true;
-        `);
-        for (let i = 0; i < campaigns.length; i++) {
-            if (campaigns[i]) {
-                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
-            };
-        };
-        return campaigns;
-    } catch (error) {
-        console.error(error);
-    };
-};
-
-const getPublicCampaignsLookingForPlayers = async () => {
-    try {
-        const { rows: campaigns } = await client.query(`
-            SELECT campaigns.*, users.username AS "creatorName"
-            FROM campaigns
-            JOIN users
-                ON campaigns."creatorId"=users.id
-            WHERE "isPublic"=true
-            AND "lookingForPlayers"=true;
+            WHERE "lookingForPlayers"=true;
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
@@ -108,27 +87,6 @@ const getCampaignsByUserId = async (userId) => {
             JOIN user_campaigns
                 ON user_campaigns."campaignId"=campaigns.id
             WHERE user_campaigns."userId"=${userId};
-        `);
-        for (let i = 0; i < campaigns.length; i++) {
-            if (campaigns[i]) {
-                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
-            };
-        };
-        return campaigns;
-    } catch (error) {
-        console.error(error);
-    };
-};
-
-const getPublicCampaignsByUserId = async (userId) => {
-    try {
-        const { rows: campaigns } = await client.query(`
-            SELECT campaigns.*
-            FROM campaigns
-            JOIN user_campaigns
-                ON user_campaigns."campaignId"=campaigns.id
-            WHERE campaigns."isPublic"=true
-            AND user_campaigns."userId"=${userId};
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
@@ -170,9 +128,7 @@ module.exports = {
     updateCampaign,
     getAllCampaigns,
     getCampaignById,
-    getAllPublicCampaigns,
-    getPublicCampaignsLookingForPlayers,
+    getCampaignsLookingForPlayers,
     getCampaignsByUserId,
-    getPublicCampaignsByUserId,
     deleteCampaign
 };

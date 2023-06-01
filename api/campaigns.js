@@ -5,7 +5,7 @@ const {
     updateCampaign,
     getAllCampaigns,
     getCampaignById,
-    getAllPublicCampaigns,
+    getCampaignsLookingForPlayers,
     deleteCampaign,
 } = require('../db/campaigns');
 const { requireUser } = require('./utils');
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
             const campaigns = await getAllCampaigns();
             res.send(campaigns);
         } else {
-            const campaigns = await getAllPublicCampaigns();
+            const campaigns = await getCampaignsLookingForPlayers();
             res.send(campaigns);
         }
     } catch ({ name, message }) {
@@ -31,9 +31,9 @@ router.get('/:campaignId', async (req, res, next) => {
     };
     try {
         const campaign = await getCampaignById(req.params.campaignId, userId);
-        if (campaign.isPublic ||
+        if (campaign.lookingForPlayers ||
             (req.user &&
-                (campaign.users.filter(user => user.userId === req.user.id).length ||
+                (campaign.users.find(user => user.userId === req.user.id) ||
                     req.user.isAdmin))) {
             res.send(campaign);
         } else {
@@ -64,7 +64,7 @@ router.patch('/:campaignId', requireUser, async (req, res, next) => {
     try {
         const campaign = await getCampaignById(campaignId);
         if (campaign) {
-            const userCampaign = campaign.users.filter(user => user.userId === req.user.id)[0]
+            const userCampaign = campaign.users.find(user => user.userId === req.user.id)
             if (campaign.creatorId === req.user.id || (userCampaign && userCampaign.isDM)) {
                 const updatedCampaign = await updateCampaign(campaignId, { ...req.body });
                 res.send(updatedCampaign);

@@ -59,7 +59,6 @@ const createTables = async () => {
             CREATE TABLE campaigns (
                 id SERIAL PRIMARY KEY,
                 "creatorId" INTEGER REFERENCES users(id) NOT NULL,
-                "isPublic" BOOLEAN DEFAULT true,
                 "lookingForPlayers" BOOLEAN DEFAULT false,
                 name VARCHAR(255) NOT NULL,
                 "imageURL" TEXT,
@@ -202,7 +201,7 @@ const createInitialCampaigns = async () => {
         campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'The Heroes of Red Larch',
-            isPublic: false,
+            lookingForPlayers: false,
             location: 'roll20.net'
         }));
 
@@ -214,7 +213,6 @@ const createInitialCampaigns = async () => {
         campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'Empty Campaign',
-            isPublic: true,
             location: 'roll20.net'
         }));
 

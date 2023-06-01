@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const NewCharacter = ({ token }) => {
-    const [isPublic, setIsPublic] = useState(true);
     const [name, setName] = useState('');
     const [species, setSpecies] = useState('');
     const [subspecies, setSubSpecies] = useState('');
@@ -35,7 +34,6 @@ const NewCharacter = ({ token }) => {
         event.preventDefault();
         if (name && species && charClass && background) {
             const fields = {
-                isPublic,
                 name,
                 species,
                 subspecies,
@@ -85,7 +83,6 @@ const NewCharacter = ({ token }) => {
                     }
                 });
                 if (response) {
-                    setIsPublic(true);
                     setName('');
                     setSpecies('');
                     setSubSpecies('');
@@ -415,16 +412,6 @@ const NewCharacter = ({ token }) => {
                         onChange={(event) => setFlaws(event.target.value)}>
                     </textarea>
                 </div>
-            </div>
-            <div className="mb-3">
-                <label htmlFor="is-public-character" className="form-check-label">Private</label>
-                <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="is-public-character"
-                    checked={!isPublic}
-                    onChange={(event) => setIsPublic(!event.target.checked)}>
-                </input>
             </div>
             <button className="btn btn-primary" type="submit">Create Character</button>
         </form>

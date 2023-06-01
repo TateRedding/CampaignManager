@@ -67,15 +67,12 @@ router.get('/username/:username', async (req, res, next) => {
     };
 });
 
-router.get('/:username/campaigns', async (req, res, next) => {
+router.get('/:username/campaigns', requireUser, async (req, res, next) => {
     const { username } = req.params;
     try {
         const user = await getUserByUsername(username);
-        if (req.user && (req.user.username === user.username || req.user.isAdmin)) {
+        if (req.user.username === user.username || req.user.isAdmin) {
             const campaigns = await getCampaignsByUserId(user.id);
-            res.send(campaigns);
-        } else {
-            const campaigns = await getPublicCampaignsByUserId(user.id);
             res.send(campaigns);
         };
     } catch ({ name, message }) {

@@ -52,9 +52,9 @@ const getMessagesByCampaignIdAndUserId = async (campaignId, userId) => {
             FROM messages
             WHERE "campaignId"=${campaignId}
             AND "isPublic"=true
-            OR ("isPublic"=false
-            AND ("senderId"=${userId}
-            OR "recipientId"=${userId}));
+                OR ("isPublic"=false
+                    AND ("senderId"=${userId}
+                            OR "recipientId"=${userId}));
         `)
         return messages;
     } catch (error) {

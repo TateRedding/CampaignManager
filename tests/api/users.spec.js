@@ -87,73 +87,46 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/:username/camapigns", () => {
-        it("Returns a list of public and private campaigns if username provided is that of the logged in user", async () => {
-            const numPublicCampaigns = 3;
-            const numPrivateCampaigns = 2;
+        it("Returns a list of all campaigns associated with the user if username provided is that of the logged in user", async () => {
+            const numCampaigns = 3;
             const { user, token } = await createFakeUserWithToken({});
-            for (let i = 0; i < numPublicCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: true });
-            };
-            for (let j = 0; j < numPrivateCampaigns; j++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: false });
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id });
             };
             const response = await request(app)
                 .get(`/api/users/${user.username}/campaigns`)
                 .set("Authorization", `Bearer ${token}`);
-            expect(response.body.length).toBe(numPublicCampaigns + numPrivateCampaigns);
+            expect(response.body.length).toBe(numCampaigns);
         });
 
-        it("Returns a list of public and private campaigns if logged in user is an admin", async () => {
-            const numPublicCampaigns = 3;
-            const numPrivateCampaigns = 2;
+        it("Returns a list of all campaigns, associated or not, if logged in user is an admin", async () => {
+            const numCampaigns = 5;
             const { token } = await createFakeUserWithToken({ isAdmin: true });
             const user = await createFakeUser({});
-            for (let i = 0; i < numPublicCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: true });
-            };
-            for (let j = 0; j < numPrivateCampaigns; j++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: false });
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id });
             };
             const response = await request(app)
                 .get(`/api/users/${user.username}/campaigns`)
                 .set("Authorization", `Bearer ${token}`);
-            expect(response.body.length).toBe(numPublicCampaigns + numPrivateCampaigns);
+            expect(response.body.length).toBe(numCampaigns);
         });
 
-        it("Returns a list of public campaigns if username provided is not that of the logged in user, or no user is logged in", async () => {
+        it("Returns a list of campaigns that are looking for players if username provided is not that of the logged in user, or no user is logged in", async () => {
             const numCampaigns = 3;
             const user = await createFakeUser({});
             const { token } = await createFakeUserWithToken({});
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ creatorId: user.id });
+                await createFakeCampaignWithUserCampaigns({ creatorId: user.id, lookingForPlayers: true });
             };
-            const noLoginResponse = await request(app).get(`/api/users/${user.username}/campaigns`);
-            const loggedInResponse = await request(app)
-                .get(`/api/users/${user.username}/campaigns`)
-                .set("Authorization", `Bearer ${token}`);
-            expect(noLoginResponse.body.length).toBe(numCampaigns);
-            expect(loggedInResponse.body.length).toBe(numCampaigns);
-        });
-
-        it("Does NOT return private campaigns if username provided is not that of the logged in user, or no user is logged in", async () => {
-            const numPublicCampaigns = 3;
-            const user = await createFakeUser({});
-            const { token } = await createFakeUserWithToken({});
-            for (let i = 0; i < numPublicCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: true });
-            };
-            const privateCampaign = await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id, isPublic: false })
-            const noLoginResponse = await request(app).get(`/api/users/${user.username}/campaigns`);
-            const loggedInResponse = await request(app)
-                .get(`/api/users/${user.username}/campaigns`)
-                .set("Authorization", `Bearer ${token}`);
-            expect(noLoginResponse.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
-            expect(loggedInResponse.body.filter(campaign => campaign.id === privateCampaign.id).length).toBeFalsy();
+            const response = await request(app).get(`/api/users/${user.username}/campaigns`);
+            expect(response.status).toBe(401);
+            expectToBeError(response.body, "UnauthorizedError")
         });
     });
 
     describe("GET /api/users/:username/characters", () => {
-        it("Returns a list of characters belonging to teh user with the given username", async () => {
+        it("Returns a list of characters belonging to the user with the given username", async () => {
             const numCharacters = 5;
             const user = await createFakeUser({});
             for (let i = 0; i < numCharacters; i++) {
