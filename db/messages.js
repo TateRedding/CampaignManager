@@ -45,6 +45,21 @@ const getMessageById = async (id) => {
     };
 };
 
+const getInvitationsByUserId = async (userId) => {
+    try {
+        const { rows: messages } = await client.query(`
+            SELECT *
+            FROM messages
+            WHERE "isInvitation"=true
+            AND ("senderId"=${userId}
+                OR "recipientId"=${userId});
+        `);
+        return messages;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 const getMessagesByCampaignIdAndUserId = async (campaignId, userId) => {
     try {
         const { rows: messages } = await client.query(`
@@ -68,5 +83,6 @@ module.exports = {
     updateMessage,
     deleteMessage,
     getMessageById,
+    getInvitationsByUserId,
     getMessagesByCampaignIdAndUserId
 };

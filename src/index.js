@@ -7,13 +7,14 @@ import jwt_decode from "jwt-decode";
 import CampaignPage from "./components/Campaigns/CampaignPage";
 import Header from "./components/Header";
 import Home from "./components/Home";
+import InvitesAndRequests from "./components/InvitesAndRequests";
 import Login from "./components/Login";
+import LookingForCampaigns from "./components/Campaigns/LookingForCampaigns";
+import LookingForPlayers from "./components/Players/LookingForPlayers";
 import NewCampaign from "./components/Campaigns/NewCampaign";
 import NewCharacter from "./components/Characters/NewCharacter";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
-import LookingForCampaigns from "./components/Campaigns/LookingForCampaigns";
-import LookingForPlayers from "./components/Players/LookingForPlayers";
 
 const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
@@ -21,6 +22,7 @@ const App = () => {
     const [userData, setUserData] = useState({});
     const [campaignData, setCampaignData] = useState([]);
     const [characterData, setCharacterData] = useState([]);
+    const [invitationData, setInvitationData] = useState([]);
 
     const navigate = useNavigate();
 
@@ -74,10 +76,27 @@ const App = () => {
         };
     };
 
+    const getInvitationData = async () => {
+        if (userData.id) {
+            try {
+                const response = await axios.get(`/api/messages/invites/${userData.id}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setInvitationData(response.data);
+            } catch (error) {
+                console.error(error);
+            };
+        };
+    };
+
     const resetData = () => {
         setUserData({});
         setCampaignData([]);
         setCharacterData([]);
+        setInvitationData([]);
     };
 
     useEffect(() => {
@@ -101,6 +120,7 @@ const App = () => {
     useEffect(() => {
         getCampaignData();
         getCharacterData();
+        getInvitationData();
     }, [userData]);
 
     return (
@@ -133,6 +153,11 @@ const App = () => {
                     <Route path='/characters/new' element={
                         <NewCharacter
                             token={token}
+                        />
+                    } />
+                    <Route path='/invites' element={
+                        <InvitesAndRequests
+                            invitationData={invitationData}
                         />
                     } />
                     <Route path='/lfg/campaigns' element={

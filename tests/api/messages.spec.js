@@ -12,6 +12,63 @@ const {
 } = require("../utils");
 
 describe("/api/messages", () => {
+    describe("GET /invites/:userId", () => {
+        it("Returns the data of the user's invitations", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const numInvitations = 5;
+            for (let i = 0; i < numInvitations; i++) {
+                const campaign = await createFakeCampaign({});
+                await createFakeMessage({
+                    senderId: campaign.creatorId,
+                    campaignId: campaign.id,
+                    recipientId: user.id,
+                    isPublic: false,
+                    isInvitation: true
+                });
+            };
+            const response = await request(app)
+                .get(`/api/messages/invites/${user.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body.length).toBe(numInvitations);
+        });
+
+        it("Returns a relevant error if logged in user's id is not that of the requested userId", async () => {
+            const user = await createFakeUser({});
+            const { token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({});
+            await createFakeMessage({
+                senderId: campaign.creatorId,
+                campaignId: campaign.id,
+                recipientId: user.id,
+                isPublic: false,
+                isInvitation: true
+            });
+            const response = await request(app)
+                .get(`/api/messages/invites/${user.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expect(response.status).toBe(403);
+            expectToBeError(response.body, "InvitationAccessError");
+
+        });
+
+        it("Returns a relevant error if no user is logged in", async () => {
+            const user = await createFakeUser({});
+            const campaign = await createFakeCampaign({});
+            await createFakeMessage({
+                senderId: campaign.creatorId,
+                campaignId: campaign.id,
+                recipientId: user.id,
+                isPublic: false,
+                isInvitation: true
+            });
+            const response = await request(app).get(`/api/messages/invites/${user.id}`)
+            expect(response.status).toBe(401);
+            expectToBeError(response.body, "UnauthorizedError");
+
+        });
+    });
+
     describe("POST /api/messages", () => {
         it("Returns the data of the newly created message", async () => {
             const { token } = await createFakeUserWithToken({});

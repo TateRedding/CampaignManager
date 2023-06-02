@@ -7,6 +7,7 @@ const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
 
     const logout = () => {
         window.localStorage.removeItem(TOKEN_NAME);
+        navigate("/");
         setToken('');
         resetData();
     };
@@ -67,7 +68,7 @@ const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    <Link className="dropdown-item" to="/">
+                                                    <Link className="dropdown-item" to="/invites">
                                                         <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Invites/ Requests</span>
                                                     </Link>
                                                 </li>

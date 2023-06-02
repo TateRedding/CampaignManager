@@ -1,9 +1,27 @@
 const express = require('express');
 const { requireUser } = require('./utils');
-const { createMessage, getMessageById, updateMessage } = require('../db/messages');
+const { createMessage, updateMessage, getMessageById, getInvitationsByUserId } = require('../db/messages');
 const { getCampaignById } = require('../db/campaigns');
 const { deleteMessage } = require('../db/messages');
 const router = express.Router();
+
+router.get('/invites/:userId', requireUser, async (req, res, next) => {
+    const { userId } = req.params;
+    try {
+        if (req.user.id === Number(userId)) {
+            const messages = await getInvitationsByUserId(userId);
+            res.send(messages);
+        } else {
+            res.status(403);
+            res.send({
+                name: 'InvitationAccessError',
+                message: 'You can only access your own invitations!'
+            });
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
 
 router.post('/', requireUser, async (req, res, next) => {
     const fields = req.body;
