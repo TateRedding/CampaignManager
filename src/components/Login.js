@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Login = ({ TOKEN_NAME, setToken }) => {
+const Login = ({ TOKEN_NAME, sessionExpired, setToken }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [invalidLogin, setInvalidLogin] = useState(false);
@@ -11,7 +11,7 @@ const Login = ({ TOKEN_NAME, setToken }) => {
 
     const logIn = async (event) => {
         event.preventDefault();
-        
+
         if (username && password) {
             setInvalidLogin(false);
             try {
@@ -36,6 +36,12 @@ const Login = ({ TOKEN_NAME, setToken }) => {
 
     return (
         <>
+            {
+                (sessionExpired) ?
+                    <h5>You're session has expired. Please log in again.</h5>
+                    :
+                    null
+            }
             {
                 (invalidLogin) ?
                     <p>Incorrect username or password. Try again.</p> :

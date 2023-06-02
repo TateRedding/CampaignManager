@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 
@@ -21,6 +21,8 @@ const App = () => {
     const [userData, setUserData] = useState({});
     const [campaignData, setCampaignData] = useState([]);
     const [characterData, setCharacterData] = useState([]);
+
+    const navigate = useNavigate();
 
     const getUserData = async () => {
         if (token) {
@@ -79,14 +81,15 @@ const App = () => {
     };
 
     useEffect(() => {
-        const token = window.localStorage.getItem(TOKEN_NAME);
-        if (token) {
-            const user = jwt_decode(token);
-            if (Date.now() > user.exp * 1000) {
+        const currToken = window.localStorage.getItem(TOKEN_NAME);
+        if (currToken) {
+            const tokenData = jwt_decode(currToken);
+            if (Date.now() > tokenData.exp * 1000) {
                 window.localStorage.removeItem(TOKEN_NAME);
                 resetData();
+                navigate("/login/expired");
             } else {
-                setToken(token);
+                setToken(currToken);
             };
         };
     }, []);
@@ -132,12 +135,6 @@ const App = () => {
                             token={token}
                         />
                     } />
-                    <Route path='/login' element={
-                        <Login
-                            TOKEN_NAME={TOKEN_NAME}
-                            setToken={setToken}
-                        />}
-                    />
                     <Route path='/lfg/campaigns' element={
                         <LookingForCampaigns
                             token={token}
@@ -151,6 +148,20 @@ const App = () => {
                             userId={userData.id}
                         />}
                     />
+                    <Route path='/login' element={
+                        <Login
+                            TOKEN_NAME={TOKEN_NAME}
+                            sessionExpired={false}
+                            setToken={setToken}
+                        />}
+                    />
+                    <Route path='/login/expired' element={
+                        <Login
+                            TOKEN_NAME={TOKEN_NAME}
+                            sessionExpired={true}
+                            setToken={setToken}
+                        />
+                    } />
                     <Route path='/profile' element={
                         <Profile
                             campaignData={campaignData}
