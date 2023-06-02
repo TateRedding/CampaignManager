@@ -68,7 +68,7 @@ const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
                                                 </li>
                                                 <li>
                                                     <Link className="dropdown-item" to="/">
-                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Invites</span>
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Invites/ Requests</span>
                                                     </Link>
                                                 </li>
                                                 <li><hr className="dropdown-divider" /></li>

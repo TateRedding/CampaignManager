@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InvitationModal from "../InvitationModal";
 
 const PlayerCard = ({ player, campaignData, token, userId }) => {
@@ -10,11 +10,14 @@ const PlayerCard = ({ player, campaignData, token, userId }) => {
             <div className="card mb-3">
                 <div className="card-body d-flex">
                     <div className="d-flex align-items-center me-3">
-                        <img
-                            className="avatar-lg"
-                            src={player.imageURL ? player.imageURL : "../images/default_avatar.png"}
-                            alt={`${player.username}'s avatar`}
-                        />
+                        <Link to={`/u/${player.username}`}>
+                            <img
+                                className="avatar-lg"
+                                src={player.imageURL ? player.imageURL : "../images/default_avatar.png"}
+                                alt={`${player.username}'s avatar`}
+                                onClick={() => navigate(`/u/${player.username}`)}
+                            />
+                        </Link>
                     </div>
                     <div className="flex-grow-1">
                         <div className="lfg-card-header d-flex">
@@ -45,7 +48,7 @@ const PlayerCard = ({ player, campaignData, token, userId }) => {
                     </div>
                 </div>
             </div>
-            <InvitationModal 
+            <InvitationModal
                 player={player}
                 campaignData={campaignData}
                 token={token}

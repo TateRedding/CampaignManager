@@ -163,6 +163,7 @@ const createInitialUsers = async () => {
             username: 'peaseblossom',
             password: 'myhusbandisamazing',
             email: 'ninasemail@gmail.com',
+            lookingForGroup: true,
             firstName: 'Nina',
             location: 'Fort Collins, CO'
         }));
@@ -201,13 +202,14 @@ const createInitialCampaigns = async () => {
         campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'The Heroes of Red Larch',
-            lookingForPlayers: false,
+            lookingForPlayers: true,
             location: 'roll20.net'
         }));
 
         campaigns.push(await createCampaign({
             creatorId: 2,
-            name: 'Bee Boop Potato Soup'
+            name: 'Bee Boop Potato Soup',
+            lookingForPlayers: true,
         }));
 
         campaigns.push(await createCampaign({
