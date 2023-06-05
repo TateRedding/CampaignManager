@@ -13,11 +13,11 @@ main {
     height: 100px;
 }
 
-.lfg-card-header {
+.name-location-header {
     align-items: flex-end;
 }
 
-.lfg-card-header > h6:last-of-type {
+.name-location-header > h6:last-of-type {
     margin-left: 1rem;
 }
 
@@ -26,16 +26,16 @@ main {
         width: 95vw;
     }
 
-    .lfg-card-header {
+    .name-location-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .lfg-card-header > .divider {
+    .name-location-header > .divider {
         display: none;
     }
 
-    .lfg-card-header > h6:last-of-type {
+    .name-location-header > h6:last-of-type {
         margin-left: 0;
     }
 }

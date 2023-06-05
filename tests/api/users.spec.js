@@ -23,7 +23,7 @@ describe("/api/users", () => {
     beforeEach(async () => emptyTables());
 
     describe("GET /api/users", () => {
-        xit("Returns a list of all users with lookingForGroup set to true", async () => {
+        it("Returns a list of all users with lookingForGroup set to true", async () => {
             const numUsers = 3;
             for (let i = 0; i < numUsers; i++) {
                 await createFakeUser({ lookingForGroup: true });
@@ -33,7 +33,7 @@ describe("/api/users", () => {
             expect(response.body.length).toBe(numUsers);
         });
 
-        xit("Does NOT return any users that are not looking for a group", async () => {
+        it("Does NOT return any users that are not looking for a group", async () => {
             const _user = await createFakeUser({});
             const response = await request(app).get("/api/users");
             expectNotToBeError(response.body);
@@ -42,7 +42,7 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/me", () => {
-        xit("Sends back the data of the user whos token is given in the header", async () => {
+        it("Sends back the data of the user whos token is given in the header", async () => {
             const { user, token } = await createFakeUserWithToken({});
             const response = await request(app)
                 .get("/api/users/me")
@@ -51,7 +51,7 @@ describe("/api/users", () => {
             expectToMatchObjectWithDates(response.body, user);
         });
 
-        xit("Rejects requests without a valid token", async () => {
+        it("Rejects requests without a valid token", async () => {
             const response = await request(app).get("/api/users/me");
             expect(response.status).toBe(401);
             expectToBeError(response.body, 'UnauthorizedError');
@@ -59,13 +59,13 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/id/:userId", () => {
-        xit("Sends back the data of the user with the given userId", async () => {
+        it("Sends back the data of the user with the given userId", async () => {
             const user = await createFakeUser({});
             const response = await request(app).get(`/api/users/id/${user.id}`);
             expectToMatchObjectWithDates(response.body, user);
         });
 
-        xit("Returns a relevant error if no user is found", async () => {
+        it("Returns a relevant error if no user is found", async () => {
             const response = await request(app).get('/api/users/id/1000000');
             expect(response.status).toBe(500);
             expectToBeError(response.body, 'InvalidUserId');
@@ -73,13 +73,13 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/username/:username", () => {
-        xit("Sends back the data of the user with the given username", async () => {
+        it("Sends back the data of the user with the given username", async () => {
             const user = await createFakeUser({});
             const response = await request(app).get(`/api/users/username/${user.username}`);
             expectToMatchObjectWithDates(response.body, user);
         });
 
-        xit("Returns a relevant error if no user is found", async () => {
+        it("Returns a relevant error if no user is found", async () => {
             const response = await request(app).get('/api/users/username/Jeffers');
             expect(response.status).toBe(500);
             expectToBeError(response.body, 'InvalidUsername');
@@ -87,7 +87,7 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/:userId/camapigns", () => {
-        xit("Returns a list of all campaigns associated with the user if the id provided is that of the logged in user", async () => {
+        it("Returns a list of all campaigns associated with the user if the id provided is that of the logged in user", async () => {
             const numCampaigns = 3;
             const { user, token } = await createFakeUserWithToken({});
             for (let i = 0; i < numCampaigns; i++) {
@@ -99,7 +99,7 @@ describe("/api/users", () => {
             expect(response.body.length).toBe(numCampaigns);
         });
 
-        xit("Returns a list of all campaigns, associated or not, if logged in user is an admin", async () => {
+        it("Returns a list of all campaigns, associated or not, if logged in user is an admin", async () => {
             const numCampaigns = 5;
             const { token } = await createFakeUserWithToken({ isAdmin: true });
             const user = await createFakeUser({});
@@ -135,7 +135,7 @@ describe("/api/users", () => {
     });
 
     describe("GET /api/users/:userId/characters", () => {
-        xit("Returns a list of characters belonging to the user with the given id", async () => {
+        it("Returns a list of characters belonging to the user with the given id", async () => {
             const numCharacters = 5;
             const user = await createFakeUser({});
             for (let i = 0; i < numCharacters; i++) {
@@ -148,7 +148,7 @@ describe("/api/users", () => {
     });
 
     describe("POST /api/users/login", () => {
-        xit("Logs in the user with given username and password, and verifies that hashed login password matches the saved hashed password.", async () => {
+        it("Logs in the user with given username and password, and verifies that hashed login password matches the saved hashed password.", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: faker.internet.password()
@@ -165,7 +165,7 @@ describe("/api/users", () => {
             );
         });
 
-        xit("Returns the logged in user's data", async () => {
+        it("Returns the logged in user's data", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: faker.internet.password()
@@ -178,7 +178,7 @@ describe("/api/users", () => {
             expectToMatchObjectWithDates(response.body.user, user);
         });
 
-        xit("Returns a JWT storing the user's id and username in the token.", async () => {
+        it("Returns a JWT storing the user's id and username in the token.", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: faker.internet.password()
@@ -195,7 +195,7 @@ describe("/api/users", () => {
             expect(parsedToken).toMatchObject({ id: user.id, username: user.username });
         });
 
-        xit("Returns a relevant error if username and password do not match", async () => {
+        it("Returns a relevant error if username and password do not match", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: faker.internet.password()
@@ -212,7 +212,7 @@ describe("/api/users", () => {
     });
 
     describe("POST /api/users/register", () => {
-        xit("Creates a new user", async () => {
+        it("Creates a new user", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: faker.internet.password(),
@@ -231,7 +231,7 @@ describe("/api/users", () => {
             });
         });
 
-        xit("Encypts the password before storing it in the database", async () => {
+        it("Encypts the password before storing it in the database", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: faker.internet.password(),
@@ -255,7 +255,7 @@ describe("/api/users", () => {
             );
         });
 
-        xit("Returns a relevant error if user enters an existing username", async () => {
+        it("Returns a relevant error if user enters an existing username", async () => {
             const firstUser = await createFakeUser({});
             const secondUserData = {
                 username: firstUser.username,
@@ -269,7 +269,7 @@ describe("/api/users", () => {
             expectToBeError(response.body, "UsernameTakenError");
         });
 
-        xit("Returns a relevant error if password is less than 8 characters", async () => {
+        it("Returns a relevant error if password is less than 8 characters", async () => {
             const fakeUserData = {
                 username: faker.internet.userName(),
                 password: "2short",
@@ -284,7 +284,7 @@ describe("/api/users", () => {
     });
 
     describe("PATCH /api/users/:userId", () => {
-        xit("Updates and returns the updated user data", async () => {
+        it("Updates and returns the updated user data", async () => {
             const newData = {
                 firstName: "Fake",
                 surname: "User"
@@ -300,7 +300,7 @@ describe("/api/users", () => {
 
         });
 
-        xit("Requires the user to be logged in", async () => {
+        it("Requires the user to be logged in", async () => {
             const newData = {
                 firstName: "Fake",
                 surname: "User"
@@ -313,7 +313,7 @@ describe("/api/users", () => {
             expectToBeError(response.body, "UnauthorizedError")
         });
 
-        xit("Returns a relevant error if logged in user is trying to update a different user's data", async () => {
+        it("Returns a relevant error if logged in user is trying to update a different user's data", async () => {
             const newData = {
                 firstName: "Fake",
                 surname: "User"
@@ -330,7 +330,7 @@ describe("/api/users", () => {
     });
 
     describe("DELETE /api/users/:userId", () => {
-        xit("Returns the data of the deactivated user", async () => {
+        it("Returns the data of the deactivated user", async () => {
             const { user, token } = await createFakeUserWithToken({});
             const response = await request(app)
                 .delete(`/api/users/${user.id}`)
@@ -340,7 +340,7 @@ describe("/api/users", () => {
             expect(response.body.deactivationDate).toBeTruthy();
         });
 
-        xit("Requires the user to be logged in", async () => {
+        it("Requires the user to be logged in", async () => {
             const user = await createFakeUser({});
             const response = await request(app)
                 .delete(`/api/users/${user.id}`)
@@ -348,7 +348,7 @@ describe("/api/users", () => {
             expectToBeError(response.body, "UnauthorizedError")
         });
 
-        xit("Returns a relevant error if logged in user is trying to deactivate a different user's account", async () => {
+        it("Returns a relevant error if logged in user is trying to deactivate a different user's account", async () => {
             const user = await createFakeUser({});
             const { token } = await createFakeUserWithToken({});
             const response = await request(app)
@@ -358,7 +358,7 @@ describe("/api/users", () => {
             expectToBeError(response.body, "UnauthorizedDeleteError");
         });
 
-        xit("Allows an admin to deactivate any account", async () => {
+        it("Allows an admin to deactivate any account", async () => {
             const { token } = await createFakeUserWithToken({ isAdmin: true });
             const user = await createFakeUser({});
             const response = await request(app)

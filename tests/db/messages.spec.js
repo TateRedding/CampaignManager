@@ -87,9 +87,8 @@ describe("DB messages", () => {
     });
 
     describe("getInvitationsByUserId", () => {
-        it("Gets a list of all messages that are invitations and the given userId is that of either the message's senderId or recipientId", async () => {
-            const numInvitations = 3;
-            const numRequests = 3;
+        it("Gets a list of all messages that are invitations and the given userId is that of either the message's recipientId", async () => {
+            const numInvitations = 5;
             const user = await createFakeUser({});
             for (let i = 0; i < numInvitations; i++) {
                 const campaign = await createFakeCampaign({});
@@ -101,18 +100,23 @@ describe("DB messages", () => {
                     isInvitation: true
                 });
             };
-            for (let j = 0; j < numRequests; j++) {
-                const campaign = await createFakeCampaign({});
-                await createFakeMessage({
-                    senderId: user.id,
-                    recipientId: campaign.creatorId,
-                    campaignId: campaign.id,
-                    isPublic: false,
-                    isInvitation: true
-                });
-            };
             const messages = await getInvitationsByUserId(user.id);
-            expect(messages.length).toBe(numInvitations + numRequests);
+            expect(messages.length).toBe(numInvitations);
+        });
+
+        it("Includes the associated campaign's creatorId aliased as campaignCreatorId", async () => {
+            const user = await createFakeUser({});
+            const campaign = await createFakeCampaign({});
+            await createFakeMessage({
+                senderId: campaign.creatorId,
+                campaignId: campaign.id,
+                recipientId: user.id,
+                isPublic: false,
+                isInvitation: true
+            });
+            const messages = await getInvitationsByUserId(user.id);
+            expect(messages[0].campaignCreatorId).toBeTruthy();
+            expect(messages[0].campaignCreatorId).toBe(campaign.creatorId);
         });
     });
 

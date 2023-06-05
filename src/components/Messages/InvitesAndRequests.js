@@ -9,13 +9,13 @@ const InvitesAndRequests = ({ invitationData, userId }) => {
     const [tab, setTab] = useState(0);
 
     useEffect(() => {
-        setInvites(invitationData.filter(invitation => invitation.recipientId === userId));
-        setRequests(invitationData.filter(invitation => invitation.senderId === userId));
+        setInvites(invitationData.filter(invitation => invitation.campaignCreatorId !== userId));
+        setRequests(invitationData.filter(invitation => invitation.campaignCreatorId === userId));
     }, [invitationData]);
 
     return (
         <>
-            <ul className="nav nav-tabs">
+            <ul className="nav nav-tabs mb-3">
                 <li className="nav-item">
                     {
                         tab === 0 ?
@@ -56,10 +56,19 @@ const InvitesAndRequests = ({ invitationData, userId }) => {
             <div>
                 {
                     tab ?
-                        requests.map(request => <RequestCard request={request} key={request.id} />)
+                        <>
+                            <h4>When others want to join your campaign, their requests will show up here</h4>
+                            {
+                                requests.map(request => <RequestCard request={request} key={request.id} />)
+                            }
+                        </>
                         :
-                        invites.map(invite => <InviteCard invite={invite} key={invite.id} />)
-
+                        <>
+                            <h4>When others want you to join their campaign, their invitations will show up here</h4>
+                            {
+                                invites.map(invite => <InviteCard invite={invite} key={invite.id} />)
+                            }
+                        </>
                 }
             </div>
         </>

@@ -47,7 +47,7 @@ const App = () => {
     const getCampaignData = async () => {
         if (userData.username) {
             try {
-                const campaigns = await axios.get(`/api/users/${userData.username}/campaigns`, {
+                const campaigns = await axios.get(`/api/users/${userData.id}/campaigns`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -63,7 +63,7 @@ const App = () => {
     const getCharacterData = async () => {
         if (userData.username) {
             try {
-                const characters = await axios.get(`/api/users/${userData.username}/characters`, {
+                const characters = await axios.get(`/api/users/${userData.id}/characters`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`

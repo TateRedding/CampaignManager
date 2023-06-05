@@ -20,7 +20,7 @@ const PlayerCard = ({ player, campaignData, token, userData }) => {
                         </Link>
                     </div>
                     <div className="flex-grow-1">
-                        <div className="lfg-card-header d-flex">
+                        <div className="name-location-header d-flex">
                             {
                                 player.location ?
                                     <>

@@ -48,11 +48,12 @@ const getMessageById = async (id) => {
 const getInvitationsByUserId = async (userId) => {
     try {
         const { rows: messages } = await client.query(`
-            SELECT *
+            SELECT messages.*, campaigns."creatorId" AS "campaignCreatorId"
             FROM messages
+            JOIN campaigns
+                ON messages."campaignId"=campaigns.id
             WHERE "isInvitation"=true
-            AND ("senderId"=${userId}
-                OR "recipientId"=${userId});
+            AND "recipientId"=${userId}
         `);
         return messages;
     } catch (error) {

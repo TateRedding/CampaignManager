@@ -37,7 +37,7 @@ const CampaignCard = ({ campaign, token, userId }) => {
 
                     </div>
                     <div className="flex-grow-1">
-                        <div className="lfg-card-header d-flex">
+                        <div className="name-location-header d-flex">
                             {
                                 campaign.location ?
                                     <>
@@ -51,8 +51,8 @@ const CampaignCard = ({ campaign, token, userId }) => {
                         </div>
                         <p className="card-text"><b>About {campaign.name}</b></p>
                         <p className="card-text">{
-                            campaign.bio ?
-                                campaign.bio
+                            campaign.description ?
+                                campaign.description
                                 :
                                 "There's nothing here!"
                         }</p>
