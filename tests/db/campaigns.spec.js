@@ -8,7 +8,8 @@ const {
     getCampaignById,
     getCampaignsLookingForPlayers,
     getCampaignsByUserId,
-    deleteCampaign
+    getCampaignsLookingForPlayersByUserId,
+    deleteCampaign,
 } = require("../../db/campaigns");
 const {
     createFakeUser,
@@ -180,7 +181,7 @@ describe("DB campaigns", () => {
             for (let i = 0; i < numCampaigns; i++) {
                 await createFakeCampaignWithUserCampaigns({
                     numUsers: 1,
-                    creatorId: creator.id,
+                    creatorId: creator.id
                 });
             };
             const campaigns = await getCampaignsByUserId(creator.id);
@@ -202,6 +203,62 @@ describe("DB campaigns", () => {
             };
         });
     });
+
+    describe("getCampaignsLookingForPlayersByUserId", () => {
+        it("Returns a list of campaigns that are looking for players with a given userId", async () => {
+            const numCampaigns = 3;
+            const creator = await createFakeUser({});
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({
+                    numUsers: 1,
+                    creatorId: creator.id,
+                    lookingForPlayers: true
+                });
+            };
+            const campaigns = await getCampaignsLookingForPlayersByUserId(creator.id);
+            expect(campaigns).toBeTruthy();
+            expect(campaigns.length).toBe(numCampaigns);
+        });
+
+        it("Does NOT return any campaigns that are not looking for players", async () => {
+            const numOpencampaigns = 3;
+            const numClosedCampaigns = 2;
+            const creator = await createFakeUser({});
+            for (let i = 0; i < numOpencampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({
+                    numUsers: 1,
+                    creatorId: creator.id,
+                    lookingForPlayers: true
+                });
+            };
+            for (let j = 0; j < numClosedCampaigns; j++) {
+                await createFakeCampaignWithUserCampaigns({
+                    numUsers: 1,
+                    creatorId: creator.id,
+                    lookingForPlayers: false
+                });
+            };
+            const campaigns = await getCampaignsLookingForPlayersByUserId(creator.id);
+            expect(campaigns).toBeTruthy();
+            expect(campaigns.length).toBe(numOpencampaigns);
+            expect(campaigns.find(campaign => !campaign.lookingForPlayers)).toBeFalsy();
+
+        });
+
+        it("Includes a list of users from the user_campaigns table", async () => {
+            const numCampaigns = 3;
+            const numUsers = 4;
+            const creator = await createFakeUser({});
+            for (let i = 0; i < numCampaigns; i++) {
+                await createFakeCampaignWithUserCampaigns({ numUsers, creatorId: creator.id });
+            };
+            const campaigns = await getCampaignsLookingForPlayersByUserId(creator.id);
+            for (let j = 0; j < campaigns.length; j++) {
+                expect(campaigns[j].users).toBeTruthy();
+                expect(campaigns[j].users.length).toBe(numUsers);
+            };
+        });
+    })
 
     describe("deleteCampaign", () => {
         it("Returns the data of the deleted campaign", async () => {

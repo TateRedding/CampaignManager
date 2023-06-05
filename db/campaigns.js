@@ -99,6 +99,27 @@ const getCampaignsByUserId = async (userId) => {
     };
 };
 
+const getCampaignsLookingForPlayersByUserId = async (userId) => {
+    try {
+        const { rows: campaigns } = await client.query(`
+            SELECT campaigns.*
+            FROM campaigns
+            JOIN user_campaigns
+                ON user_campaigns."campaignId"=campaigns.id
+            WHERE "lookingForPlayers"=true
+            AND user_campaigns."userId"=${userId};
+        `);
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
+        return campaigns;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 const deleteCampaign = async (id) => {
     try {
         const campaign = await getCampaignById(id);
@@ -129,6 +150,7 @@ module.exports = {
     getAllCampaigns,
     getCampaignById,
     getCampaignsLookingForPlayers,
+    getCampaignsLookingForPlayersByUserId,
     getCampaignsByUserId,
     deleteCampaign
 };

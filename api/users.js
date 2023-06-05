@@ -11,7 +11,7 @@ const {
     getUsersLookingForGroup
 } = require('../db/users');
 const { requireUser } = require('./utils');
-const { getCampaignsByUserId, getPublicCampaignsByUserId } = require('../db/campaigns');
+const { getCampaignsByUserId, getCampaignsLookingForPlayersByUserId } = require('../db/campaigns');
 const { getCharactersByUserId } = require('../db/characters');
 const router = express.Router();
 
@@ -67,23 +67,26 @@ router.get('/username/:username', async (req, res, next) => {
     };
 });
 
-router.get('/:username/campaigns', requireUser, async (req, res, next) => {
-    const { username } = req.params;
+router.get('/:userId/campaigns', async (req, res, next) => {
+    const { userId } = req.params;
     try {
-        const user = await getUserByUsername(username);
-        if (req.user.username === user.username || req.user.isAdmin) {
+        const user = await getUserById(userId);
+        if (req.user.id === user.id || req.user.isAdmin) {
             const campaigns = await getCampaignsByUserId(user.id);
             res.send(campaigns);
+        } else {
+            const camapigns = await getCampaignsLookingForPlayersByUserId(user.id);
+            res.send(camapigns);
         };
     } catch ({ name, message }) {
         next({ name, message });
     };
 });
 
-router.get('/:username/characters', async (req, res, next) => {
-    const { username } = req.params;
+router.get('/:userId/characters', async (req, res, next) => {
+    const { userId } = req.params;
     try {
-        const user = await getUserByUsername(username);
+        const user = await getUserById(userId);
         if (user) {
             const characters = await getCharactersByUserId(user.id);
             res.send(characters);
