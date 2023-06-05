@@ -7,7 +7,7 @@ import jwt_decode from "jwt-decode";
 import CampaignPage from "./components/Campaigns/CampaignPage";
 import Header from "./components/Header";
 import Home from "./components/Home";
-import InvitesAndRequests from "./components/InvitesAndRequests";
+import InvitesAndRequests from "./components/Messages/InvitesAndRequests";
 import Login from "./components/Login";
 import LookingForCampaigns from "./components/Campaigns/LookingForCampaigns";
 import LookingForPlayers from "./components/Players/LookingForPlayers";
@@ -158,6 +158,7 @@ const App = () => {
                     <Route path='/invites' element={
                         <InvitesAndRequests
                             invitationData={invitationData}
+                            userId={userData.id}
                         />
                     } />
                     <Route path='/lfg/campaigns' element={
@@ -170,7 +171,7 @@ const App = () => {
                         <LookingForPlayers
                             campaignData={campaignData}
                             token={token}
-                            userId={userData.id}
+                            userData={userData}
                         />}
                     />
                     <Route path='/login' element={

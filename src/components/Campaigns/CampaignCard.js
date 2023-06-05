@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import InvitationModal from "../InvitationModal";
+import InvitationModal from "../Messages/InvitationModal";
 
 const CampaignCard = ({ campaign, token, userId }) => {
     const navigate = useNavigate();
