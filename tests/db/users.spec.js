@@ -6,10 +6,19 @@ const {
     deactivateUser,
     getUser,
     getUserById,
+    getAllUserDataById,
+    getPublicUserDataById,
     getUserByUsername,
     getUsersLookingForGroup
 } = require("../../db/users");
-const { createFakeUser, expectToMatchObjectWithDates } = require("../utils");
+const {
+    expectToMatchObjectWithDates,
+    createFakeUser,
+    createFakeCampaign,
+    createFakeCampaignWithUserCampaigns,
+    createFakeMessage,
+    createFakeCharacter
+} = require("../utils");
 
 describe("DB Users", () => {
     describe("createUser", () => {
@@ -128,6 +137,102 @@ describe("DB Users", () => {
             const _user = await createFakeUser({})
             const user = await getUserById(_user.id);
             expect(user.password).toBeFalsy();
+        });
+    });
+
+    describe("getAllUserDataById", () => {
+        it("Gets the user with the given id", async () => {
+            const _user = await createFakeUser({});
+            const user = await getAllUserDataById(_user.id);
+            expect(user).toMatchObject(user);
+        });
+
+        it("Does NOT return the password", async () => {
+            const _user = await createFakeUser({});
+            const user = await getAllUserDataById(_user.id);
+            expect(user.password).toBeFalsy();
+        });
+
+        it("Includes all campaigns the user is in, even if they are not looking for players", async () => {
+            const _user = await createFakeUser({})
+            const campaign = await createFakeCampaignWithUserCampaigns({ creatorId: _user.id, lookingForPlayers: false });
+            const user = await getAllUserDataById(_user.id);
+            expect(user.campaigns).toBeTruthy();
+            expectToMatchObjectWithDates(user.campaigns[0], campaign);
+        });
+
+        it("Includes all characters the user has created", async () => {
+            const _user = await createFakeUser({});
+            const character = await createFakeCharacter({ userId: _user.id });
+            const user = await getAllUserDataById(_user.id);
+            expect(user.characters).toBeTruthy();
+            expect(user.characters[0]).toMatchObject(character);
+        });
+
+        it("Includes all invitations where the user is either the sender or recipient", async () => {
+            const _user = await createFakeUser({});
+            const campaign = await createFakeCampaign({});
+            const invitation = await createFakeMessage({
+                senderId: campaign.creatorId,
+                campaignId: campaign.id,
+                recipientId: _user.id,
+                isPublic: false,
+                isInvitation: true
+            });
+            const user = await getAllUserDataById(_user.id);
+            expect(user.invitations).toBeTruthy();
+            expect(user.invitations[0]).toMatchObject({
+                id: invitation.id,
+                content: invitation.content,
+                isInvitation: invitation.isInvitation
+            });
+        });
+
+        it("Includes all private messages where the user is either the sender or recipient", async () => {
+            const _user = await createFakeUser({});
+            const recipient = await createFakeUser({});
+            const message = await createFakeMessage({
+                senderId: _user.id,
+                recipientId: recipient.id,
+                isPublic: false,
+                isInvitation: false
+            });
+            const user = await getAllUserDataById(_user.id);
+            expect(user.privateMessages).toBeTruthy();
+            expectToMatchObjectWithDates(user.privateMessages[0], message);
+        });
+    });
+
+    describe("getPublicUserDataById", () => {
+        it("Gets the user with the given id", async () => {
+            const _user = await createFakeUser({});
+            const user = await getPublicUserDataById(_user.id);
+            expect(user).toMatchObject(user);
+        });
+
+        it("Does NOT return the password", async () => {
+            const _user = await createFakeUser({})
+            const user = await getPublicUserDataById(_user.id);
+            expect(user.password).toBeFalsy();
+        });
+
+        it("Includes all campaigns the user is in that are looking for players", async () => {
+            const _user = await createFakeUser({})
+            const campaign = await createFakeCampaignWithUserCampaigns({ creatorId: _user.id, lookingForPlayers: true });
+            const user = await getPublicUserDataById(_user.id);
+            console.log(campaign);
+            console.log(user.campaigns);
+            expect(user.campaigns).toBeTruthy();
+            expectToMatchObjectWithDates(user.campaigns[0], campaign);
+        });
+
+        it("Includes all characters the user has created", async () => {
+            const _user = await createFakeUser({});
+            const character = await createFakeCharacter({ userId: _user.id });
+            const user = await getPublicUserDataById(_user.id);
+            expect(user.characters).toBeTruthy();
+            expect(user.characters[0]).toMatchObject(character);
+            
         });
     });
 

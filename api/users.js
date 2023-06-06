@@ -7,12 +7,12 @@ const {
     deactivateUser,
     getUser,
     getUserById,
+    getAllUserDataById,
+    getPublicUserDataById,
     getUserByUsername,
     getUsersLookingForGroup
 } = require('../db/users');
 const { requireUser } = require('./utils');
-const { getCampaignsByUserId, getCampaignsLookingForPlayersByUserId } = require('../db/campaigns');
-const { getCharactersByUserId } = require('../db/characters');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -26,7 +26,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/me', requireUser, async (req, res, next) => {
     try {
-        const user = await getUserById(req.user.id);
+        const user = await getAllUserDataById(req.user.id);
         res.send(user);
     } catch ({ name, message }) {
         next({ name, message });
@@ -36,7 +36,12 @@ router.get('/me', requireUser, async (req, res, next) => {
 router.get('/id/:userId', async (req, res, next) => {
     const { userId } = req.params;
     try {
-        const user = await getUserById(userId);
+        let user;
+        if (req.user && req.user.id === userId) {
+            user = await getAllUserDataById(userId);
+        } else {
+            user = await getPublicUserDataById(userId);
+        };
         if (user) {
             res.send(user);
         } else {
@@ -62,35 +67,6 @@ router.get('/username/:username', async (req, res, next) => {
                 message: `No user found with username ${username}`
             });
         };
-    } catch ({ name, message }) {
-        next({ name, message });
-    };
-});
-
-router.get('/:userId/campaigns', async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-        const user = await getUserById(userId);
-        if (req.user && (req.user.id === user.id || req.user.isAdmin)) {
-            const campaigns = await getCampaignsByUserId(user.id);
-            res.send(campaigns);
-        } else {
-            const camapigns = await getCampaignsLookingForPlayersByUserId(user.id);
-            res.send(camapigns);
-        };
-    } catch ({ name, message }) {
-        next({ name, message });
-    };
-});
-
-router.get('/:userId/characters', async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-        const user = await getUserById(userId);
-        if (user) {
-            const characters = await getCharactersByUserId(user.id);
-            res.send(characters);
-        }
     } catch ({ name, message }) {
         next({ name, message });
     };

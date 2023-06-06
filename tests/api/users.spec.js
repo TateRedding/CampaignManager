@@ -48,7 +48,11 @@ describe("/api/users", () => {
                 .get("/api/users/me")
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
-            expectToMatchObjectWithDates(response.body, user);
+            expect(response.body).toMatchObject({
+                id: user.id,
+                username: user.username,
+                email: user.email
+            });
         });
 
         it("Rejects requests without a valid token", async () => {
@@ -62,7 +66,11 @@ describe("/api/users", () => {
         it("Sends back the data of the user with the given userId", async () => {
             const user = await createFakeUser({});
             const response = await request(app).get(`/api/users/id/${user.id}`);
-            expectToMatchObjectWithDates(response.body, user);
+            expect(response.body).toMatchObject({
+                id: user.id,
+                username: user.username,
+                email: user.email
+            });
         });
 
         it("Returns a relevant error if no user is found", async () => {
@@ -83,67 +91,6 @@ describe("/api/users", () => {
             const response = await request(app).get('/api/users/username/Jeffers');
             expect(response.status).toBe(500);
             expectToBeError(response.body, 'InvalidUsername');
-        });
-    });
-
-    describe("GET /api/users/:userId/camapigns", () => {
-        it("Returns a list of all campaigns associated with the user if the id provided is that of the logged in user", async () => {
-            const numCampaigns = 3;
-            const { user, token } = await createFakeUserWithToken({});
-            for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id });
-            };
-            const response = await request(app)
-                .get(`/api/users/${user.id}/campaigns`)
-                .set("Authorization", `Bearer ${token}`);
-            expect(response.body.length).toBe(numCampaigns);
-        });
-
-        it("Returns a list of all campaigns, associated or not, if logged in user is an admin", async () => {
-            const numCampaigns = 5;
-            const { token } = await createFakeUserWithToken({ isAdmin: true });
-            const user = await createFakeUser({});
-            for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers: 1, creatorId: user.id });
-            };
-            const response = await request(app)
-                .get(`/api/users/${user.id}/campaigns`)
-                .set("Authorization", `Bearer ${token}`);
-            expect(response.body.length).toBe(numCampaigns);
-        });
-
-        it("Returns a list of campaigns that are looking for players if id provided is not that of the logged in user, or no user is logged in", async () => {
-            const numOpencampaigns = 3;
-            const numClosedCampaigns = 2;
-            const user = await createFakeUser({});
-            const { token } = await createFakeUserWithToken({});
-            for (let i = 0; i < numOpencampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ creatorId: user.id, lookingForPlayers: true });
-            };
-            for (let j = 0; j < numClosedCampaigns; j++) {
-                await createFakeCampaignWithUserCampaigns({ creatorId: user.id, lookingForPlayers: false });
-            };
-            const noLoginResponse = await request(app).get(`/api/users/${user.id}/campaigns`);
-            const loggedInResponse = await request(app)
-                .get(`/api/users/${user.id}/campaigns`)
-                .set("Authorization", `Bearer ${token}`);
-            expectNotToBeError(noLoginResponse.body);
-            expect(noLoginResponse.body.length).toBe(numOpencampaigns);
-            expectNotToBeError(loggedInResponse.body);
-            expect(loggedInResponse.body.length).toBe(numOpencampaigns);
-        });
-    });
-
-    describe("GET /api/users/:userId/characters", () => {
-        it("Returns a list of characters belonging to the user with the given id", async () => {
-            const numCharacters = 5;
-            const user = await createFakeUser({});
-            for (let i = 0; i < numCharacters; i++) {
-                await createFakeCharacter({ userId: user.id });
-            };
-            const response = await request(app).get(`/api/users/${user.id}/characters`);
-            expect(response.body).toBeTruthy();
-            expect(response.body.length).toBe(numCharacters);
         });
     });
 

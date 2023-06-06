@@ -1,6 +1,9 @@
 const client = require('./client');
 const bcrypt = require('bcrypt');
 const { createRow, updateRow, getRowById } = require('./utils');
+const { getCampaignsByUserId, getCampaignsLookingForPlayersByUserId } = require('./campaigns');
+const { getCharactersByUserId } = require('./characters');
+const { getInvitationsByUserId, getPrivateMessagesByUserId } = require('./messages');
 
 const createUser = async ({ ...fields }) => {
     try {
@@ -67,6 +70,39 @@ const getUserById = async (id) => {
     };
 };
 
+const getAllUserDataById = async (id) => {
+    try {
+        const user = await getRowById('users', id);
+        if (user) {
+            delete user.password;
+            user.campaigns = await getCampaignsByUserId(user.id);
+            user.characters = await getCharactersByUserId(user.id);
+            user.invitations = await getInvitationsByUserId(user.id);
+            user.privateMessages = await getPrivateMessagesByUserId(user.id);
+            return user;
+        };
+        return null;
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+const getPublicUserDataById = async (id) => {
+    try {
+        const user = await getRowById('users', id);
+        if (user) {
+            delete user.password;
+            user.campaigns = await getCampaignsLookingForPlayersByUserId(user.id);
+            user.characters = await getCharactersByUserId(user.id);
+            return user;
+        };
+        return null;
+    } catch (error) {
+        console.error(error);
+    };
+
+};
+
 const getUserByUsername = async (username) => {
     try {
         const { rows: [user] } = await client.query(`
@@ -108,6 +144,8 @@ module.exports = {
     deactivateUser,
     getUser,
     getUserById,
+    getAllUserDataById,
+    getPublicUserDataById,
     getUserByUsername,
     getUsersLookingForGroup
 };
