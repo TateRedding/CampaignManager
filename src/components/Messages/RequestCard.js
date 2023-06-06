@@ -2,15 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const RequestCard = ({ request }) => {
+const RequestCard = ({ request, rejectRequest }) => {
     const [player, setPlayer] = useState({});
     const [campaignName, setCampaignName] = useState('');
 
     const acceptRequest = async () => {
-
-    };
-
-    const declineRequest = async () => {
 
     };
 
@@ -24,10 +20,10 @@ const RequestCard = ({ request }) => {
             const response = await axios.get(`/api/campaigns/${request.campaignId}`);
             setCampaignName(response.data.name);
         };
-
+        
         getPlayerData();
         getCampaignName();
-    });
+    }, []);
     return (
         <div className="card mb-3">
             <div className="card-body d-flex">
@@ -47,7 +43,7 @@ const RequestCard = ({ request }) => {
                     <div className="d-flex">
                         <div className="ms-auto">
                             <button className="btn btn-success me-3" onClick={() => acceptRequest()}>Accept</button>
-                            <button className="btn btn-danger" onClick={() => declineRequest()}>Reject</button>
+                            <button className="btn btn-danger" onClick={() => rejectRequest(request)}>Reject</button>
                         </div>
                     </div>
                 </div>

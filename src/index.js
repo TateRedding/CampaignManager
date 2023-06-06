@@ -158,6 +158,7 @@ const App = () => {
                     <Route path='/invites' element={
                         <InvitesAndRequests
                             invitationData={invitationData}
+                            token={token}
                             userId={userData.id}
                         />
                     } />

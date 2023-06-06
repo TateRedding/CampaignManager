@@ -1,8 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
-const InviteCard = ({ invite }) => {
+const InviteCard = ({ invite, declineInvite }) => {
     const [campaign, setCampaign] = useState({});
     const [senderName, setSenderName] = useState('');
 
@@ -12,10 +11,6 @@ const InviteCard = ({ invite }) => {
     };
 
     const acceptInvite = async () => {
-
-    };
-
-    const declineInvite = async () => {
 
     };
 
@@ -83,7 +78,7 @@ const InviteCard = ({ invite }) => {
                     <div className="d-flex">
                         <div className="ms-auto">
                             <button className="btn btn-success me-3" onClick={() => acceptInvite()}>Accept</button>
-                            <button className="btn btn-danger" onClick={() => declineInvite()}>Decline</button>
+                            <button className="btn btn-danger" onClick={() => declineInvite(invite)}>Decline</button>
                         </div>
                     </div>
                 </div>
