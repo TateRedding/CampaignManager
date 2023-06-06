@@ -64,12 +64,19 @@ const getInvitationsByUserId = async (userId) => {
 const getPrivateMessagesByUserId = async (userId) => {
     try {
         const { rows: messages } = await client.query(`
-            SELECT *
+            SELECT messages.*,users.username AS "otherPartyUsername", users."avatarURL" AS "otherPartyAvatarURL"
             FROM messages
-            WHERE "isPublic"=false
-            AND "isInvitation"=false
-            AND ("senderId"=${userId}
-                OR "recipientId"=${userId});
+            JOIN users
+                ON
+                    (CASE
+                        WHEN messages."senderId"=${userId}
+                            THEN messages."recipientId"=users.id
+                        ELSE messages."senderId"=users.id
+                    END)
+            WHERE messages."isPublic"=false
+            AND messages."isInvitation"=false
+            AND (messages."senderId"=${userId}
+                OR messages."recipientId"=${userId});
         `);
         return messages;
     } catch (error) {

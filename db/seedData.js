@@ -554,8 +554,28 @@ const createInitialMessages = async () => {
         messages.push(await createMessage({
             senderId: 2,
             recipientId: 1,
-            campaignId: 2,
-            content: 'This is a private message',
+            content: 'This is a private message from peaseblossom to tredding',
+            isPublic: false
+        }));
+
+        messages.push(await createMessage({
+            senderId: 1,
+            recipientId: 2,
+            content: 'This is a private message from tredding to peaseblossom',
+            isPublic: false
+        }));
+
+        messages.push(await createMessage({
+            senderId: 2,
+            recipientId: 1,
+            content: 'This is another private message from peaseblossom to tredding',
+            isPublic: false
+        }));
+
+        messages.push(await createMessage({
+            senderId: 3,
+            recipientId: 1,
+            content: 'This is a private message from DavisTheButcher to tredding',
             isPublic: false
         }));
 

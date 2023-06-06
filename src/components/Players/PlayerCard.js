@@ -13,7 +13,7 @@ const PlayerCard = ({ player, token, userData }) => {
                         <Link to={`/u/${player.username}`}>
                             <img
                                 className="avatar-lg"
-                                src={player.imageURL ? player.imageURL : "../images/default_avatar.png"}
+                                src={player.avatarURL ? player.avatarURL : "../images/default_avatar.png"}
                                 alt={`${player.username}'s avatar`}
                                 onClick={() => navigate(`/u/${player.username}`)}
                             />
