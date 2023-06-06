@@ -6,46 +6,8 @@ const {
     createMessage,
     updateMessage,
     deleteMessage,
-    getMessageById,
-    getInvitationsByUserId,
-    getPrivateMessagesByUserId
+    getMessageById
 } = require('../db/messages');
-
-router.get('/invites/:userId', requireUser, async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-        if (req.user.id === Number(userId)) {
-            const messages = await getInvitationsByUserId(userId);
-            res.send(messages);
-        } else {
-            res.status(403);
-            res.send({
-                name: 'InvitationAccessError',
-                message: 'You can only access your own invitations!'
-            });
-        };
-    } catch ({ name, message }) {
-        next({ name, message });
-    };
-});
-
-router.get('/private/:userId', requireUser, async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-        if (req.user.id === Number(userId)) {
-            const messages = await getPrivateMessagesByUserId(userId);
-            res.send(messages);
-        } else {
-            res.status(403);
-            res.send({
-                name: 'PrivateMessageAccessError',
-                message: 'You can only access your own private messages!'
-            });
-        };
-    } catch ({ name, message }) {
-        next({ name, message });
-    };
-});
 
 router.post('/', requireUser, async (req, res, next) => {
     const fields = req.body;
