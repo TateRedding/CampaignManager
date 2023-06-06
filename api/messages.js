@@ -1,9 +1,15 @@
 const express = require('express');
-const { requireUser } = require('./utils');
-const { createMessage, updateMessage, getMessageById, getInvitationsByUserId } = require('../db/messages');
-const { getCampaignById } = require('../db/campaigns');
-const { deleteMessage } = require('../db/messages');
 const router = express.Router();
+const { requireUser } = require('./utils');
+const { getCampaignById } = require('../db/campaigns');
+const {
+    createMessage,
+    updateMessage,
+    deleteMessage,
+    getMessageById,
+    getInvitationsByUserId,
+    getPrivateMessagesByUserId
+} = require('../db/messages');
 
 router.get('/invites/:userId', requireUser, async (req, res, next) => {
     const { userId } = req.params;
@@ -16,6 +22,24 @@ router.get('/invites/:userId', requireUser, async (req, res, next) => {
             res.send({
                 name: 'InvitationAccessError',
                 message: 'You can only access your own invitations!'
+            });
+        };
+    } catch ({ name, message }) {
+        next({ name, message });
+    };
+});
+
+router.get('/private/:userId', requireUser, async (req, res, next) => {
+    const { userId } = req.params;
+    try {
+        if (req.user.id === Number(userId)) {
+            const messages = await getPrivateMessagesByUserId(userId);
+            res.send(messages);
+        } else {
+            res.status(403);
+            res.send({
+                name: 'PrivateMessageAccessError',
+                message: 'You can only access your own private messages!'
             });
         };
     } catch ({ name, message }) {
@@ -58,8 +82,14 @@ router.delete('/:messageId', requireUser, async (req, res, next) => {
     const { messageId } = req.params;
     try {
         const message = await getMessageById(messageId);
-        const campaign = await getCampaignById(message.campaignId);
-        if (message.senderId === req.user.id || req.user.id === campaign.creatorId || req.user.isAdmin) {
+        let campaign;
+        if (message.campaignId) {
+            campaign = await getCampaignById(message.campaignId);
+        }
+        if (message.senderId === req.user.id
+            || campaign && req.user.id === campaign.creatorId
+            || (message.isInvitation && req.user.id === message.recipientId)
+            || req.user.isAdmin) {
             const deletedMessage = await deleteMessage(messageId);
             res.send(deletedMessage);
         } else {

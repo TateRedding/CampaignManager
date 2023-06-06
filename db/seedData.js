@@ -130,7 +130,7 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 "senderId" INTEGER NOT NULL REFERENCES users(id),
                 "recipientId" INTEGER REFERENCES users(id),
-                "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
+                "campaignId" INTEGER REFERENCES campaigns(id),
                 "isInvitation" BOOLEAN DEFAULT false,
                 content TEXT NOT NULL,
                 "isPublic" BOOLEAN DEFAULT true,

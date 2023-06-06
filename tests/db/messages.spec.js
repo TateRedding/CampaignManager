@@ -5,8 +5,9 @@ const {
     updateMessage,
     getMessageById,
     deleteMessage,
-    getMessagesByCampaignIdAndUserId,
-    getInvitationsByUserId
+    getInvitationsByUserId,
+    getPrivateMessagesByUserId,
+    getPublicMessagesByCampaignId
 } = require("../../db/messages");
 const {
     createFakeUser,
@@ -120,50 +121,93 @@ describe("DB messages", () => {
         });
     });
 
-    describe("getMessagesByCampaignIdAndUserId", () => {
-        it("Gets a list of all public messages with a given campaignId", async () => {
-            const numPublicMessages = 4;
-            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers: 4, numPublicMessages });
-            const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);
-            expect(messages.length).toBe(numPublicMessages);
-        });
-
+    describe("getPrivateMessagesByUserId", () => {
         it("Gets the private messages where the given userId is that of the message's senderId", async () => {
-            const numPrivateMessages = 10;
-            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({
-                numUsers: 4,
-                numPublicMessages: 0,
-                numPrivateMessages
-            });
-            const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);
+            const numPrivateMessages = 5;
+            const user = await createFakeUser({});
+            const recipient = await createFakeUser({});
+            for (let i = 0; i < numPrivateMessages; i++) {
+                await createFakeMessage({
+                    senderId: user.id,
+                    recipientId: recipient.id,
+                    isPublic: false
+                });
+            };
+            const messages = await getPrivateMessagesByUserId(user.id);
             expect(messages.length).toBeTruthy();
-            expect(messages.filter(message => message.senderId === campaign.creatorId).length).toBeTruthy();
+            expect(messages.filter(message => message.senderId === user.id).length).toBeTruthy();
         });
 
         it("Gets the private messages where the given userId is that of the message's recipientId", async () => {
-            const numPrivateMessages = 10;
-            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({
-                numUsers: 4,
-                numPublicMessages: 0,
-                numPrivateMessages
-            });
-            const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);
+            const numPrivateMessages = 5;
+            const user = await createFakeUser({});
+            const sender = await createFakeUser({});
+            for (let i = 0; i < numPrivateMessages; i++) {
+                await createFakeMessage({
+                    senderId: sender.id,
+                    recipientId: user.id,
+                    isPublic: false
+                });
+            };
+            const messages = await getPrivateMessagesByUserId(user.id);
             expect(messages.length).toBeTruthy();
-            expect(messages.filter(message => message.recipientId === campaign.creatorId).length).toBeTruthy();
+            expect(messages.filter(message => message.recipientId === user.id).length).toBeTruthy();
+        });
+
+        it("Does NOT return any of the users invitations", async () => {
+            const numPrivateMessages = 3;
+            const numInvitations = 2;
+            const user = await createFakeUser({});
+            const sender = await createFakeUser({});
+            for (let i = 0; i < numPrivateMessages; i++) {
+                await createFakeMessage({
+                    senderId: sender.id,
+                    recipientId: user.id,
+                    isPublic: false,
+                    isInvitation: false
+                });
+            };
+            for (let j = 0; j < numInvitations; j++) {
+                const campaign = await createFakeCampaign({});
+                await createFakeMessage({   
+                    senderId: campaign.creatorId,
+                    campaignId: campaign.id,
+                    recipientId: user.id,
+                    isPublic: false,
+                    isInvitation: true
+                });
+            };
+            const messages = await getPrivateMessagesByUserId(user.id);
+            expect(messages.length).toBe(numPrivateMessages);
+            expect(messages.filter(message => message.isInvitation).length).toBeFalsy();
         });
 
         it("Does NOT return any messages where the given userId is neither that of the message's senderId or recipientId", async () => {
-            const numPrivateMessages = 10;
-            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({
-                numUsers: 4,
-                numPublicMessages: 0,
-                numPrivateMessages
-            });
-            const messages = await getMessagesByCampaignIdAndUserId(campaign.id, campaign.creatorId);
+            const numPrivateMessages = 5;
+            const user = await createFakeUser({});
+            const sender = await createFakeUser({});
+            const recipient = await createFakeUser({});
+            for (let i = 0; i < numPrivateMessages; i++) {
+                await createFakeMessage({
+                    senderId: sender.id,
+                    recipientId: recipient.id,
+                    isPublic: false
+                });
+            };
+            const messages = await getPrivateMessagesByUserId(user.id);
             expect(messages.filter(message => {
-                return (message.senderId !== campaign.creatorId
-                    && message.recipientId !== campaign.creatorId)
+                return (message.senderId === user.id
+                    || message.recipientId === user.id)
             }).length).toBeFalsy();
+        });
+    });
+
+    describe("getPublicMessagesByCampaignId", () => {
+        it("Gets a list of all public messages with a given campaignId", async () => {
+            const numPublicMessages = 4;
+            const campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers: 4, numPublicMessages });
+            const messages = await getPublicMessagesByCampaignId(campaign.id);
+            expect(messages.length).toBe(numPublicMessages);
         });
     });
 });

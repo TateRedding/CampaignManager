@@ -105,30 +105,13 @@ describe("DB campaigns", () => {
             expect(campaign.users.length).toBe(numUsers);
         });
 
-        it("Includes a list of messages from the messages table if a userId is provided and corresponds to a userId in the users list of the campaign", async () => {
+        it("Includes a list of messages from the messages table", async () => {
             const numUsers = 4;
             const numPublicMessages = 10;
             const _campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers, numPublicMessages });
             const campaign = await getCampaignById(_campaign.id, _campaign.creatorId);
             expect(campaign.messages).toBeTruthy();
             expect(campaign.messages.length).toBe(numPublicMessages);
-        });
-
-        it("Does NOT include a list of messages from the messages table if a userId is provided and does not correspond to a userId in the users list of the campaign", async () => {
-            const numUsers = 4;
-            const numPublicMessages = 10;
-            const _campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers, numPublicMessages });
-            const otherUser = await createFakeUser({})
-            const campaign = await getCampaignById(_campaign.id, otherUser.id);
-            expect(campaign.messages).toBeFalsy();
-        });
-
-        it("Does NOT include a list of messages if no userId is provided", async () => {
-            const numUsers = 4;
-            const numPublicMessages = 10;
-            const _campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers, numPublicMessages });
-            const campaign = await getCampaignById(_campaign.id);
-            expect(campaign.messages).toBeFalsy();
         });
     });
 

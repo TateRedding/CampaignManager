@@ -71,7 +71,7 @@ router.get('/:userId/campaigns', async (req, res, next) => {
     const { userId } = req.params;
     try {
         const user = await getUserById(userId);
-        if (req.user.id === user.id || req.user.isAdmin) {
+        if (req.user && (req.user.id === user.id || req.user.isAdmin)) {
             const campaigns = await getCampaignsByUserId(user.id);
             res.send(campaigns);
         } else {

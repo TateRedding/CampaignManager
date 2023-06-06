@@ -122,7 +122,7 @@ describe("/api/users", () => {
             };
             for (let j = 0; j < numClosedCampaigns; j++) {
                 await createFakeCampaignWithUserCampaigns({ creatorId: user.id, lookingForPlayers: false });
-            }
+            };
             const noLoginResponse = await request(app).get(`/api/users/${user.id}/campaigns`);
             const loggedInResponse = await request(app)
                 .get(`/api/users/${user.id}/campaigns`)

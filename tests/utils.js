@@ -183,10 +183,6 @@ const createFakeMessage = async ({
         const user = await createFakeUser({});
         senderId = user.id;
     };
-    if (!campaignId) {
-        const campaign = await createFakeCampaign({});
-        campaignId = campaign.id;
-    };
     if ((!isPublic || isInvitation) && !recipientId) {
         const user = await createFakeUser({});
         recipientId = user.id;

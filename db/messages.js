@@ -61,16 +61,29 @@ const getInvitationsByUserId = async (userId) => {
     };
 };
 
-const getMessagesByCampaignIdAndUserId = async (campaignId, userId) => {
+const getPrivateMessagesByUserId = async (userId) => {
+    try {
+        const { rows: messages } = await client.query(`
+            SELECT *
+            FROM messages
+            WHERE "isPublic"=false
+            AND "isInvitation"=false
+            AND ("senderId"=${userId}
+                OR "recipientId"=${userId});
+        `);
+        return messages;
+    } catch (error) {
+        console.error(error);
+    };
+}
+
+const getPublicMessagesByCampaignId = async (campaignId) => {
     try {
         const { rows: messages } = await client.query(`
             SELECT *
             FROM messages
             WHERE "campaignId"=${campaignId}
             AND "isPublic"=true
-                OR ("isPublic"=false
-                    AND ("senderId"=${userId}
-                            OR "recipientId"=${userId}));
         `)
         return messages;
     } catch (error) {
@@ -85,5 +98,6 @@ module.exports = {
     deleteMessage,
     getMessageById,
     getInvitationsByUserId,
-    getMessagesByCampaignIdAndUserId
+    getPrivateMessagesByUserId,
+    getPublicMessagesByCampaignId
 };
