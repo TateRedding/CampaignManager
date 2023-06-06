@@ -72,6 +72,11 @@ const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
                                                         <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Invites/ Requests</span>
                                                     </Link>
                                                 </li>
+                                                <li>
+                                                    <Link className="dropdown-item" to="/messages">
+                                                        <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">Private Messages</span>
+                                                    </Link>
+                                                </li>
                                                 <li><hr className="dropdown-divider" /></li>
                                                 <li><button className="dropdown-item" onClick={() => logout()}>Sign Out</button></li>
                                             </> :

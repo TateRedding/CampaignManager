@@ -13,6 +13,7 @@ import LookingForCampaigns from "./components/Campaigns/LookingForCampaigns";
 import LookingForPlayers from "./components/Players/LookingForPlayers";
 import NewCampaign from "./components/Campaigns/NewCampaign";
 import NewCharacter from "./components/Characters/NewCharacter";
+import PrivateMessages from "./components/Messages/PrivateMessages";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 
@@ -23,19 +24,53 @@ const App = () => {
     const [campaignData, setCampaignData] = useState([]);
     const [characterData, setCharacterData] = useState([]);
     const [invitationData, setInvitationData] = useState([]);
+    const [privateMessageData, setPrivateMessageData] = useState([]);
 
     const navigate = useNavigate();
 
     const getUserData = async () => {
         if (token) {
             try {
-                const response = await axios.get(`/api/users/me`, {
+                const userResponse = await axios.get(`/api/users/me`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                setUserData(response.data);
+                setUserData(userResponse.data);
+                if (userResponse.data.id) {
+                    const campaignResponse = await axios.get(`/api/users/${userResponse.data.id}/campaigns`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setCampaignData(campaignResponse.data);
+
+                    const characterResponse = await axios.get(`/api/users/${userResponse.data.id}/characters`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setCharacterData(characterResponse.data);
+
+                    const invitationResponse = await axios.get(`/api/messages/invites/${userResponse.data.id}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setInvitationData(invitationResponse.data);
+
+                    const privateMessageResponse = await axios.get(`/api/messages/private/${userResponse.data.id}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setPrivateMessageData(privateMessageResponse.data);
+                }
             } catch (error) {
                 console.error(error);
             };
@@ -44,59 +79,12 @@ const App = () => {
         }
     };
 
-    const getCampaignData = async () => {
-        if (userData.username) {
-            try {
-                const campaigns = await axios.get(`/api/users/${userData.id}/campaigns`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setCampaignData(campaigns.data);
-            } catch (error) {
-                console.error(error);
-            };
-        };
-    };
-
-    const getCharacterData = async () => {
-        if (userData.username) {
-            try {
-                const characters = await axios.get(`/api/users/${userData.id}/characters`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setCharacterData(characters.data);
-            } catch (error) {
-                console.error(error);
-            };
-        };
-    };
-
-    const getInvitationData = async () => {
-        if (userData.id) {
-            try {
-                const response = await axios.get(`/api/messages/invites/${userData.id}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setInvitationData(response.data);
-            } catch (error) {
-                console.error(error);
-            };
-        };
-    };
-
     const resetData = () => {
         setUserData({});
         setCampaignData([]);
         setCharacterData([]);
         setInvitationData([]);
+        setPrivateMessageData([]);
     };
 
     useEffect(() => {
@@ -116,12 +104,6 @@ const App = () => {
     useEffect(() => {
         getUserData();
     }, [token]);
-
-    useEffect(() => {
-        getCampaignData();
-        getCharacterData();
-        getInvitationData();
-    }, [userData]);
 
     return (
         <>
@@ -187,6 +169,11 @@ const App = () => {
                             TOKEN_NAME={TOKEN_NAME}
                             sessionExpired={true}
                             setToken={setToken}
+                        />
+                    } />
+                    <Route path='/messages' element={
+                        <PrivateMessages
+                            privateMessageData={privateMessageData}
                         />
                     } />
                     <Route path='/profile' element={
