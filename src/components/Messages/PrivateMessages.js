@@ -1,8 +1,8 @@
 import React from "react";
 
-const PrivateMessages = ({ privateMessageData }) => {
+const PrivateMessages = ({ userData }) => {
     return (
-        privateMessageData.map(message => <p key={message.id}>{message.content}</p>)
+        userData.privateMessages.map(message => <p key={message.id}>{message.content}</p>)
     );
 };
 

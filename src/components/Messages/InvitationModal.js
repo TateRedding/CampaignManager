@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 
-const InvitationModal = ({ player, campaignData, campaign, token, userId }) => {
+const InvitationModal = ({ player, campaign, token, userData }) => {
     const [selectedCampaignId, setSelectedCampaignId] = useState(0);
     const [message, setMessage] = useState("");
 
@@ -79,8 +79,8 @@ const InvitationModal = ({ player, campaignData, campaign, token, userId }) => {
                                 >
                                     <option value={0}>Select Campaign</option>
                                     {
-                                        campaignData
-                                            .filter(campaign => campaign.creatorId === userId)
+                                        userData.campaigns
+                                            .filter(campaign => campaign.creatorId === userData.id)
                                             .filter(campaign => !campaign.users.find(userCampaign => userCampaign.userId === player.id))
                                             .map(campaign => <option value={campaign.id} key={campaign.id}>{campaign.name}</option>)
                                     }

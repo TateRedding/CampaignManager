@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
+const Header = ({ TOKEN_NAME, token, setUserData, setToken, userData }) => {
 
     const navigate = useNavigate();
 
@@ -9,7 +9,7 @@ const Header = ({ TOKEN_NAME, token, resetData, setToken, userData }) => {
         window.localStorage.removeItem(TOKEN_NAME);
         navigate("/");
         setToken('');
-        resetData();
+        setUserData({});
     };
 
     return (

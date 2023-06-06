@@ -4,7 +4,7 @@ import axios from "axios";
 import InviteCard from "./InviteCard";
 import RequestCard from "./RequestCard";
 
-const InvitesAndRequests = ({ invitationData, token, userId }) => {
+const InvitesAndRequests = ({ token, userData }) => {
     const [invites, setInvites] = useState([]);
     const [requests, setRequests] = useState([]);
     const [tab, setTab] = useState(0);
@@ -17,19 +17,19 @@ const InvitesAndRequests = ({ invitationData, token, userId }) => {
             }
         });
         if (response.data) {
-            invitationData.splice(invitationData.indexOf(message), 1);
+            userData.invitations.splice(userData.invitations.indexOf(message), 1);
             updateArrays();
         };
     };
 
     const updateArrays = () => {
-        setInvites(invitationData.filter(invitation => invitation.campaignCreatorId !== userId));
-        setRequests(invitationData.filter(invitation => invitation.campaignCreatorId === userId));
+        setInvites(userData.invitations.filter(invitation => invitation.campaignCreatorId !== userData.id));
+        setRequests(userData.invitations.filter(invitation => invitation.campaignCreatorId === userData.id));
     };
 
     useEffect(() => {
         updateArrays();
-    }, [invitationData]);
+    }, [userData.invitations]);
 
     return (
         <>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import PlayerCard from "./PlayerCard";
 
-const LookingForPlayers = ({ campaignData, token, userData }) => {
+const LookingForPlayers = ({ token, userData }) => {
     const [players, setPlayers] = useState([]);
 
     useEffect(() => {
@@ -25,7 +25,6 @@ const LookingForPlayers = ({ campaignData, token, userData }) => {
                     if (player.id !== userData.id) {
                         return <PlayerCard
                             player={player}
-                            campaignData={campaignData}
                             token={token}
                             userData={userData}
                             key={player.id}

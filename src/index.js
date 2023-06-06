@@ -21,70 +21,25 @@ const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
     const [token, setToken] = useState('');
     const [userData, setUserData] = useState({});
-    const [campaignData, setCampaignData] = useState([]);
-    const [characterData, setCharacterData] = useState([]);
-    const [invitationData, setInvitationData] = useState([]);
-    const [privateMessageData, setPrivateMessageData] = useState([]);
 
     const navigate = useNavigate();
 
     const getUserData = async () => {
         if (token) {
             try {
-                const userResponse = await axios.get(`/api/users/me`, {
+                const response = await axios.get(`/api/users/me`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                setUserData(userResponse.data);
-                if (userResponse.data.id) {
-                    const campaignResponse = await axios.get(`/api/users/${userResponse.data.id}/campaigns`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setCampaignData(campaignResponse.data);
-
-                    const characterResponse = await axios.get(`/api/users/${userResponse.data.id}/characters`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setCharacterData(characterResponse.data);
-
-                    const invitationResponse = await axios.get(`/api/messages/invites/${userResponse.data.id}`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setInvitationData(invitationResponse.data);
-
-                    const privateMessageResponse = await axios.get(`/api/messages/private/${userResponse.data.id}`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setPrivateMessageData(privateMessageResponse.data);
-                }
+                setUserData(response.data);
             } catch (error) {
                 console.error(error);
             };
         } else {
             setUserData({});
-        }
-    };
-
-    const resetData = () => {
-        setUserData({});
-        setCampaignData([]);
-        setCharacterData([]);
-        setInvitationData([]);
-        setPrivateMessageData([]);
+        };
     };
 
     useEffect(() => {
@@ -110,7 +65,7 @@ const App = () => {
             <Header
                 TOKEN_NAME={TOKEN_NAME}
                 token={token}
-                resetData={resetData}
+                setUserData={setUserData}
                 setToken={setToken}
                 userData={userData}
             />
@@ -118,7 +73,6 @@ const App = () => {
                 <Routes>
                     <Route path='/' element={
                         <Home
-                            campaignData={campaignData}
                             userData={userData}
                         />} />
                     <Route path='/campaigns/new' element={
@@ -139,9 +93,8 @@ const App = () => {
                     } />
                     <Route path='/invites' element={
                         <InvitesAndRequests
-                            invitationData={invitationData}
                             token={token}
-                            userId={userData.id}
+                            userData={userData}
                         />
                     } />
                     <Route path='/lfg/campaigns' element={
@@ -152,7 +105,6 @@ const App = () => {
                     />
                     <Route path='/lfg/players' element={
                         <LookingForPlayers
-                            campaignData={campaignData}
                             token={token}
                             userData={userData}
                         />}
@@ -173,13 +125,12 @@ const App = () => {
                     } />
                     <Route path='/messages' element={
                         <PrivateMessages
-                            privateMessageData={privateMessageData}
+                            userData={userData}
                         />
                     } />
                     <Route path='/profile' element={
                         <Profile
-                            campaignData={campaignData}
-                            characterData={characterData}
+                            userData={userData}
                         />
                     } />
                     <Route path='/register' element={

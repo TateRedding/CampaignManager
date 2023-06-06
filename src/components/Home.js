@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import CampaignHomeCard from "./Campaigns/CampaignHomeCard";
 
-const Home = ({ campaignData, userData }) => {
+const Home = ({ userData }) => {
     const navigate = useNavigate();
 
     return (
@@ -18,13 +18,13 @@ const Home = ({ campaignData, userData }) => {
                 </div>
             </div>
             {
-                Object.keys(userData).length && campaignData.length ?
+                Object.keys(userData).length && userData.campaigns.length ?
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title text-center">Your Campaigns</h5>
                             <div className="d-flex flex-wrap justify-content-around">
                                 {
-                                    campaignData.map(campaign => <CampaignHomeCard campaign={campaign} userData={userData} key={campaign.id} />)
+                                    userData.campaigns.map(campaign => <CampaignHomeCard campaign={campaign} userData={userData} key={campaign.id} />)
                                 }
 
                             </div>

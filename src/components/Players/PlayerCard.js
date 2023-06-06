@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InvitationModal from "../Messages/InvitationModal";
 
-const PlayerCard = ({ player, campaignData, token, userData }) => {
+const PlayerCard = ({ player, token, userData }) => {
     const navigate = useNavigate();
 
     return (
@@ -55,9 +55,8 @@ const PlayerCard = ({ player, campaignData, token, userData }) => {
             </div>
             <InvitationModal
                 player={player}
-                campaignData={campaignData}
                 token={token}
-                userId={userData.id}
+                userData={userData}
             />
         </>
     );

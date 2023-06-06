@@ -1,11 +1,10 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import CharacterCard from "./Characters/CharacterCard";
 import CampaignCard from "./Campaigns/CampaignCard";
 
-const Profile = ({ campaignData, characterData }) => {
+const Profile = ({ userData }) => {
     
 
     const navigate = useNavigate();
@@ -17,14 +16,14 @@ const Profile = ({ campaignData, characterData }) => {
             <h2>My Characters</h2>
             <button className="btn btn-primary" onClick={() => navigate('/characters/new')}>New Character</button>
             {
-                characterData.map((character, i) => {
+                userData.characters.map((character, i) => {
                     return <CharacterCard character={character} key={i} />
                 })
             }
             <h2>My Campaigns</h2>
             <button className="btn btn-primary" onClick={() => navigate('/campaigns/new')}>New Campaign</button>
             {
-                campaignData.map((campaign, i) => {
+                userData.campaigns.map((campaign, i) => {
                     return <CampaignCard campaign={campaign} key={i} />
                 })
             }

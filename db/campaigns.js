@@ -75,7 +75,7 @@ const getCampaignsLookingForPlayers = async () => {
     } catch (error) {
         console.error(error);
     };
-}
+};
 
 const getCampaignsByUserId = async (userId) => {
     try {
@@ -86,6 +86,11 @@ const getCampaignsByUserId = async (userId) => {
                 ON user_campaigns."campaignId"=campaigns.id
             WHERE user_campaigns."userId"=${userId};
         `);
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
         return campaigns;
     } catch (error) {
         console.error(error);
@@ -102,6 +107,11 @@ const getCampaignsLookingForPlayersByUserId = async (userId) => {
             WHERE "lookingForPlayers"=true
             AND user_campaigns."userId"=${userId};
         `);
+        for (let i = 0; i < campaigns.length; i++) {
+            if (campaigns[i]) {
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+            };
+        };
         return campaigns;
     } catch (error) {
         console.error(error);
