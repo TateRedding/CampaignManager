@@ -18,6 +18,15 @@ main {
     height: 100px;
 }
 
+.avatar-xlg {
+    width: 200px;
+    height: 200px;
+}
+
+.avatar-container {
+    margin-right: 3em;
+}
+
 .name-location-header {
     align-items: flex-end;
 }
@@ -31,6 +40,10 @@ main {
         width: 95vw;
     }
 
+    .avatar-container {
+        margin-right: 0;
+    }
+
     .name-location-header {
         flex-direction: column;
         align-items: flex-start;
@@ -42,5 +55,9 @@ main {
 
     .name-location-header > h6:last-of-type {
         margin-left: 0;
+    }
+
+    .profile-overview {
+        flex-direction: column;
     }
 }

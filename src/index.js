@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { HashRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 
@@ -14,7 +14,7 @@ import LookingForPlayers from "./components/Players/LookingForPlayers";
 import NewCampaign from "./components/Campaigns/NewCampaign";
 import NewCharacter from "./components/Characters/NewCharacter";
 import PrivateMessages from "./components/Messages/PrivateMessages";
-import Profile from "./components/Profile/ProfilePage";
+import ProfilePage from "./components/Profile/ProfilePage";
 import Register from "./components/Register";
 
 const App = () => {
@@ -23,6 +23,11 @@ const App = () => {
     const [userData, setUserData] = useState({});
 
     const navigate = useNavigate();
+
+    const useQuery = () => {
+        const { search } = useLocation();
+        return React.useMemo(() => new URLSearchParams(search), [search]);
+    };
 
     const getUserData = async () => {
         if (token) {
@@ -56,7 +61,7 @@ const App = () => {
             };
             period = 'PM'
         };
-        return (`${day}, ${month} ${date.getDate()} ${date.getFullYear()} ${hour}:${date.getMinutes()} ${period}`)
+        return (`${day} ${month} ${date.getDate()}, ${date.getFullYear()} ${hour}:${date.getMinutes()} ${period}`)
     };
 
     useEffect(() => {
@@ -111,6 +116,7 @@ const App = () => {
                     <Route path='/invites' element={
                         <InvitesAndRequests
                             token={token}
+                            useQuery={useQuery}
                             userData={userData}
                         />
                     } />
@@ -153,7 +159,9 @@ const App = () => {
                         />}
                     />
                     <Route path='/u/:username' element={
-                        <Profile
+                        <ProfilePage
+                            parseDate={parseDate}
+                            useQuery={useQuery}
                             userData={userData}
                         />
                     } />

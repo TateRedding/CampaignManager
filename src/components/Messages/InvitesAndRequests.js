@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import InviteCard from "./InviteCard";
 import RequestCard from "./RequestCard";
 
-const InvitesAndRequests = ({ token, userData }) => {
+const InvitesAndRequests = ({ token, useQuery, userData }) => {
     const [invites, setInvites] = useState([]);
     const [requests, setRequests] = useState([]);
-
-    const useQuery = () => {
-        const { search } = useLocation();
-        return React.useMemo(() => new URLSearchParams(search), [search]);
-    };
 
     const query = useQuery();
     const tab = query.get("tab");
@@ -45,42 +40,22 @@ const InvitesAndRequests = ({ token, userData }) => {
         <>
             <ul className="nav nav-tabs mb-3">
                 <li className="nav-item">
-                    {
-                        !tab || tab === 'invites' ?
-                            <Link
-                                to="/invites?tab=invites"
-                                className="nav-link active"
-                                aria-current="page"
-                            >
-                                Invites
-                            </Link>
-                            :
-                            <Link
-                                to="/invites?tab=invites"
-                                className="nav-link"
-                            >
-                                Invites
-                            </Link>
-                    }
+                    <Link
+                        to={`/u/${username}?tab=invites`}
+                        className={!tab || tab === 'invites' ? "nav-link active" : "nav-link"}
+                        aria-current={!tab || tab === 'invites' ? "page" : "false"}
+                    >
+                        Invites
+                    </Link>
                 </li>
                 <li className="nav-item">
-                    {
-                        tab === 'requests' ?
-                            <Link
-                                to="/invites?tab=requests"
-                                className="nav-link active"
-                                aria-current="page"
-                            >
-                                Requests
-                            </Link>
-                            :
-                            <Link
-                                to="/invites?tab=requests"
-                                className="nav-link"
-                            >
-                                Requests
-                            </Link>
-                    }
+                <Link
+                        to={`/u/${username}?tab=requests`}
+                        className={tab === 'requests' ? "nav-link active" : "nav-link"}
+                        aria-current={tab === 'requests' ? "page" : "false"}
+                    >
+                        Requests
+                    </Link>
                 </li>
             </ul>
             <div>
