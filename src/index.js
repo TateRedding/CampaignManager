@@ -41,6 +41,10 @@ const App = () => {
             setUserData({});
         };
     };
+    
+    if (userData.privateMessages) {
+        console.log(userData.privateMessages);
+    };
 
     useEffect(() => {
         const currToken = window.localStorage.getItem(TOKEN_NAME);

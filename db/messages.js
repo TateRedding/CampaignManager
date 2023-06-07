@@ -63,22 +63,45 @@ const getInvitationsByUserId = async (userId) => {
 
 const getPrivateMessagesByUserId = async (userId) => {
     try {
-        const { rows: messages } = await client.query(`
-            SELECT messages.*,users.username AS "otherPartyUsername", users."avatarURL" AS "otherPartyAvatarURL"
-            FROM messages
-            JOIN users
-                ON
-                    (CASE
-                        WHEN messages."senderId"=${userId}
-                            THEN messages."recipientId"=users.id
-                        ELSE messages."senderId"=users.id
-                    END)
-            WHERE messages."isPublic"=false
-            AND messages."isInvitation"=false
-            AND (messages."senderId"=${userId}
-                OR messages."recipientId"=${userId});
+        const { rows: users } = await client.query(`
+            SELECT a.username, a."avatarURL", a.id as "userId"
+            FROM users a
+            JOIN (
+                SELECT DISTINCT users.id
+                    FROM users
+                    JOIN messages
+                        ON
+                            (CASE
+                                WHEN messages."senderId"=${userId}
+                                    THEN messages."recipientId"=users.id
+                                ELSE messages."senderId"=users.id
+                            END)
+                    WHERE messages."isPublic"=false
+                    AND messages."isInvitation"=false
+                    AND (messages."senderId"=${userId}
+                        OR messages."recipientId"=${userId})
+            ) AS b
+                ON a.id=b.id;
         `);
-        return messages;
+        for (let i = 0; i < users.length; i++) {
+            const { rows: messages} = await client.query(`
+                SELECT *
+                FROM messages
+                WHERE (
+                    (
+                        "senderId"=${userId}
+                            AND "recipientId"=${users[i].userId}
+                    ) OR (
+                        "senderId"=${users[i].userId}
+                            AND "recipientId"=${userId}
+                    )
+                )
+                AND "isPublic"=false
+                AND "isInvitation"=false;
+            `);
+            users[i].messages = messages;
+        };
+        return users;
     } catch (error) {
         console.error(error);
     };

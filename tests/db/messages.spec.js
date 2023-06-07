@@ -93,7 +93,7 @@ describe("DB messages", () => {
             const user = await createFakeUser({});
             for (let i = 0; i < numInvitations; i++) {
                 const campaign = await createFakeCampaign({});
-                await createFakeMessage({   
+                await createFakeMessage({
                     senderId: campaign.creatorId,
                     campaignId: campaign.id,
                     recipientId: user.id,
@@ -122,36 +122,45 @@ describe("DB messages", () => {
     });
 
     describe("getPrivateMessagesByUserId", () => {
-        it("Gets the private messages where the given userId is that of the message's senderId", async () => {
-            const numPrivateMessages = 5;
+        it("Returns an array of objects with key:values that are the other party's userId, username, and avatarURL", async () => {
             const user = await createFakeUser({});
-            const recipient = await createFakeUser({});
-            for (let i = 0; i < numPrivateMessages; i++) {
-                await createFakeMessage({
-                    senderId: user.id,
-                    recipientId: recipient.id,
-                    isPublic: false
-                });
-            };
+            const otherUser = await createFakeUser({});
+            await createFakeMessage({
+                senderId: user.id,
+                recipientId: otherUser.id,
+                isPublic: false
+            });
             const messages = await getPrivateMessagesByUserId(user.id);
             expect(messages.length).toBeTruthy();
-            expect(messages.filter(message => message.senderId === user.id).length).toBeTruthy();
+            expect(messages[0]).toMatchObject({
+                userId: otherUser.id,
+                username: otherUser.username,
+                avatarURL: otherUser.avatarURL
+            });
         });
 
-        it("Gets the private messages where the given userId is that of the message's recipientId", async () => {
-            const numPrivateMessages = 5;
+        it("returns an array of messages both to and from the other party within their corresponding object", async () => {
+            const numPrivateMessages = 6;
             const user = await createFakeUser({});
-            const sender = await createFakeUser({});
+            const otherUser = await createFakeUser({});
             for (let i = 0; i < numPrivateMessages; i++) {
-                await createFakeMessage({
-                    senderId: sender.id,
-                    recipientId: user.id,
-                    isPublic: false
-                });
+                if (i % 2 === 0) {
+                    await createFakeMessage({
+                        senderId: user.id,
+                        recipientId: otherUser.id,
+                        isPublic: false
+                    });
+                } else {
+                    await createFakeMessage({
+                        senderId: otherUser.id,
+                        recipientId: user.id,
+                        isPublic: false
+                    });
+                };
             };
-            const messages = await getPrivateMessagesByUserId(user.id);
-            expect(messages.length).toBeTruthy();
-            expect(messages.filter(message => message.recipientId === user.id).length).toBeTruthy();
+            const threads = await getPrivateMessagesByUserId(user.id);
+            expect(threads[0].messages).toBeTruthy();
+            expect(threads[0].messages.length).toBe(numPrivateMessages);
         });
 
         it("Does NOT return any of the users invitations", async () => {
@@ -168,8 +177,8 @@ describe("DB messages", () => {
                 });
             };
             for (let j = 0; j < numInvitations; j++) {
-                const campaign = await createFakeCampaign({});
-                await createFakeMessage({   
+                const campaign = await createFakeCampaign({ creatorId: sender.id});
+                await createFakeMessage({
                     senderId: campaign.creatorId,
                     campaignId: campaign.id,
                     recipientId: user.id,
@@ -177,28 +186,28 @@ describe("DB messages", () => {
                     isInvitation: true
                 });
             };
-            const messages = await getPrivateMessagesByUserId(user.id);
-            expect(messages.length).toBe(numPrivateMessages);
-            expect(messages.filter(message => message.isInvitation).length).toBeFalsy();
+            const threads = await getPrivateMessagesByUserId(user.id);
+            expect(threads[0].messages.length).toBe(numPrivateMessages);
+            expect(threads[0].messages.filter(message => message.isInvitation).length).toBeFalsy();
         });
 
         it("Does NOT return any messages where the given userId is neither that of the message's senderId or recipientId", async () => {
-            const numPrivateMessages = 5;
             const user = await createFakeUser({});
-            const sender = await createFakeUser({});
+            const unaffiliatedUser = await createFakeUser({});
             const recipient = await createFakeUser({});
-            for (let i = 0; i < numPrivateMessages; i++) {
-                await createFakeMessage({
-                    senderId: sender.id,
-                    recipientId: recipient.id,
-                    isPublic: false
-                });
-            };
-            const messages = await getPrivateMessagesByUserId(user.id);
-            expect(messages.filter(message => {
-                return (message.senderId === user.id
-                    || message.recipientId === user.id)
-            }).length).toBeFalsy();
+            await createFakeMessage({
+                senderId: user.id,
+                recipientId: recipient.id,
+                isPublic: false
+            });
+            await createFakeMessage({
+                senderId: unaffiliatedUser.id,
+                recipientId: recipient.id,
+                isPublic: false
+            });
+            const threads = await getPrivateMessagesByUserId(user.id);
+            expect(threads.length).toBe(1);
+            expect(threads[0].username).not.toBe(unaffiliatedUser.username);
         });
     });
 

@@ -1,35 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import MessageThread from "./MessageThread";
 
 const PrivateMessages = ({ userData }) => {
-    const [threads, setThreads] = useState([]);
-
-    useEffect(() => {
-        const messageThreads = {};
-        if (userData.privateMessages) {
-            userData.privateMessages.forEach((message) => {
-                let currUserId;
-                message.senderId === userData.id ? currUserId = message.recipientId : currUserId = message.senderId;
-                if (messageThreads[currUserId]) {
-                    messageThreads[currUserId].push(message);
-                } else {
-                    messageThreads[currUserId] = [message];
-                };
-            });
-            setThreads(messageThreads);
-        };
-    }, [userData]);
 
     return (
         <div className="accordion" id="private-message-accordion">
             {
-                Object.keys(threads).map((key, i) => {
-                    return <MessageThread
-                        messages={threads[key]}
-                        userId={userData.id}
-                        key={i}
-                    />
-                })
+                userData.privateMessages ?
+                    userData.privateMessages.map((thread) => {
+                        return <MessageThread
+                            thread={thread}
+                            userData={userData}
+                            key={thread.userId}
+                        />
+                    })
+                    :
+                    <h4>You do not have any private messages yet!</h4>
             }
         </div>
     );
