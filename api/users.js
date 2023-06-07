@@ -8,9 +8,9 @@ const {
     getUser,
     getUserById,
     getAllUserDataById,
-    getPublicUserDataById,
+    getPublicUserDataByUsername,
     getUserByUsername,
-    getUsersLookingForGroup
+    getUsersLookingForGroup,
 } = require('../db/users');
 const { requireUser } = require('./utils');
 const router = express.Router();
@@ -36,12 +36,7 @@ router.get('/me', requireUser, async (req, res, next) => {
 router.get('/id/:userId', async (req, res, next) => {
     const { userId } = req.params;
     try {
-        let user;
-        if (req.user && req.user.id === userId) {
-            user = await getAllUserDataById(userId);
-        } else {
-            user = await getPublicUserDataById(userId);
-        };
+        const user = await getUserById(userId);
         if (user) {
             res.send(user);
         } else {
@@ -60,7 +55,8 @@ router.get('/username/:username', async (req, res, next) => {
     try {
         const user = await getUserByUsername(username);
         if (user) {
-            res.send(user);
+            const userData = await getPublicUserDataByUsername(username);
+            res.send(userData);
         } else {
             next({
                 name: 'InvalidUsername',

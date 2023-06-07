@@ -14,9 +14,7 @@ const {
     expectToMatchObjectWithDates,
     createFakeUser,
     createFakeUserWithToken,
-    createFakeCharacter
 } = require("../utils");
-const { createFakeCampaignWithUserCampaigns } = require("../utils");
 
 describe("/api/users", () => {
 
@@ -84,7 +82,11 @@ describe("/api/users", () => {
         it("Sends back the data of the user with the given username", async () => {
             const user = await createFakeUser({});
             const response = await request(app).get(`/api/users/username/${user.username}`);
-            expectToMatchObjectWithDates(response.body, user);
+            expect(response.body).toMatchObject({
+                id: user.id,
+                username: user.username,
+                avatarURL: user.avatarURL
+            });
         });
 
         it("Returns a relevant error if no user is found", async () => {

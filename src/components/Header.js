@@ -45,25 +45,25 @@ const Header = ({ TOKEN_NAME, token, setUserData, setToken, userData }) => {
                         <ul className="navbar-nav d-flex me-1">
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img className="avatar-sm" src="../images/default_avatar.png" alt="Avatar" />
+                                    <img className="avatar-sm" src={userData.avatarURL} alt={`${userData.username}'s avatar`} />
                                 </a>
                                 <ul className="dropdown-menu dropdown-menu-end">
                                     {
                                         (token) ?
                                             <>
                                                 <li>
-                                                    <Link className="dropdown-item" to="/profile">
+                                                    <Link className="dropdown-item" to={`/u/${userData.username}`}>
                                                         <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">{userData.username}</span>
                                                     </Link>
                                                 </li>
                                                 <li><hr className="dropdown-divider" /></li>
                                                 <li>
-                                                    <Link className="dropdown-item" to="/">
+                                                    <Link className="dropdown-item" to={`/u/${userData.username}?tab=campaigns`}>
                                                         <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">My Campaigns</span>
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    <Link className="dropdown-item" to="/">
+                                                    <Link className="dropdown-item" to={`/u/${userData.username}?tab=characters`}>
                                                         <span data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">My Characters</span>
                                                     </Link>
                                                 </li>

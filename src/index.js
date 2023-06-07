@@ -14,7 +14,7 @@ import LookingForPlayers from "./components/Players/LookingForPlayers";
 import NewCampaign from "./components/Campaigns/NewCampaign";
 import NewCharacter from "./components/Characters/NewCharacter";
 import PrivateMessages from "./components/Messages/PrivateMessages";
-import Profile from "./components/Profile";
+import Profile from "./components/Profile/ProfilePage";
 import Register from "./components/Register";
 
 const App = () => {
@@ -146,17 +146,17 @@ const App = () => {
                             parseDate={parseDate}
                         />
                     } />
-                    <Route path='/profile' element={
-                        <Profile
-                            userData={userData}
-                        />
-                    } />
                     <Route path='/register' element={
                         <Register
                             TOKEN_NAME={TOKEN_NAME}
                             setToken={setToken}
                         />}
                     />
+                    <Route path='/u/:username' element={
+                        <Profile
+                            userData={userData}
+                        />
+                    } />
                 </Routes>
             </main>
         </>

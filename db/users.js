@@ -90,9 +90,9 @@ const getAllUserDataById = async (id) => {
     };
 };
 
-const getPublicUserDataById = async (id) => {
+const getPublicUserDataByUsername = async (username) => {
     try {
-        const user = await getRowById('users', id);
+        const user = await getUserByUsername(username);
         if (user) {
             delete user.password;
             user.campaigns = await getCampaignsLookingForPlayersByUserId(user.id);
@@ -148,7 +148,7 @@ module.exports = {
     getUser,
     getUserById,
     getAllUserDataById,
-    getPublicUserDataById,
+    getPublicUserDataByUsername,
     getUserByUsername,
     getUsersLookingForGroup
 };
