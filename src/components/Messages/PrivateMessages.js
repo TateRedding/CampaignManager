@@ -1,7 +1,7 @@
 import React from "react";
 import MessageThread from "./MessageThread";
 
-const PrivateMessages = ({ userData }) => {
+const PrivateMessages = ({ userData, parseDate }) => {
 
     return (
         <div className="accordion" id="private-message-accordion">
@@ -10,6 +10,7 @@ const PrivateMessages = ({ userData }) => {
                     userData.privateMessages.map((thread) => {
                         return <MessageThread
                             thread={thread}
+                            parseDate={parseDate}
                             userData={userData}
                             key={thread.userId}
                         />

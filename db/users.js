@@ -6,6 +6,9 @@ const { getCharactersByUserId } = require('./characters');
 const { getInvitationsByUserId, getPrivateMessagesByUserId } = require('./messages');
 
 const createUser = async ({ ...fields }) => {
+    if (!fields.avatarURL) {
+        fields.avatarURL = "../images/default_avatar.png";
+    };
     try {
         fields.password = await bcrypt.hash(fields.password, 10);
         const user = await createRow('users', fields);

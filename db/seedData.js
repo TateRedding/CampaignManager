@@ -49,7 +49,7 @@ const createTables = async () => {
                 "deactivationDate" TIMESTAMPTZ,
                 "lookingForGroup" BOOLEAN DEFAULT false,
                 "isAdmin" BOOLEAN DEFAULT false,
-                "avatarURL" text,
+                "avatarURL" text NOT NULL,
                 "firstName" VARCHAR(100),
                 surname VARCHAR(100),
                 location VARCHAR(100),
@@ -155,6 +155,7 @@ const createInitialUsers = async () => {
             password: 'password1234',
             email: 'tateredding@gmail.com',
             isAdmin: true,
+            avatarURL: "../images/default_avatar.png",
             firstName: 'Tate',
             bio: 'I am the creator of this website!'
         }));
@@ -173,6 +174,7 @@ const createInitialUsers = async () => {
             password: 'beefboi55',
             email: 'daviswells@gmail.com',
             lookingForGroup: true,
+            avatarURL: "../images/default_avatar.png",
             firstName: 'Davis',
             surname: 'Wells',
             location: 'The Regional'

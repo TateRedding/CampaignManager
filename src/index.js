@@ -41,9 +41,22 @@ const App = () => {
             setUserData({});
         };
     };
-    
-    if (userData.privateMessages) {
-        console.log(userData.privateMessages);
+
+    const parseDate = (postDate) => {
+        const date = new Date(Date.parse(postDate));
+        const day = date.toString().split(' ')[0];
+        const month = date.toString().split(' ')[1];
+        date.setHours(12);
+        let period = 'AM'
+        let hour = date.getHours();
+        if (hour >= 12) {
+            hour -= 12;
+            if (hour === 0) {
+                hour = 12;
+            };
+            period = 'PM'
+        };
+        return (`${day}, ${month} ${date.getDate()} ${date.getFullYear()} ${hour}:${date.getMinutes()} ${period}`)
     };
 
     useEffect(() => {
@@ -130,6 +143,7 @@ const App = () => {
                     <Route path='/messages' element={
                         <PrivateMessages
                             userData={userData}
+                            parseDate={parseDate}
                         />
                     } />
                     <Route path='/profile' element={
