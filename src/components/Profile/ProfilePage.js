@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
 import ProfileOverview from "./ProfileOverview";
+import ProfileCharacterCard from "./ProfileCharacterCard";
 
 const ProfilePage = ({ parseDate, useQuery, userData }) => {
     const [profileData, setProfileData] = useState({});
@@ -79,6 +80,16 @@ const ProfilePage = ({ parseDate, useQuery, userData }) => {
                         parseDate={parseDate}
                         isLoggedInUser={isLoggedInUser}
                     />
+                    :
+                    null
+            }
+            {
+                tab === 'characters' && profileData.characters ?
+                    <div className="d-flex justify-content-center flex-wrap">
+                        {
+                            profileData.characters.map(character => <ProfileCharacterCard character={character} key={character.id}/>)
+                        }
+                    </div>
                     :
                     null
             }

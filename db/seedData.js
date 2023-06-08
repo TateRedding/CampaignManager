@@ -4,6 +4,7 @@ const { createCampaign } = require('./campaigns');
 const { createUserCampaign } = require('./user_campaigns');
 const { createMessage } = require('./messages');
 const { createCharacter } = require('./characters');
+const { createFakeCharacter } = require("../tests/utils");
 
 const dropTables = async () => {
     try {
@@ -238,7 +239,7 @@ const createInitialCharacters = async () => {
             userId: 1,
             name: 'Tredd Fargrim',
             species: 'dwarf',
-            subspecies: 'mountain dwarf',
+            subspecies: 'mountain',
             class: 'paladin',
             alignment: 'lawful-good',
             background: 'noble',
