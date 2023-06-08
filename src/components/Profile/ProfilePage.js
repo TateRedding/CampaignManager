@@ -14,6 +14,7 @@ const ProfilePage = ({ parseDate, useQuery, userData }) => {
     const tab = query.get("tab");
 
     useEffect(() => {
+        setIsLoggedInUser(false);
         const getProfileData = async () => {
             if (username === userData.username) {
                 setProfileData(userData);
@@ -28,7 +29,7 @@ const ProfilePage = ({ parseDate, useQuery, userData }) => {
             };
         };
         getProfileData();
-    }, [userData]);
+    }, [userData, username]);
 
     return (
         <>

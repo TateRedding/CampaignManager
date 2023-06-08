@@ -41,7 +41,7 @@ const InvitesAndRequests = ({ token, useQuery, userData }) => {
             <ul className="nav nav-tabs mb-3">
                 <li className="nav-item">
                     <Link
-                        to={`/u/${username}?tab=invites`}
+                        to={`/invites?tab=invites`}
                         className={!tab || tab === 'invites' ? "nav-link active" : "nav-link"}
                         aria-current={!tab || tab === 'invites' ? "page" : "false"}
                     >
@@ -50,7 +50,7 @@ const InvitesAndRequests = ({ token, useQuery, userData }) => {
                 </li>
                 <li className="nav-item">
                 <Link
-                        to={`/u/${username}?tab=requests`}
+                        to={`/invites?tab=requests`}
                         className={tab === 'requests' ? "nav-link active" : "nav-link"}
                         aria-current={tab === 'requests' ? "page" : "false"}
                     >
