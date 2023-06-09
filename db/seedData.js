@@ -156,7 +156,7 @@ const createInitialUsers = async () => {
             password: 'password1234',
             email: 'tateredding@gmail.com',
             isAdmin: true,
-            avatarURL: "../images/default_avatar.png",
+            avatarURL: "../images/default_avatar.svg",
             firstName: 'Tate',
             bio: 'I am the creator of this website!'
         }));
@@ -175,7 +175,7 @@ const createInitialUsers = async () => {
             password: 'beefboi55',
             email: 'daviswells@gmail.com',
             lookingForGroup: true,
-            avatarURL: "../images/default_avatar.png",
+            avatarURL: "../images/default_avatar.svg",
             firstName: 'Davis',
             surname: 'Wells',
             location: 'The Regional'

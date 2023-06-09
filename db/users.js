@@ -7,7 +7,7 @@ const { getInvitationsByUserId, getPrivateMessagesByUserId } = require('./messag
 
 const createUser = async ({ ...fields }) => {
     if (!fields.avatarURL) {
-        fields.avatarURL = "../images/default_avatar.png";
+        fields.avatarURL = "../images/default_avatar.svg";
     };
     try {
         fields.password = await bcrypt.hash(fields.password, 10);

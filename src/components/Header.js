@@ -45,7 +45,7 @@ const Header = ({ TOKEN_NAME, token, setUserData, setToken, userData }) => {
                         <ul className="navbar-nav d-flex me-1">
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img className="avatar-sm" src={userData.avatarURL ? userData.avatarURL : "../images/default_avatar.png"} alt={userData.username ? `${userData.username}'s avatar`: "Deafult Avatar"} />
+                                    <img className="avatar-sm" src={userData.avatarURL ? userData.avatarURL : "../images/default_avatar.svg"} alt={userData.username ? `${userData.username}'s avatar`: "Deafult Avatar"} />
                                 </a>
                                 <ul className="dropdown-menu dropdown-menu-end">
                                     {
