@@ -15,7 +15,17 @@ const dropTables = async () => {
             DROP TABLE IF EXISTS characters;
             DROP TABLE IF EXISTS campaigns;
             DROP TABLE IF EXISTS users;
+            DROP TYPE IF EXISTS ability_stat;
             DROP TYPE IF EXISTS alignment;
+            DROP TYPE IF EXISTS attack;
+            DROP TYPE IF EXISTS ability;
+            DROP TYPE IF EXISTS class;
+            DROP TYPE IF EXISTS damage_type;
+            DROP TYPE IF EXISTS hit_die;
+            DROP TYPE IF EXISTS spell;
+            DROP TYPE IF EXISTS school;
+            DROP TYPE IF EXISTS skill;
+            DROP TYPE IF EXISTS message_type;
         `);
         console.log('Finished dropping tables.');
     } catch (error) {
@@ -28,6 +38,22 @@ const createTables = async () => {
     try {
         console.log('Creating tables...');
         await client.query(`
+            CREATE TYPE ability AS ENUM (
+                'strength',
+                'dexterity',
+                'constitution',
+                'intelligence',
+                'wisdom',
+                'charisma'
+            );
+
+            CREATE TYPE ability_stat AS (
+                score INTEGER,
+                mod INTEGER,
+                save INTEGER,
+                proficiency BOOLEAN
+            );
+
             CREATE TYPE alignment AS ENUM (
                 'lawful-good',
                 'neutral-good',
@@ -40,71 +66,163 @@ const createTables = async () => {
                 'chaotic-evil'
             );
 
+            CREATE TYPE damage_type AS ENUM (
+                'acid',
+                'bludgeoning',
+                'cold',
+                'fire',
+                'force',
+                'lightning',
+                'necrotic',
+                'piercing',
+                'poison',
+                'psychic',
+                'radiant',
+                'slashing',
+                'thunder'
+            );
+
+            CREATE TYPE attack AS (
+                name VARCHAR(100),
+                "attackBonus" INTEGER,
+                "damageDie" INTEGER,
+                "damageDieCount" INTEGER,
+                "damageType" damage_type,
+                save BOOLEAN,
+                "saveAbility" ability
+            );
+
+            CREATE TYPE class AS (
+                name TEXT,
+                subclass TEXT,
+                level INTEGER
+            );
+
+            CREATE TYPE hit_die AS (
+                type INTEGER,
+                total INTEGER,
+                remaining INTEGER
+            );
+
+            CREATE TYPE school AS ENUM (
+                'abjuration',
+                'conjuration',
+                'divination',
+                'enchantment',
+                'evocation',
+                'illusion',
+                'necromancy',
+                'transmutation'
+            );
+
+            CREATE TYPE skill AS (
+                mod INTEGER,
+                proficiency BOOLEAN
+            );
+
+            CREATE TYPE spell AS (
+                name VARCHAR(100),
+                level INTEGER,
+                school school,
+                "castingTime" VARCHAR(100),
+                range VARCHAR(100),
+                verbal BOOLEAN,
+                somatic BOOLEAN,
+                material BOOLEAN,
+                components TEXT,
+                concentration BOOLEAN,
+                duration VARCHAR(100),
+                description TEXT
+            );
+
+            CREATE TYPE message_type AS ENUM (
+                'invitation',
+                'join_request',
+                'private',
+                'public'
+            );
+
             CREATE TABLE users (
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(100) UNIQUE NOT NULL,
-                password VARCHAR(100) NOT NULL,
+                password VARCHAR(150) NOT NULL,
                 email VARCHAR(150) NOT NULL,
-                "registerDate" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-                "isActive" BOOLEAN DEFAULT true,
-                "deactivationDate" TIMESTAMPTZ,
+                "registerTime" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                 "lookingForGroup" BOOLEAN DEFAULT false,
                 "isAdmin" BOOLEAN DEFAULT false,
                 "avatarURL" text NOT NULL,
                 "firstName" VARCHAR(100),
-                surname VARCHAR(100),
-                location VARCHAR(100),
+                "lastName" VARCHAR(100),
                 bio TEXT
             );
 
             CREATE TABLE campaigns (
                 id SERIAL PRIMARY KEY,
                 "creatorId" INTEGER REFERENCES users(id) NOT NULL,
-                "lookingForPlayers" BOOLEAN DEFAULT false,
                 name VARCHAR(255) NOT NULL,
-                "imageURL" TEXT,
-                description TEXT,
+                url VARCHAR(255) NOT NULL,
                 location VARCHAR(255),
-                "creationDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+                "creationTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "isOpen" BOOLEAN DEFAULT false
             );
  
             CREATE TABLE characters (
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
-                name VARCHAR(100) NOT NULL,
+                "campaignId" INTEGER REFERENCES campaigns(id),
+                name VARCHAR(100),
                 level INTEGER DEFAULT 1,
                 experience INTEGER DEFAULT 0,
-                species VARCHAR(50) NOT NULL,
+                species VARCHAR(50),
                 subspecies VARCHAR(50),
-                class VARCHAR(50) NOT NULL,
-                subclass VARCHAR(50),
-                alignment ALIGNMENT NOT NULL, 
-                background VARCHAR(100) NOT NULL,
+                class class[],
+                alignment alignment,
+                background VARCHAR(100),
                 age INTEGER,
                 height INTEGER,
                 weight INTEGER,
                 eyes VARCHAR(35),
                 hair VARCHAR(35),
                 skin VARCHAR(35),
+                strength ability_stat NOT NULL,
+                dexterity ability_stat NOT NULL,
+                constitution ability_stat NOT NULL,
+                intelligence ability_stat NOT NULL,
+                wisdom ability_stat NOT NULL,
+                charisma ability_stat NOT NULL,
+                acrobatics skill NOT NULL,
+                "animalHandling" skill NOT NULL,
+                arcana skill NOT NULL,
+                athletics skill NOT NULL,
+                deception skill NOT NULL,
+                history skill NOT NULL,
+                insight skill NOT NULL,
+                intimidation skill NOT NULL,
+                investigation skill NOT NULL,
+                medicine skill NOT NULL,
+                nature skill NOT NULL,
+                perception skill NOT NULL,
+                performance skill NOT NULL,
+                persuasion skill NOT NULL,
+                religion skill NOT NULL,
+                "sleightOfHand" skill NOT NULL,
+                stealth skill NOT NULL,
+                survival skill NOT NULL,
+                "proficiencyBonus" INTEGER DEFAULT 2,
+                "passivePerception" INTEGER DEFAULT 10,
+                "otherProficiencies" TEXT,
                 inspiration BOOLEAN DEFAULT false,
-                strength INTEGER DEFAULT 10,
-                dexterity INTEGER DEFAULT 10,
-                constitution INTEGER DEFAULT 10,
-                intelligence INTEGER DEFAULT 10,
-                wisdom INTEGER DEFAULT 10,
-                charisma INTEGER DEFAULT 10,
-                proficiencies JSON NOT NULL,
                 "armorClass" INTEGER DEFAULT 10,
+                initiative INTEGER DEFAULT 0,
                 speed INTEGER DEFAULT 25,
-                "maxHitPoints" INTEGER DEFAULT 0,
-                "currentHitPoints" INTEGER DEFAULT 0,
+                "hitPoints" INTEGER DEFAULT 8,
+                "currentHitPoints" INTEGER DEFAULT 8,
                 "temporaryHitPoints" INTEGER DEFAULT 0,
-                "totalHitDice" JSON NOT NULL,
-                "currentHitDice" JSON NOT NULL,
+                "hitDice" hit_die[] NOT NULL,
                 "deathSaveSuccesses" INTEGER DEFAULT 0,
                 "deathSaveFailures" INTEGER DEFAULT 0,
-                attacks JSON,
-                spells JSON,
+                attacks attack[],
+                spells spell[],
                 copper INTEGER DEFAULT 0,
                 silver INTEGER DEFAULT 0,
                 etherium INTEGER DEFAULT 0,
@@ -115,15 +233,20 @@ const createTables = async () => {
                 ideals TEXT,
                 bonds TEXT,
                 flaws TEXT,
-                features JSON NOT NULL
+                "featuresAndTraits" TEXT,
+                backstory TEXT,
+                treasure TEXT,
+                "additionalFeaturesAndTraits" TEXT,
+                "alliesAndOrganizations" TEXT,
+                "spellcastingAbility" ability
             );
 
             CREATE TABLE user_campaigns (
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
                 "campaignId" INTEGER NOT NULL REFERENCES campaigns(id),
-                "isDM" BOOLEAN DEFAULT FALSE,
-                "characterId" INTEGER REFERENCES characters(id),
+                "isDM" BOOLEAN DEFAULT false,
+                "canEdit" BOOLEAN DEFAULT false,
                 UNIQUE ("userId", "campaignId")
             );
 
@@ -132,10 +255,9 @@ const createTables = async () => {
                 "senderId" INTEGER NOT NULL REFERENCES users(id),
                 "recipientId" INTEGER REFERENCES users(id),
                 "campaignId" INTEGER REFERENCES campaigns(id),
-                "isInvitation" BOOLEAN DEFAULT false,
+                type message_type NOT NULL,
                 content TEXT NOT NULL,
-                "isPublic" BOOLEAN DEFAULT true,
-                "postDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+                "postTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         `)
         console.log('Finished creating tables!');
@@ -443,7 +565,7 @@ const createInitialCharacters = async () => {
             flaws: 'Extremely distanced from reality when visions/nightmares of old experimentation take hold.',
             features: {
                 species: [
-                    'fey ancestry', 
+                    'fey ancestry',
                     'trance'
                 ],
                 class: [
@@ -612,11 +734,11 @@ const rebuildDB = async () => {
     try {
         await dropTables();
         await createTables();
-        await createInitialUsers();
-        await createInitialCampaigns();
-        await createInitialCharacters();
-        await createInitialUserCampaigns();
-        await createInitialMessages();
+        // await createInitialUsers();
+        // await createInitialCampaigns();
+        // await createInitialCharacters();
+        // await createInitialUserCampaigns();
+        // await createInitialMessages();
     } catch (error) {
         console.error(error);
     };
