@@ -2,8 +2,14 @@ const client = require('./client');
 
 const createRow = async (table, fields) => {
     const keys = Object.keys(fields);
-    const valuesString = keys.map((key, index) => `$${index + 1}`).join(', ');
-    const columnNames = keys.map((key) => `"${key}"`).join(', ');
+    const valuesString = keys.map((_, index) => `$${index + 1}`).join(', ');
+    const columnNames = keys.map(key => {
+        return key.split('.').map(key => {
+            const arr = key.split('[');
+            arr[0] = `"${arr[0]}"`;
+            return arr.join('[');
+        }).join('.');
+    }).join(', ');
     try {
         const { rows: [result] } = await client.query(`
                 INSERT INTO ${table}(${columnNames})

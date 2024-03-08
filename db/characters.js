@@ -2,11 +2,28 @@ const client = require('./client');
 const { createRow, updateRow, getRowById } = require('./utils');
 
 const createCharacter = async ({ ...fields }) => {
-    try {
-        return await createRow('characters', fields);
-    } catch (error) {
-        console.error(error);
+    JSON.flatten = (object) => {
+        const result = {};
+        const recurse = (currValue, currKey) => {
+            if (Array.isArray(currValue)) {
+                for (let i = 0; i < currValue.length; i++) {
+                    recurse(currValue[i], currKey ? `${currKey}[${i}]` : `[${i}]`);
+                };
+                if (!currValue.length) result[currKey] = [];
+            } else if (typeof currValue === "object") {
+                let isEmpty = false;
+                for (const key in currValue) {
+                    isEmpty = false;
+                    recurse(currValue[key], currKey ? `${currKey}.${key}` : key)
+                };
+            } else {
+                result[currKey] = currValue;
+            };
+        };
+        recurse(object, "");
+        return result;
     };
+    return await createRow("characters", JSON.flatten(fields));
 };
 
 const updateCharacter = async (id, { ...fields }) => {

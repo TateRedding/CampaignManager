@@ -4,7 +4,7 @@ const { createCampaign } = require('./campaigns');
 const { createUserCampaign } = require('./user_campaigns');
 const { createMessage } = require('./messages');
 const { createCharacter } = require('./characters');
-const { createFakeCharacter } = require("../tests/utils");
+const { treddFargrim, thyriLittleflower } = require('./characterObjects')
 
 const dropTables = async () => {
     try {
@@ -15,6 +15,7 @@ const dropTables = async () => {
             DROP TABLE IF EXISTS characters;
             DROP TABLE IF EXISTS campaigns;
             DROP TABLE IF EXISTS users;
+            DROP TYPE IF EXISTS abilities;
             DROP TYPE IF EXISTS ability_stat;
             DROP TYPE IF EXISTS alignment;
             DROP TYPE IF EXISTS attack;
@@ -24,7 +25,8 @@ const dropTables = async () => {
             DROP TYPE IF EXISTS hit_die;
             DROP TYPE IF EXISTS spell;
             DROP TYPE IF EXISTS school;
-            DROP TYPE IF EXISTS skill;
+            DROP TYPE IF EXISTS skills;
+            DROP TYPE IF EXISTS skill_stat;
             DROP TYPE IF EXISTS message_type;
         `);
         console.log('Finished dropping tables.');
@@ -52,6 +54,15 @@ const createTables = async () => {
                 mod INTEGER,
                 save INTEGER,
                 proficiency BOOLEAN
+            );
+
+            CREATE TYPE abilities AS (
+                strength ability_stat,
+                dexterity ability_stat,
+                constitution ability_stat,
+                intelligence ability_stat,
+                wisdom ability_stat,
+                charisma ability_stat
             );
 
             CREATE TYPE alignment AS ENUM (
@@ -87,13 +98,14 @@ const createTables = async () => {
                 "attackBonus" INTEGER,
                 "damageDie" INTEGER,
                 "damageDieCount" INTEGER,
+                "damageBonus" INTEGER,
                 "damageType" damage_type,
                 save BOOLEAN,
                 "saveAbility" ability
             );
 
             CREATE TYPE class AS (
-                name TEXT,
+                "baseClass" TEXT,
                 subclass TEXT,
                 level INTEGER
             );
@@ -115,9 +127,30 @@ const createTables = async () => {
                 'transmutation'
             );
 
-            CREATE TYPE skill AS (
+            CREATE TYPE skill_stat AS (
                 mod INTEGER,
                 proficiency BOOLEAN
+            );
+
+            CREATE TYPE skills AS (
+                acrobatics skill_stat,
+                "animalHandling" skill_stat,
+                arcana skill_stat,
+                athletics skill_stat,
+                deception skill_stat,
+                history skill_stat,
+                insight skill_stat,
+                intimidation skill_stat,
+                investigation skill_stat,
+                medicine skill_stat,
+                nature skill_stat,
+                perception skill_stat,
+                performance skill_stat,
+                persuasion skill_stat,
+                religion skill_stat,
+                "sleightOfHand" skill_stat,
+                stealth skill_stat,
+                survival skill_stat
             );
 
             CREATE TYPE spell AS (
@@ -160,7 +193,7 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 "creatorId" INTEGER REFERENCES users(id) NOT NULL,
                 name VARCHAR(255) NOT NULL,
-                url VARCHAR(255) NOT NULL,
+                path VARCHAR(255) NOT NULL,
                 location VARCHAR(255),
                 "creationTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 "isOpen" BOOLEAN DEFAULT false
@@ -184,30 +217,8 @@ const createTables = async () => {
                 eyes VARCHAR(35),
                 hair VARCHAR(35),
                 skin VARCHAR(35),
-                strength ability_stat NOT NULL,
-                dexterity ability_stat NOT NULL,
-                constitution ability_stat NOT NULL,
-                intelligence ability_stat NOT NULL,
-                wisdom ability_stat NOT NULL,
-                charisma ability_stat NOT NULL,
-                acrobatics skill NOT NULL,
-                "animalHandling" skill NOT NULL,
-                arcana skill NOT NULL,
-                athletics skill NOT NULL,
-                deception skill NOT NULL,
-                history skill NOT NULL,
-                insight skill NOT NULL,
-                intimidation skill NOT NULL,
-                investigation skill NOT NULL,
-                medicine skill NOT NULL,
-                nature skill NOT NULL,
-                perception skill NOT NULL,
-                performance skill NOT NULL,
-                persuasion skill NOT NULL,
-                religion skill NOT NULL,
-                "sleightOfHand" skill NOT NULL,
-                stealth skill NOT NULL,
-                survival skill NOT NULL,
+                abilities abilities NOT NULL,
+                skills skills NOT NULL,
                 "proficiencyBonus" INTEGER DEFAULT 2,
                 "passivePerception" INTEGER DEFAULT 10,
                 "otherProficiencies" TEXT,
@@ -238,7 +249,9 @@ const createTables = async () => {
                 treasure TEXT,
                 "additionalFeaturesAndTraits" TEXT,
                 "alliesAndOrganizations" TEXT,
-                "spellcastingAbility" ability
+                "spellcastingAbility" ability,
+                "spellSaveDC" INTEGER,
+                "spellAttackBonus" INTEGER
             );
 
             CREATE TABLE user_campaigns (
@@ -255,7 +268,7 @@ const createTables = async () => {
                 "senderId" INTEGER NOT NULL REFERENCES users(id),
                 "recipientId" INTEGER REFERENCES users(id),
                 "campaignId" INTEGER REFERENCES campaigns(id),
-                type message_type NOT NULL,
+                type message_type NOT NULL DEFAULT 'public',
                 content TEXT NOT NULL,
                 "postTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
@@ -287,9 +300,9 @@ const createInitialUsers = async () => {
             username: 'peaseblossom',
             password: 'myhusbandisamazing',
             email: 'ninasemail@gmail.com',
+            avatarURL: "../images/default_avatar.svg",
             lookingForGroup: true,
             firstName: 'Nina',
-            location: 'Fort Collins, CO'
         }));
 
         users.push(await createUser({
@@ -299,8 +312,7 @@ const createInitialUsers = async () => {
             lookingForGroup: true,
             avatarURL: "../images/default_avatar.svg",
             firstName: 'Davis',
-            surname: 'Wells',
-            location: 'The Regional'
+            lastName: 'Wells',
         }));
 
         console.log(users);
@@ -320,26 +332,29 @@ const createInitialCampaigns = async () => {
         campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'Curse of Strahd with the FoCo Squad',
-            description: 'A (mostly) RAW in person Curse of Strahd campaign.',
+            path: 'CoSwtFS',
             location: 'Fort Collins, CO'
         }));
 
         campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'The Heroes of Red Larch',
-            lookingForPlayers: true,
+            path: 'The_Heroes_of_Red_Larch',
+            isOpen: true,
             location: 'roll20.net'
         }));
 
         campaigns.push(await createCampaign({
             creatorId: 2,
             name: 'Bee Boop Potato Soup',
-            lookingForPlayers: true,
+            path: 'Bee_Boop_Potato_Soup',
+            isOpen: true,
         }));
 
         campaigns.push(await createCampaign({
             creatorId: 1,
             name: 'Empty Campaign',
+            path: 'Empty_Campaign',
             location: 'roll20.net'
         }));
 
@@ -357,226 +372,8 @@ const createInitialCharacters = async () => {
 
         const characters = [];
 
-        characters.push(await createCharacter({
-            userId: 1,
-            name: 'Tredd Fargrim',
-            species: 'dwarf',
-            subspecies: 'mountain',
-            class: 'paladin',
-            alignment: 'lawful-good',
-            background: 'noble',
-            age: 146,
-            height: 41,
-            weight: 190,
-            eyes: 'brown',
-            hair: 'reddish brown',
-            skin: 'pale',
-            strength: 16,
-            dexterity: 9,
-            constitution: 14,
-            wisdom: 8,
-            charisma: 13,
-            proficiencies: {
-                savingThrows: [
-                    'strength',
-                    'constitution'
-                ],
-                skills: [
-                    'history',
-                    'intimidation',
-                    'perception',
-                    'religion',
-                    'survival'
-                ],
-                armor: [
-                    'light',
-                    'medium',
-                    'heavy',
-                    'shields'
-                ],
-                weapons: [
-                    'simple_melee',
-                    'martial_melee',
-                    'simple_ranged',
-                    'martial_ranged'
-                ],
-                langauges: [
-                    'common',
-                    'dwarvish'
-                ],
-                tools: [
-                    "mason's_tools"
-                ],
-                vehicles: [
-                    'land'
-                ]
-            },
-            armorClass: 18,
-            maxHitPoints: 12,
-            currentHitPoints: 12,
-            totalHitDice: {
-                'd10': 1
-            },
-            currentHitDice: {
-                'd8': 13
-            },
-            attacks: {
-                attacks: [
-                    {
-                        name: 'Greataxe',
-                        type: 'martial melee',
-                        damage: '1d12',
-                        damageType: 'slashing'
-                    }]
-            },
-            gold: 100,
-            equipment: 'Shield, plate armor, greatsword, 10 torches, 50 feet of hempen rope',
-            personalityTraits: 'I have a pretty big ego. I am very easy to get along with.',
-            ideals: 'Justice must be served',
-            bonds: 'I must protect those who cannot protect themselves',
-            flaws: 'I cannot turn down a drink',
-            features: {
-                species: [
-                    'Stonecunning'
-                ],
-                class: [
-                    'Lay on Hands',
-                    'Divine Sense'
-                ]
-            }
-        }));
-
-        characters.push(await createCharacter({
-            userId: 2,
-            name: 'Thyri Littleflower',
-            level: 13,
-            experience: 168970,
-            species: 'elf',
-            class: 'druid',
-            subclass: 'circle of the land',
-            alignment: 'chaotic-good',
-            background: 'escaped research relic',
-            age: 314,
-            height: 71,
-            weight: 150,
-            eyes: 'yellow',
-            hair: 'deep mahogany',
-            skin: 'silvery',
-            strength: 13,
-            dexterity: 13,
-            constitution: 14,
-            intelligence: 13,
-            wisdom: 13,
-            charisma: 14,
-            proficiencies: {
-                savingThrows: [
-                    'intelligence',
-                    'wisdom'
-                ],
-                skills: [
-                    'animal_handling',
-                    'perception',
-                    'survival'
-                ],
-                armor: [
-                    'light',
-                    'medium',
-                    'shields'
-                ],
-                weapons: [
-                    'club',
-                    'dagger',
-                    'dart',
-                    'javelin',
-                    'mace',
-                    'quarterstaff',
-                    'scimitar',
-                    'sickle',
-                    'sling',
-                    'spear'
-                ],
-                langauges: [
-                    'common',
-                    'celestial',
-                    'druidic',
-                    'elvish'
-                ]
-            },
-            armorClass: 14,
-            maxHitPoints: 96,
-            currentHitPoints: 96,
-            temporaryHitPoints: 5,
-            totalHitDice: {
-                'd8': 13
-            },
-            currentHitDice: {
-                'd8': 13
-            },
-            attacks: {
-                attacks: [
-                    {
-                        name: 'Quarterstaff (One handed)',
-                        type: 'simple melee',
-                        damage: '1d6',
-                        damageType: 'bludgeoning'
-                    }, {
-                        name: 'Quarterstaff (Two handed)',
-                        type: 'simple melee',
-                        damage: '1d8',
-                        damageType: 'bludgeoning'
-                    }, {
-                        name: 'Produce Flame',
-                        type: 'spell',
-                        damage: {
-                            1: '1d8',
-                            5: '2d8',
-                            11: '3d8',
-                            17: '4d8'
-                        },
-                        damageType: 'fire'
-                    }
-                ]
-            },
-            spells: {
-                spells: [
-                    {
-                        name: 'Produce Flame',
-                        level: 'cantrip',
-                        castingTime: '1 action',
-                        range: 'self',
-                        components: ['v', 's'],
-                        duration: '10 minutes',
-                        school: 'conjuration',
-                        attack: 'ranged',
-                        damageType: 'fire',
-                        description: 'A flickering flame appears in your hand...'
-                    }
-                ]
-            },
-            copper: 7,
-            silver: 1,
-            etherium: 1,
-            gold: 408,
-            platinum: 160,
-            equipment: 'Druidic Focus, Waterskin, Quarterstaff, Backpack, Bedroll, Potion of Thunder Resistance, Scroll of Tidal Wave',
-            personalityTraits: 'Distracted, gentle unless provoked vision-centric, intuitive',
-            ideals: 'To locate healing serum for a mother she lost years ago. To ensure the well being of young living things, distrusts organization or for-profit ideals.',
-            bonds: 'Fascination for all living things. A great sense for justice/balance.',
-            flaws: 'Extremely distanced from reality when visions/nightmares of old experimentation take hold.',
-            features: {
-                species: [
-                    'fey ancestry',
-                    'trance'
-                ],
-                class: [
-                    'natural recovery',
-                    'Nature\'s ward'
-                ],
-                feats: [
-                    'Lucky'
-                ]
-            }
-        }));
+        characters.push(await createCharacter(treddFargrim));
+        characters.push(await createCharacter(thyriLittleflower));
 
         console.log(characters);
         console.log('Finished creating characters!');
@@ -595,12 +392,14 @@ const createInitialUserCampaigns = async () => {
         userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 1,
-            isDM: true
+            isDM: true,
+            canEdit: true
         }));
 
         userCampaigns.push(await createUserCampaign({
             userId: 2,
-            campaignId: 1
+            campaignId: 1,
+            canEdit: true
         }));
 
         userCampaigns.push(await createUserCampaign({
@@ -611,31 +410,32 @@ const createInitialUserCampaigns = async () => {
         userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 2,
-            isDM: true
+            isDM: true,
+            canEdit: true
         }));
 
         userCampaigns.push(await createUserCampaign({
             userId: 2,
             campaignId: 2,
-            characterId: 2
         }));
 
         userCampaigns.push(await createUserCampaign({
             userId: 2,
             campaignId: 3,
-            isDM: true
+            isDM: true,
+            canEdit: true
         }));
 
         userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 3,
-            characterId: 1
         }));
 
         userCampaigns.push(await createUserCampaign({
             userId: 1,
             campaignId: 4,
-            isDM: true
+            isDM: true,
+            canEdit: true
         }));
 
         console.log(userCampaigns);
@@ -679,47 +479,45 @@ const createInitialMessages = async () => {
         messages.push(await createMessage({
             senderId: 2,
             recipientId: 1,
-            content: 'This is a private message from peaseblossom to tredding',
-            isPublic: false
+            type: 'private',
+            content: 'This is a private message from peaseblossom to tredding'
         }));
 
         messages.push(await createMessage({
             senderId: 1,
             recipientId: 2,
-            content: 'This is a private message from tredding to peaseblossom',
-            isPublic: false
+            type: 'private',
+            content: 'This is a private message from tredding to peaseblossom'
         }));
 
         messages.push(await createMessage({
             senderId: 2,
             recipientId: 1,
-            content: 'This is another private message from peaseblossom to tredding',
-            isPublic: false
+            type: 'private',
+            content: 'This is another private message from peaseblossom to tredding'
         }));
 
         messages.push(await createMessage({
             senderId: 3,
             recipientId: 1,
-            content: 'This is a private message from DavisTheButcher to tredding',
-            isPublic: false
+            type: 'private',
+            content: 'This is a private message from DavisTheButcher to tredding'
         }));
 
         messages.push(await createMessage({
             senderId: 2,
             recipientId: 3,
             campaignId: 3,
-            isInvitation: true,
-            content: 'This is an invitation to Davis to join Bee Boop Potato Soup',
-            isPublic: false
+            type: 'invitation',
+            content: 'This is an invitation to Davis to join Bee Boop Potato Soup'
         }));
 
         messages.push(await createMessage({
             senderId: 3,
             recipientId: 1,
             campaignId: 2,
-            isInvitation: true,
+            type: 'join_request',
             content: 'This is a request from Davis to join The Heroes of Red Larch',
-            isPublic: false
         }));
 
         console.log(messages);
@@ -734,11 +532,11 @@ const rebuildDB = async () => {
     try {
         await dropTables();
         await createTables();
-        // await createInitialUsers();
-        // await createInitialCampaigns();
-        // await createInitialCharacters();
-        // await createInitialUserCampaigns();
-        // await createInitialMessages();
+        await createInitialUsers();
+        await createInitialCampaigns();
+        await createInitialCharacters();
+        await createInitialUserCampaigns();
+        await createInitialMessages();
     } catch (error) {
         console.error(error);
     };
