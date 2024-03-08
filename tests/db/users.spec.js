@@ -180,8 +180,7 @@ describe("DB Users", () => {
                 senderId: campaign.creatorId,
                 campaignId: campaign.id,
                 recipientId: _user.id,
-                isPublic: false,
-                isInvitation: true
+                type: 'invitation'
             });
             const user = await getAllUserDataById(_user.id);
             expect(user.invitations).toBeTruthy();
@@ -198,8 +197,7 @@ describe("DB Users", () => {
             const message = await createFakeMessage({
                 senderId: _user.id,
                 recipientId: recipient.id,
-                isPublic: false,
-                isInvitation: false
+                type: 'private'
             });
             const user = await getAllUserDataById(_user.id);
             expect(user.privateMessages).toBeTruthy();

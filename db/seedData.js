@@ -4,7 +4,7 @@ const { createCampaign } = require('./campaigns');
 const { createUserCampaign } = require('./user_campaigns');
 const { createMessage } = require('./messages');
 const { createCharacter } = require('./characters');
-const { treddFargrim, thyriLittleflower } = require('./characterObjects')
+const { treddFargrim, thyriLittleflower } = require('./characterObjects');
 
 const dropTables = async () => {
     try {
@@ -268,7 +268,7 @@ const createTables = async () => {
                 "senderId" INTEGER NOT NULL REFERENCES users(id),
                 "recipientId" INTEGER REFERENCES users(id),
                 "campaignId" INTEGER REFERENCES campaigns(id),
-                type message_type NOT NULL DEFAULT 'public',
+                type message_type DEFAULT 'public',
                 content TEXT NOT NULL,
                 "postTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
             );

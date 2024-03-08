@@ -8,6 +8,7 @@ const { createCampaign } = require("../db/campaigns");
 const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user_campaigns");
 const { createMessage } = require("../db/messages");
 const { createCharacter } = require("../db/characters");
+const { defaultAbilities, defaultSkills } = require("../db/characterObjects");
 
 const emptyTables = async () => {
     await client.query(`
@@ -16,7 +17,7 @@ const emptyTables = async () => {
         DELETE FROM characters;
         DELETE FROM campaigns;
         DELETE FROM users;
-    `)
+    `);
 };
 
 const expectToBeError = (body, name) => {
@@ -63,7 +64,8 @@ const createFakeUser = async ({
         password,
         email: faker.internet.email(),
         isAdmin,
-        lookingForGroup
+        lookingForGroup,
+        avatarURL: "./images/default_avatar.svg"
     };
     const user = await createUser(fakeUserData);
     if (!user) {
@@ -100,7 +102,7 @@ const createFakeUserWithToken = async ({
 const createFakeCampaign = async ({
     creatorId,
     name = `${faker.word.adjective()} ${faker.word.noun()}`,
-    lookingForPlayers = true
+    isOpen = true
 }) => {
     if (!creatorId) {
         const user = await createFakeUser({});
@@ -109,7 +111,8 @@ const createFakeCampaign = async ({
     const campaign = await createCampaign({
         creatorId,
         name,
-        lookingForPlayers
+        path: name,
+        isOpen
     });
     if (!campaign) {
         throw new Error("createCampaign didn't return a campaign");
@@ -176,14 +179,13 @@ const createFakeMessage = async ({
     senderId,
     campaignId,
     recipientId,
-    isPublic = true,
-    isInvitation = false
+    type = 'public'
 }) => {
     if (!senderId) {
         const user = await createFakeUser({});
         senderId = user.id;
     };
-    if ((!isPublic || isInvitation) && !recipientId) {
+    if ((type !== "public") && !recipientId) {
         const user = await createFakeUser({});
         recipientId = user.id;
     };
@@ -191,8 +193,7 @@ const createFakeMessage = async ({
         senderId,
         campaignId,
         content: faker.string.sample(100),
-        isPublic,
-        isInvitation
+        type
     };
     if (recipientId) {
         fakeMessageData.recipientId = recipientId;
@@ -233,7 +234,7 @@ const createFakeCampaignWithUserCampaignsAndMessages = async ({
             senderId: users[senderIdx].userId,
             recipientId: users[recipientIdx].userId,
             campaignId: campaign.id,
-            isPublic: false,
+            type: 'private',
         });
         senderIdx++;
         recipientIdx++;
@@ -272,7 +273,11 @@ const createFakeCharacter = async ({
         userId,
         name,
         species: faker.word.noun(),
-        class: faker.word.adjective(),
+        class: [{
+            baseClass: faker.word.adjective(),
+            subClass: null,
+            level: 1
+        }],
         alignment,
         background: `${faker.word.noun()} ${faker.word.adjective()}`,
         age: randInt(350, 18),
@@ -281,10 +286,13 @@ const createFakeCharacter = async ({
         eyes: faker.color.human(),
         hair: faker.color.human(),
         skin: faker.color.human(),
-        proficiencies: {},
-        totalHitDice: { 'd10': 1 },
-        currentHitDice: { 'd10': 1 },
-        features: {}
+        abilities: defaultAbilities,
+        skills: defaultSkills,
+        hitDice: [{
+            type: 6,
+            total: 1,
+            remaining: 1
+        }]
     };
     if (campaignId) {
         fakeCharacterData.campaignId = campaignId;

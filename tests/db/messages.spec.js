@@ -18,7 +18,7 @@ const {
 
 describe("DB messages", () => {
     describe("createMessage", () => {
-        it("creates and returns the new message", async () => {
+        it("Creates and returns the new message", async () => {
             const sender = await createFakeUser({});
             const campaign = await createFakeCampaign({})
             const message = await createFakeMessage({
@@ -97,8 +97,7 @@ describe("DB messages", () => {
                     senderId: campaign.creatorId,
                     campaignId: campaign.id,
                     recipientId: user.id,
-                    isPublic: false,
-                    isInvitation: true
+                    type: 'invitation'
                 });
             };
             const messages = await getInvitationsByUserId(user.id);
@@ -112,8 +111,7 @@ describe("DB messages", () => {
                 senderId: campaign.creatorId,
                 campaignId: campaign.id,
                 recipientId: user.id,
-                isPublic: false,
-                isInvitation: true
+                type: 'invitation'
             });
             const messages = await getInvitationsByUserId(user.id);
             expect(messages[0].campaignCreatorId).toBeTruthy();
@@ -128,7 +126,7 @@ describe("DB messages", () => {
             await createFakeMessage({
                 senderId: user.id,
                 recipientId: otherUser.id,
-                isPublic: false
+                type: 'private'
             });
             const messages = await getPrivateMessagesByUserId(user.id);
             expect(messages.length).toBeTruthy();
@@ -148,13 +146,13 @@ describe("DB messages", () => {
                     await createFakeMessage({
                         senderId: user.id,
                         recipientId: otherUser.id,
-                        isPublic: false
+                        type: 'private'
                     });
                 } else {
                     await createFakeMessage({
                         senderId: otherUser.id,
                         recipientId: user.id,
-                        isPublic: false
+                        type: 'private'
                     });
                 };
             };
@@ -172,8 +170,7 @@ describe("DB messages", () => {
                 await createFakeMessage({
                     senderId: sender.id,
                     recipientId: user.id,
-                    isPublic: false,
-                    isInvitation: false
+                    type: 'private'
                 });
             };
             for (let j = 0; j < numInvitations; j++) {
@@ -182,8 +179,7 @@ describe("DB messages", () => {
                     senderId: campaign.creatorId,
                     campaignId: campaign.id,
                     recipientId: user.id,
-                    isPublic: false,
-                    isInvitation: true
+                    type: 'invitation'
                 });
             };
             const threads = await getPrivateMessagesByUserId(user.id);
@@ -198,12 +194,12 @@ describe("DB messages", () => {
             await createFakeMessage({
                 senderId: user.id,
                 recipientId: recipient.id,
-                isPublic: false
+                type: 'private'
             });
             await createFakeMessage({
                 senderId: unaffiliatedUser.id,
                 recipientId: recipient.id,
-                isPublic: false
+                type: 'private'
             });
             const threads = await getPrivateMessagesByUserId(user.id);
             expect(threads.length).toBe(1);
