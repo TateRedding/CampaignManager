@@ -45,14 +45,14 @@ const getMessageById = async (id) => {
     };
 };
 
-const getInvitationsByUserId = async (userId) => {
+const getInvitationsAndRequestsByUserId = async (userId) => {
     try {
         const { rows: messages } = await client.query(`
             SELECT messages.*, campaigns."creatorId" AS "campaignCreatorId"
             FROM messages
             JOIN campaigns
                 ON messages."campaignId"=campaigns.id
-            WHERE "isInvitation"=true
+            WHERE (type = 'invitation' OR type = 'join_request')
             AND "recipientId"=${userId}
         `);
         return messages;
@@ -76,8 +76,7 @@ const getPrivateMessagesByUserId = async (userId) => {
                                     THEN messages."recipientId"=users.id
                                 ELSE messages."senderId"=users.id
                             END)
-                    WHERE messages."isPublic"=false
-                    AND messages."isInvitation"=false
+                    WHERE messages.type='private'
                     AND (messages."senderId"=${userId}
                         OR messages."recipientId"=${userId})
             ) AS b
@@ -96,8 +95,7 @@ const getPrivateMessagesByUserId = async (userId) => {
                             AND "recipientId"=${userId}
                     )
                 )
-                AND "isPublic"=false
-                AND "isInvitation"=false;
+                AND type='private'
             `);
             users[i].messages = messages;
         };
@@ -127,7 +125,7 @@ module.exports = {
     updateMessage,
     deleteMessage,
     getMessageById,
-    getInvitationsByUserId,
+    getInvitationsAndRequestsByUserId,
     getPrivateMessagesByUserId,
     getPublicMessagesByCampaignId
 };

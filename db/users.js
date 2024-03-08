@@ -1,9 +1,9 @@
 const client = require('./client');
 const bcrypt = require('bcrypt');
 const { createRow, updateRow, getRowById } = require('./utils');
-const { getCampaignsByUserId, getCampaignsLookingForPlayersByUserId } = require('./campaigns');
+const { getCampaignsByUserId, getOpenCampaignsByUserId } = require('./campaigns');
 const { getCharactersByUserId } = require('./characters');
-const { getInvitationsByUserId, getPrivateMessagesByUserId } = require('./messages');
+const { getInvitationsAndRequestsByUserId, getPrivateMessagesByUserId } = require('./messages');
 
 const createUser = async ({ ...fields }) => {
     if (!fields.avatarURL) {
@@ -80,7 +80,7 @@ const getAllUserDataById = async (id) => {
             delete user.password;
             user.campaigns = await getCampaignsByUserId(user.id);
             user.characters = await getCharactersByUserId(user.id);
-            user.invitations = await getInvitationsByUserId(user.id);
+            user.invitationsAndRequests = await getInvitationsAndRequestsByUserId(user.id);
             user.privateMessages = await getPrivateMessagesByUserId(user.id);
             return user;
         };
@@ -95,7 +95,7 @@ const getPublicUserDataByUsername = async (username) => {
         const user = await getUserByUsername(username);
         if (user) {
             delete user.password;
-            user.campaigns = await getCampaignsLookingForPlayersByUserId(user.id);
+            user.campaigns = await getOpenCampaignsByUserId(user.id);
             user.characters = await getCharactersByUserId(user.id);
             return user;
         };

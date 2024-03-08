@@ -47,12 +47,10 @@ const getUserCampaignById = async (id) => {
 const getUserCampaignsByCampaignId = async (campaignId) => {
     try {
         const { rows: userCampaigns } = await client.query(`
-            SELECT user_campaigns.id, user_campaigns."userId", users.username AS username, user_campaigns."isDM", user_campaigns."characterId", characters.name as "characterName"
+            SELECT user_campaigns.id, user_campaigns."userId", users.username AS username, user_campaigns."isDM", user_campaigns."canEdit"
             FROM user_campaigns
             JOIN users
                 ON user_campaigns."userId"=users.id
-            LEFT JOIN characters
-                ON user_campaigns."characterId"=characters.id
             WHERE "campaignId"=${campaignId};
         `);
         return userCampaigns;

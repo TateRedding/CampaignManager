@@ -3,7 +3,6 @@ const { faker } = require("@faker-js/faker");
 const { objectContaining } = expect;
 const {
     updateUser,
-    deactivateUser,
     getUser,
     getUserById,
     getAllUserDataById,
@@ -56,7 +55,7 @@ describe("DB Users", () => {
                 objectContaining({
                     id: user.id,
                     email: user.email,
-                    registerDate: user.registerDate
+                    registerTime: user.registerTime
                 })
             );
             expect(updatedUser.username).toBe(username);
@@ -66,24 +65,6 @@ describe("DB Users", () => {
             const user = await createFakeUser({});
             const updatedUser = await updateUser(user.id, { username: "Leopold" });
             expect(updatedUser.password).toBeFalsy();
-        });
-    });
-
-    describe("deactivateUser", () => {
-        it("Updates the user with the given userId and sets isActive to false, and creates an entry for deactivationDate", async () => {
-            const user = await createFakeUser({});
-            const deactivatedUser = await deactivateUser(user.id);
-            expect(deactivatedUser).toBeTruthy();
-            expect(deactivatedUser.isActive).toBeFalsy();
-            expect(deactivatedUser.deactivationDate).toBeTruthy();
-        });
-
-        it("Does NOT remove the user's data form the database", async () => {
-            const user = await createFakeUser({});
-            const _deactivatedUser = await deactivateUser(user.id);
-            const deactivatedUser = await getUserById(user.id);
-            expectToMatchObjectWithDates(deactivatedUser, _deactivatedUser);
-
         });
     });
 
@@ -175,19 +156,32 @@ describe("DB Users", () => {
 
         it("Includes all invitations where the user is either the sender or recipient", async () => {
             const _user = await createFakeUser({});
-            const campaign = await createFakeCampaign({});
+            const userForRequest = await createFakeUser({});
+            const campaignForInvitation = await createFakeCampaign({});
+            const campaignForRequest = await createFakeCampaign({ creatorId: _user.id });
             const invitation = await createFakeMessage({
-                senderId: campaign.creatorId,
-                campaignId: campaign.id,
+                senderId: campaignForInvitation.creatorId,
+                campaignId: campaignForInvitation.id,
                 recipientId: _user.id,
                 type: 'invitation'
             });
+            const request = await createFakeMessage({
+                senderId: userForRequest.id,
+                campaignId: campaignForRequest.id,
+                recipientId: _user.id,
+                type: 'join_request'
+            });
             const user = await getAllUserDataById(_user.id);
-            expect(user.invitations).toBeTruthy();
-            expect(user.invitations[0]).toMatchObject({
+            expect(user.invitationsAndRequests).toBeTruthy();
+            expect(user.invitationsAndRequests[0]).toMatchObject({
                 id: invitation.id,
                 content: invitation.content,
-                isInvitation: invitation.isInvitation
+                type: invitation.type
+            });
+            expect(user.invitationsAndRequests[1]).toMatchObject({
+                id: request.id,
+                content: request.content,
+                type: request.type
             });
         });
 

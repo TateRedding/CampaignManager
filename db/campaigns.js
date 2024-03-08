@@ -97,14 +97,14 @@ const getCampaignsByUserId = async (userId) => {
     };
 };
 
-const getCampaignsLookingForPlayersByUserId = async (userId) => {
+const getOpenCampaignsByUserId = async (userId) => {
     try {
         const { rows: campaigns } = await client.query(`
             SELECT campaigns.*
             FROM campaigns
             JOIN user_campaigns
                 ON user_campaigns."campaignId"=campaigns.id
-            WHERE "lookingForPlayers"=true
+            WHERE "isOpen"=true
             AND user_campaigns."userId"=${userId};
         `);
         for (let i = 0; i < campaigns.length; i++) {
@@ -148,7 +148,7 @@ module.exports = {
     getAllCampaigns,
     getCampaignById,
     getCampaignsLookingForPlayers,
-    getCampaignsLookingForPlayersByUserId,
+    getOpenCampaignsByUserId,
     getCampaignsByUserId,
     deleteCampaign
 };
