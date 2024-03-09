@@ -33,7 +33,7 @@ const deactivateUser = async (userId) => {
     try {
         const { rows: [user] } = await client.query(`
             UPDATE users
-            SET "isActive"=false, "deactivationDate"=CURRENT_TIMESTAMP
+            SET "isActive"=false, "deactivationTime"=CURRENT_TIMESTAMP
             WHERE id=${userId}
             RETURNING *;
         `);

@@ -3,6 +3,7 @@ const { faker } = require("@faker-js/faker");
 const { objectContaining } = expect;
 const {
     updateUser,
+    deactivateUser,
     getUser,
     getUserById,
     getAllUserDataById,
@@ -65,6 +66,24 @@ describe("DB Users", () => {
             const user = await createFakeUser({});
             const updatedUser = await updateUser(user.id, { username: "Leopold" });
             expect(updatedUser.password).toBeFalsy();
+        });
+    });
+
+    describe("deactivateUser", () => {
+        it("Updates the user with the given userId and sets isActive to false, and creates an entry for deactivationDate", async () => {
+            const user = await createFakeUser({});
+            const deactivatedUser = await deactivateUser(user.id);
+            expect(deactivatedUser).toBeTruthy();
+            expect(deactivatedUser.isActive).toBeFalsy();
+            expect(deactivatedUser.deactivationTime).toBeTruthy();
+        });
+
+        it("Does NOT remove the user's data form the database", async () => {
+            const user = await createFakeUser({});
+            const _deactivatedUser = await deactivateUser(user.id);
+            const deactivatedUser = await getUserById(user.id);
+            expectToMatchObjectWithDates(deactivatedUser, _deactivatedUser);
+
         });
     });
 

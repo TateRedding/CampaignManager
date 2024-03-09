@@ -183,6 +183,8 @@ const createTables = async () => {
                 "registerTime" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                 "lookingForGroup" BOOLEAN DEFAULT false,
                 "isAdmin" BOOLEAN DEFAULT false,
+                "isActive" BOOLEAN DEFAULT false,
+                "deactivationTime" TIMESTAMPTZ,
                 "avatarURL" text NOT NULL,
                 "firstName" VARCHAR(100),
                 "lastName" VARCHAR(100),
