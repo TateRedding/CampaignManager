@@ -5,7 +5,7 @@ const {
     updateCampaign,
     getAllCampaigns,
     getCampaignById,
-    getCampaignsLookingForPlayers,
+    getOpenCampaigns,
     deleteCampaign,
 } = require('../db/campaigns');
 const { requireUser } = require('./utils');
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
             const campaigns = await getAllCampaigns();
             res.send(campaigns);
         } else {
-            const campaigns = await getCampaignsLookingForPlayers();
+            const campaigns = await getOpenCampaigns();
             res.send(campaigns);
         }
     } catch ({ name, message }) {
@@ -31,7 +31,7 @@ router.get('/:campaignId', async (req, res, next) => {
     };
     try {
         const campaign = await getCampaignById(req.params.campaignId, userId);
-        if (campaign.lookingForPlayers ||
+        if (campaign.isOpen ||
             (req.user &&
                 (campaign.users.find(user => user.userId === req.user.id) ||
                     req.user.isAdmin))) {

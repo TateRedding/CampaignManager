@@ -111,7 +111,7 @@ const getPublicMessagesByCampaignId = async (campaignId) => {
             SELECT *
             FROM messages
             WHERE "campaignId"=${campaignId}
-            AND "isPublic"=true
+            AND type='public'
         `)
         return messages;
     } catch (error) {

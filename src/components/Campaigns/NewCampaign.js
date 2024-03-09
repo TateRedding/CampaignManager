@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const NewCampaign = ({ token }) => {
-    const [isLookingForPlayers, setIsLookingForPlayers] = useState(true);
+    const [isOpen, setIsOpen] = useState(true);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [location, setLocation] = useState('');
@@ -12,13 +12,13 @@ const NewCampaign = ({ token }) => {
 
         if (name) {
             const fields = {
-                isLookingForPlayers,
+                isOpen,
                 name,
                 description,
                 location
             };
 
-            Object.keys(fields).map(key => (key !== 'isLookingForPlayers' && !fields[key]) ? delete fields[key] : null);
+            Object.keys(fields).map(key => (key !== 'isOpen' && !fields[key]) ? delete fields[key] : null);
 
             try {
                 const campaignResponse = await axios.post('/api/campaigns', fields, {
@@ -34,7 +34,7 @@ const NewCampaign = ({ token }) => {
                         isDM: true
                     });
                     if (userCampaignResponse) {
-                        setIsLookingForPlayers(true);
+                        setIsOpen(true);
                         setName('');
                         setDescription('');
                         setLocation('');
@@ -84,8 +84,8 @@ const NewCampaign = ({ token }) => {
                         className="form-check-input"
                         type="checkbox"
                         id="is-looking-for-players"
-                        checked={isLookingForPlayers}
-                        onChange={(event) => setIsLookingForPlayers(event.target.checked)}>
+                        checked={isOpen}
+                        onChange={(event) => setIsOpen(event.target.checked)}>
                     </input>
                 </div>
                 <button type="submit" className="btn btn-primary">Start your Journey!</button>

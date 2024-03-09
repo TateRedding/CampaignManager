@@ -57,14 +57,14 @@ const getCampaignById = async (id) => {
     };
 };
 
-const getCampaignsLookingForPlayers = async () => {
+const getOpenCampaigns = async () => {
     try {
         const { rows: campaigns } = await client.query(`
             SELECT campaigns.*, users.username AS "creatorName"
             FROM campaigns
             JOIN users
                 ON campaigns."creatorId"=users.id
-            WHERE "lookingForPlayers"=true;
+            WHERE "isOpen"=true;
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
@@ -147,7 +147,7 @@ module.exports = {
     updateCampaign,
     getAllCampaigns,
     getCampaignById,
-    getCampaignsLookingForPlayers,
+    getOpenCampaigns,
     getOpenCampaignsByUserId,
     getCampaignsByUserId,
     deleteCampaign

@@ -24,7 +24,7 @@ describe("/api/campaigns", () => {
             const { token } = await createFakeUserWithToken({ isAdmin: false });
             const numCampaigns = 3;
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaign({ lookingForPlayers: true });
+                await createFakeCampaign({ isOpen: true });
             };
             const noLoginResponse = await request(app).get("/api/campaigns");
             const loggedInResponse = await request(app)
@@ -40,7 +40,7 @@ describe("/api/campaigns", () => {
             const { token } = await createFakeUserWithToken({ isAdmin: true });
             const numCampaigns = 5;
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaign({ lookingForPlayers: false });
+                await createFakeCampaign({ isOpen: false });
             };
             const response = await request(app)
                 .get("/api/campaigns")
@@ -52,7 +52,7 @@ describe("/api/campaigns", () => {
 
     describe("GET /api/campaigns/:campaignId", () => {
         it("Returns the data for the camapign given a specific id", async () => {
-            const campaign = await createFakeCampaign({ lookingForPlayers: true});
+            const campaign = await createFakeCampaign({ isOpen: true});
             const response = await request(app).get(`/api/campaigns/${campaign.id}`);
             expectNotToBeError(response.body);
             expect(response.body).toEqual(
@@ -66,7 +66,7 @@ describe("/api/campaigns", () => {
 
         it("Returns the data for a campaign that is not looking for players if logged in user is in the campaign", async () => {
             const { user, token } = await createFakeUserWithToken({});
-            const closedCampaign = await createFakeCampaignWithUserCampaigns({ creatorId: user.id, lookingForPlayers: false });
+            const closedCampaign = await createFakeCampaignWithUserCampaigns({ creatorId: user.id, isOpen: false });
             const response = await request(app)
                 .get(`/api/campaigns/${closedCampaign.id}`)
                 .set("Authorization", `Bearer ${token}`);
@@ -83,7 +83,7 @@ describe("/api/campaigns", () => {
         it("Returns the data for a campaign that is not looking for players if logged in user is NOT in the campaign, but is an admin", async () => {
             const user = await createFakeUser({})
             const { token } = await createFakeUserWithToken({ isAdmin: true });
-            const closedCampaign = await createFakeCampaignWithUserCampaigns({ creatorId: user.id, lookingForPlayers: false });
+            const closedCampaign = await createFakeCampaignWithUserCampaigns({ creatorId: user.id, isOpen: false });
             const response = await request(app)
                 .get(`/api/campaigns/${closedCampaign.id}`)
                 .set("Authorization", `Bearer ${token}`);
@@ -109,7 +109,7 @@ describe("/api/campaigns", () => {
 
         it("Returns a relevant error if the campaign is not looking for players and no user is logged in or logged in user is not in camapign or an admin", async () => {
             const { token } = await createFakeUserWithToken({});
-            const campaign = await createFakeCampaignWithUserCampaigns({ lookingForPlayers: false });
+            const campaign = await createFakeCampaignWithUserCampaigns({ isOpen: false });
             const noLoginResponse = await request(app)
                 .get(`/api/campaigns/${campaign.id}`);
             const loggedInResponse = await request(app)

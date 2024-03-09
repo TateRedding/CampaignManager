@@ -70,7 +70,7 @@ describe("DB Users", () => {
     });
 
     describe("deactivateUser", () => {
-        it("Updates the user with the given userId and sets isActive to false, and creates an entry for deactivationDate", async () => {
+        it("Updates the user with the given userId and sets isActive to false, and creates an entry for deactivationTime", async () => {
             const user = await createFakeUser({});
             const deactivatedUser = await deactivateUser(user.id);
             expect(deactivatedUser).toBeTruthy();
@@ -153,9 +153,9 @@ describe("DB Users", () => {
             expect(user.password).toBeFalsy();
         });
 
-        it("Includes all campaigns the user is in, even if they are not looking for players", async () => {
+        it("Includes all campaigns the user is in, even if they are not open", async () => {
             const _user = await createFakeUser({})
-            const campaign = await createFakeCampaignWithUserCampaigns({ creatorId: _user.id, lookingForPlayers: false });
+            const campaign = await createFakeCampaignWithUserCampaigns({ creatorId: _user.id, isOpen: false });
             const user = await getAllUserDataById(_user.id);
             expect(user.campaigns).toBeTruthy();
             expect(user.campaigns[0]).toMatchObject({
@@ -173,7 +173,7 @@ describe("DB Users", () => {
             expect(user.characters[0]).toMatchObject(character);
         });
 
-        it("Includes all invitations where the user is either the sender or recipient", async () => {
+        it("Includes all invitations and join requests where the user is the sender", async () => {
             const _user = await createFakeUser({});
             const userForRequest = await createFakeUser({});
             const campaignForInvitation = await createFakeCampaign({});
@@ -231,9 +231,9 @@ describe("DB Users", () => {
             expect(user.password).toBeFalsy();
         });
 
-        it("Includes all campaigns the user is in that are looking for players", async () => {
+        it("Includes all campaigns the user is in that are open", async () => {
             const _user = await createFakeUser({})
-            const campaign = await createFakeCampaignWithUserCampaigns({ creatorId: _user.id, lookingForPlayers: true });
+            const campaign = await createFakeCampaignWithUserCampaigns({ creatorId: _user.id, isOpen: true });
             const user = await getPublicUserDataByUsername(_user.username);
             expect(user.campaigns).toBeTruthy();
             expect(user.campaigns[0]).toMatchObject({

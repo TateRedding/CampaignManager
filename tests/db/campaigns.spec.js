@@ -6,9 +6,9 @@ const {
     updateCampaign,
     getAllCampaigns,
     getCampaignById,
-    getCampaignsLookingForPlayers,
+    getOpenCampaigns,
     getCampaignsByUserId,
-    getCampaignsLookingForPlayersByUserId,
+    getOpenCampaignsByUserId,
     deleteCampaign,
 } = require("../../db/campaigns");
 const {
@@ -40,7 +40,7 @@ describe("DB campaigns", () => {
                 objectContaining({
                     id: campaign.id,
                     creatorId: campaign.creatorId,
-                    creationDate: campaign.creationDate
+                    creationTime: campaign.creationTime
                 })
             );
             expect(updatedCampaign.name).toBe(name);
@@ -115,13 +115,13 @@ describe("DB campaigns", () => {
         });
     });
 
-    describe("getCampaignsLookingForPlayers", () => {
-        it("Gets a list of all campaigns that are looking for players", async () => {
+    describe("getOpenCampaigns", () => {
+        it("Gets a list of all campaigns that are open", async () => {
             const numCampaigns = 3;
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaign({ lookingForPlayers: true });
+                await createFakeCampaign({ isOpen: true });
             };
-            const campaigns = await getCampaignsLookingForPlayers();
+            const campaigns = await getOpenCampaigns();
             expect(campaigns).toBeTruthy();
             expect(campaigns.length).toBe(numCampaigns);
         });
@@ -129,9 +129,9 @@ describe("DB campaigns", () => {
         it("Includes the usernames of the creators, aliased as creatorName", async () => {
             const numCampaigns = 3;
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaign({ lookingForPlayers: true });
+                await createFakeCampaign({ isOpen: true });
             };
-            const campaigns = await getCampaignsLookingForPlayers();
+            const campaigns = await getOpenCampaigns();
             for (let j = 0; j < campaigns.length; j++) {
                 expect(campaigns[j].creatorName).toBeTruthy();
             };
@@ -141,18 +141,18 @@ describe("DB campaigns", () => {
             const numUsers = 6;
             const numCampaigns = 3;
             for (let i = 0; i < numCampaigns; i++) {
-                await createFakeCampaignWithUserCampaigns({ numUsers, lookingForPlayers: true });
+                await createFakeCampaignWithUserCampaigns({ numUsers, isOpen: true });
             };
-            const campaigns = await getCampaignsLookingForPlayers();
+            const campaigns = await getOpenCampaigns();
             for (let j = 0; j < campaigns.length; j++) {
                 expect(campaigns[j].users).toBeTruthy();
             };
             expect(campaigns.filter(campaign => campaign.users.length >= numUsers).length).toBe(numCampaigns);
         });
 
-        it("Does NOT include campaigns that are not looking for players", async () => {
-            const _campaign = await createFakeCampaign({ lookingForPlayers: false });
-            const campaigns = await getCampaignsLookingForPlayers();
+        it("Does NOT include campaigns that are not open", async () => {
+            const _campaign = await createFakeCampaign({ isOpen: false });
+            const campaigns = await getOpenCampaigns();
             expect(campaigns.filter(campaign => campaign.id === _campaign.id).length).toBeFalsy();
         });
     });
@@ -187,23 +187,23 @@ describe("DB campaigns", () => {
         });
     });
 
-    describe("getCampaignsLookingForPlayersByUserId", () => {
-        it("Returns a list of campaigns that are looking for players with a given userId", async () => {
+    describe("getOpenCampaignsByUserId", () => {
+        it("Returns a list of campaigns that are open with a given userId", async () => {
             const numCampaigns = 3;
             const creator = await createFakeUser({});
             for (let i = 0; i < numCampaigns; i++) {
                 await createFakeCampaignWithUserCampaigns({
                     numUsers: 1,
                     creatorId: creator.id,
-                    lookingForPlayers: true
+                    isOpen: true
                 });
             };
-            const campaigns = await getCampaignsLookingForPlayersByUserId(creator.id);
+            const campaigns = await getOpenCampaignsByUserId(creator.id);
             expect(campaigns).toBeTruthy();
             expect(campaigns.length).toBe(numCampaigns);
         });
 
-        it("Does NOT return any campaigns that are not looking for players", async () => {
+        it("Does NOT return any campaigns that are not open", async () => {
             const numOpencampaigns = 3;
             const numClosedCampaigns = 2;
             const creator = await createFakeUser({});
@@ -211,20 +211,20 @@ describe("DB campaigns", () => {
                 await createFakeCampaignWithUserCampaigns({
                     numUsers: 1,
                     creatorId: creator.id,
-                    lookingForPlayers: true
+                    isOpen: true
                 });
             };
             for (let j = 0; j < numClosedCampaigns; j++) {
                 await createFakeCampaignWithUserCampaigns({
                     numUsers: 1,
                     creatorId: creator.id,
-                    lookingForPlayers: false
+                    isOpen: false
                 });
             };
-            const campaigns = await getCampaignsLookingForPlayersByUserId(creator.id);
+            const campaigns = await getOpenCampaignsByUserId(creator.id);
             expect(campaigns).toBeTruthy();
             expect(campaigns.length).toBe(numOpencampaigns);
-            expect(campaigns.find(campaign => !campaign.lookingForPlayers)).toBeFalsy();
+            expect(campaigns.find(campaign => !campaign.isOpen)).toBeFalsy();
 
         });
 
@@ -235,7 +235,7 @@ describe("DB campaigns", () => {
             for (let i = 0; i < numCampaigns; i++) {
                 await createFakeCampaignWithUserCampaigns({ numUsers, creatorId: creator.id });
             };
-            const campaigns = await getCampaignsLookingForPlayersByUserId(creator.id);
+            const campaigns = await getOpenCampaignsByUserId(creator.id);
             for (let j = 0; j < campaigns.length; j++) {
                 expect(campaigns[j].users).toBeTruthy();
                 expect(campaigns[j].users.length).toBe(numUsers);
