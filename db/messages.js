@@ -1,7 +1,7 @@
 const client = require('./client');
 const { createRow, getRowById } = require('./utils');
 
-const createMessage = async ({ ...fields }) => {
+const createMessage = async (fields) => {
     try {
         return await createRow('messages', fields);
     } catch (error) {

@@ -29,7 +29,7 @@ describe("DB characters", () => {
         it("Updates and returns updated character information", async () => {
             const name = "Yog So'thoth"
             const character = await createFakeCharacter({});
-            const updatedCharacter = await updateCharacter(character.id, { name });
+            const updatedCharacter = await updateCharacter(character.id, { name, abilities: { strength: { score: 13, mod: 2 }}});
             expect(updatedCharacter).toEqual(
                 objectContaining({
                     id: character.id,
@@ -38,6 +38,7 @@ describe("DB characters", () => {
                 })
             );
             expect(updatedCharacter.name).toBe(name);
+            expect(updatedCharacter.abilities.strength.score).toBe(13);
         });
     });
 

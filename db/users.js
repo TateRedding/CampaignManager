@@ -5,7 +5,7 @@ const { getCampaignsByUserId, getOpenCampaignsByUserId } = require('./campaigns'
 const { getCharactersByUserId } = require('./characters');
 const { getInvitationsAndRequestsByUserId, getPrivateMessagesByUserId } = require('./messages');
 
-const createUser = async ({ ...fields }) => {
+const createUser = async (fields) => {
     if (!fields.avatarURL) {
         fields.avatarURL = "../images/default_avatar.svg";
     };
@@ -19,7 +19,7 @@ const createUser = async ({ ...fields }) => {
     };
 };
 
-const updateUser = async (id, { ...fields }) => {
+const updateUser = async (id, fields) => {
     try {
         const user = await updateRow('users', id, fields);
         delete user.password;

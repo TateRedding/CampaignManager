@@ -3,7 +3,7 @@ const { getPublicMessagesByCampaignId } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
 const { createRow, updateRow } = require('./utils');
 
-const createCampaign = async ({ ...fields }) => {
+const createCampaign = async (fields) => {
     try {
         return await createRow('campaigns', fields);
     } catch (error) {
@@ -11,7 +11,7 @@ const createCampaign = async ({ ...fields }) => {
     };
 };
 
-const updateCampaign = async (id, { ...fields }) => {
+const updateCampaign = async (id, fields) => {
     try {
         return await updateRow('campaigns', id, fields);
     } catch (error) {

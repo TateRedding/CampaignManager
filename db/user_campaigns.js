@@ -1,7 +1,7 @@
 const client = require('./client');
 const { createRow, getRowById } = require('./utils');
 
-const createUserCampaign = async ({ ...fields }) => {
+const createUserCampaign = async (fields) => {
     try {
         return await createRow('user_campaigns', fields);
     } catch (error) {

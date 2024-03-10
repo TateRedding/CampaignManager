@@ -1,34 +1,49 @@
 const client = require('./client');
-const { createRow, updateRow, getRowById } = require('./utils');
+const { getRowById, flattenJSON } = require('./utils');
 
-const createCharacter = async ({ ...fields }) => {
-    JSON.flatten = (object) => {
-        const result = {};
-        const recurse = (currValue, currKey) => {
-            if (Array.isArray(currValue)) {
-                for (let i = 0; i < currValue.length; i++) {
-                    recurse(currValue[i], currKey ? `${currKey}[${i}]` : `[${i}]`);
-                };
-                if (!currValue.length) result[currKey] = [];
-            } else if (typeof currValue === "object") {
-                let isEmpty = false;
-                for (const key in currValue) {
-                    isEmpty = false;
-                    recurse(currValue[key], currKey ? `${currKey}.${key}` : key)
-                };
-            } else {
-                result[currKey] = currValue;
-            };
-        };
-        recurse(object, "");
-        return result;
+const createCharacter = async (fields) => {
+    fields = flattenJSON(fields);
+    const keys = Object.keys(fields);
+    const valuesString = keys.map((_, index) => `$${index + 1}`).join(', ');
+    const columnNames = keys.map(key => {
+        return key.split('.').map(key => {
+            const arr = key.split('[');
+            arr[0] = `"${arr[0]}"`;
+            return arr.join('[');
+        }).join('.');
+    }).join(', ');
+    try {
+        const { rows: [character] } = await client.query(`
+            INSERT INTO characters(${columnNames})
+            VALUES (${valuesString})
+            RETURNING *;
+        `, Object.values(fields));
+        return character;
+    } catch (error) {
+        console.error(error);
     };
-    return await createRow("characters", JSON.flatten(fields));
 };
 
-const updateCharacter = async (id, { ...fields }) => {
+const updateCharacter = async (id, fields) => {
+    fields = flattenJSON(fields);
+    const setString = Object.keys(fields).map((key, index) => {
+        return `${key.split('.').map(key => {
+            const arr = key.split('[');
+            arr[0] = `"${arr[0]}"`;
+            return arr.join('[');
+        }).join('.')}=$${index + 1}`;
+    }).join(', ');
+    if (!setString.length) {
+        return;
+    };
     try {
-        return await updateRow('characters', id, fields);
+        const { rows: [character] } = await client.query(`
+            UPDATE characters
+            SET ${setString}
+            WHERE id=${id}
+            RETURNING *;
+        `, Object.values(fields));
+        return  character;
     } catch (error) {
         console.error(error);
     };
