@@ -16,17 +16,9 @@ const dropTables = async () => {
             DROP TABLE IF EXISTS campaigns;
             DROP TABLE IF EXISTS users;
             DROP TYPE IF EXISTS abilities;
-            DROP TYPE IF EXISTS ability_stat;
             DROP TYPE IF EXISTS alignment;
-            DROP TYPE IF EXISTS attack;
             DROP TYPE IF EXISTS ability;
-            DROP TYPE IF EXISTS class;
             DROP TYPE IF EXISTS damage_type;
-            DROP TYPE IF EXISTS hit_die;
-            DROP TYPE IF EXISTS spell;
-            DROP TYPE IF EXISTS school;
-            DROP TYPE IF EXISTS skills;
-            DROP TYPE IF EXISTS skill_stat;
             DROP TYPE IF EXISTS message_type;
         `);
         console.log('Finished dropping tables.');
@@ -47,22 +39,6 @@ const createTables = async () => {
                 'intelligence',
                 'wisdom',
                 'charisma'
-            );
-
-            CREATE TYPE ability_stat AS (
-                score INTEGER,
-                mod INTEGER,
-                save INTEGER,
-                proficiency BOOLEAN
-            );
-
-            CREATE TYPE abilities AS (
-                strength ability_stat,
-                dexterity ability_stat,
-                constitution ability_stat,
-                intelligence ability_stat,
-                wisdom ability_stat,
-                charisma ability_stat
             );
 
             CREATE TYPE alignment AS ENUM (
@@ -91,81 +67,6 @@ const createTables = async () => {
                 'radiant',
                 'slashing',
                 'thunder'
-            );
-
-            CREATE TYPE attack AS (
-                name VARCHAR(100),
-                "attackBonus" INTEGER,
-                "damageDie" INTEGER,
-                "damageDieCount" INTEGER,
-                "damageBonus" INTEGER,
-                "damageType" damage_type,
-                save BOOLEAN,
-                "saveAbility" ability
-            );
-
-            CREATE TYPE class AS (
-                "baseClass" TEXT,
-                subclass TEXT,
-                level INTEGER
-            );
-
-            CREATE TYPE hit_die AS (
-                type INTEGER,
-                total INTEGER,
-                remaining INTEGER
-            );
-
-            CREATE TYPE school AS ENUM (
-                'abjuration',
-                'conjuration',
-                'divination',
-                'enchantment',
-                'evocation',
-                'illusion',
-                'necromancy',
-                'transmutation'
-            );
-
-            CREATE TYPE skill_stat AS (
-                mod INTEGER,
-                proficiency BOOLEAN
-            );
-
-            CREATE TYPE skills AS (
-                acrobatics skill_stat,
-                "animalHandling" skill_stat,
-                arcana skill_stat,
-                athletics skill_stat,
-                deception skill_stat,
-                history skill_stat,
-                insight skill_stat,
-                intimidation skill_stat,
-                investigation skill_stat,
-                medicine skill_stat,
-                nature skill_stat,
-                perception skill_stat,
-                performance skill_stat,
-                persuasion skill_stat,
-                religion skill_stat,
-                "sleightOfHand" skill_stat,
-                stealth skill_stat,
-                survival skill_stat
-            );
-
-            CREATE TYPE spell AS (
-                name VARCHAR(100),
-                level INTEGER,
-                school school,
-                "castingTime" VARCHAR(100),
-                range VARCHAR(100),
-                verbal BOOLEAN,
-                somatic BOOLEAN,
-                material BOOLEAN,
-                components TEXT,
-                concentration BOOLEAN,
-                duration VARCHAR(100),
-                description TEXT
             );
 
             CREATE TYPE message_type AS ENUM (
@@ -205,12 +106,12 @@ const createTables = async () => {
                 id SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL REFERENCES users(id),
                 "campaignId" INTEGER REFERENCES campaigns(id),
-                name VARCHAR(100),
+                name VARCHAR(100) NOT NULL,
                 level INTEGER DEFAULT 1,
                 experience INTEGER DEFAULT 0,
                 species VARCHAR(50),
                 subspecies VARCHAR(50),
-                class class[],
+                class JSONB[],
                 alignment alignment,
                 background VARCHAR(100),
                 age INTEGER,
@@ -219,8 +120,8 @@ const createTables = async () => {
                 eyes VARCHAR(35),
                 hair VARCHAR(35),
                 skin VARCHAR(35),
-                abilities abilities NOT NULL,
-                skills skills NOT NULL,
+                abilities JSONB,
+                skills JSONB,
                 "proficiencyBonus" INTEGER DEFAULT 2,
                 "passivePerception" INTEGER DEFAULT 10,
                 "otherProficiencies" TEXT,
@@ -231,11 +132,11 @@ const createTables = async () => {
                 "hitPoints" INTEGER DEFAULT 8,
                 "currentHitPoints" INTEGER DEFAULT 8,
                 "temporaryHitPoints" INTEGER DEFAULT 0,
-                "hitDice" hit_die[] NOT NULL,
+                "hitDice" JSONB[],
                 "deathSaveSuccesses" INTEGER DEFAULT 0,
                 "deathSaveFailures" INTEGER DEFAULT 0,
-                attacks attack[],
-                spells spell[],
+                attacks JSONB[],
+                spells JSONB[],
                 copper INTEGER DEFAULT 0,
                 silver INTEGER DEFAULT 0,
                 etherium INTEGER DEFAULT 0,
@@ -317,7 +218,7 @@ const createInitialUsers = async () => {
             lastName: 'Wells',
         }));
 
-        console.log(users);
+        //console.log(users);
         console.log('Finished creating users!')
     } catch (error) {
         console.log('Error creating users!');
@@ -535,10 +436,10 @@ const rebuildDB = async () => {
         await dropTables();
         await createTables();
         await createInitialUsers();
-        await createInitialCampaigns();
+        //await createInitialCampaigns();
         await createInitialCharacters();
-        await createInitialUserCampaigns();
-        await createInitialMessages();
+        //await createInitialUserCampaigns();
+        //await createInitialMessages();
     } catch (error) {
         console.error(error);
     };

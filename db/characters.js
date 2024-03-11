@@ -1,37 +1,25 @@
 const client = require('./client');
-const { getRowById, flattenJSON } = require('./utils');
+const { createRow, getRowById, formatCharacterDataForDBEntry, updateRow } = require('./utils');
 
 const createCharacter = async (fields) => {
-    fields = flattenJSON(fields);
-    const keys = Object.keys(fields);
-    const valuesString = keys.map((_, index) => `$${index + 1}`).join(', ');
-    const columnNames = keys.map(key => {
-        return key.split('.').map(key => {
-            const arr = key.split('[');
-            arr[0] = `"${arr[0]}"`;
-            return arr.join('[');
-        }).join('.');
-    }).join(', ');
+    fields = formatCharacterDataForDBEntry(fields);
     try {
-        const { rows: [character] } = await client.query(`
-            INSERT INTO characters(${columnNames})
-            VALUES (${valuesString})
-            RETURNING *;
-        `, Object.values(fields));
-        return character;
+        return await createRow('characters', fields);
     } catch (error) {
         console.error(error);
     };
 };
 
+// This function does not account for nested arrays. If nested arrays are ever introduced, this function will need to be updated.
 const updateCharacter = async (id, fields) => {
-    fields = flattenJSON(fields);
+    fields = formatCharacterDataForDBEntry(fields);
     const setString = Object.keys(fields).map((key, index) => {
-        return `${key.split('.').map(key => {
-            const arr = key.split('[');
-            arr[0] = `"${arr[0]}"`;
-            return arr.join('[');
-        }).join('.')}=$${index + 1}`;
+        if (key.includes('[')) {
+            const split = key.split('[');
+            return `"${split[0]}"[${split[1]}=$${index + 1}`;
+        } else {
+            return `"${key}"=$${index + 1}`;
+        };
     }).join(', ');
     if (!setString.length) {
         return;
@@ -43,7 +31,7 @@ const updateCharacter = async (id, fields) => {
             WHERE id=${id}
             RETURNING *;
         `, Object.values(fields));
-        return  character;
+        return character;
     } catch (error) {
         console.error(error);
     };

@@ -47,70 +47,23 @@ const getRowById = async (table, id) => {
     };
 };
 
-const flattenJSON = (object) => {
-    const result = {};
-    const recurse = (currValue, currKey) => {
-        if (Array.isArray(currValue)) {
-            for (let i = 0; i < currValue.length; i++) {
-                recurse(currValue[i], currKey ? `${currKey}[${i}]` : `[${i}]`);
-            };
-            if (!currValue.length) result[currKey] = [];
-        } else if (typeof currValue === "object") {
-            let isEmpty = false;
-            for (const key in currValue) {
-                isEmpty = false;
-                recurse(currValue[key], currKey ? `${currKey}.${key}` : key)
-            };
-        } else {
-            result[currKey] = currValue;
-        };
-    };
-    recurse(object, "");
-    return result;
-};
-/*
-const parseCharacterData = (character) => {
-    let characterString = "";
-    const baseKeys = Object.keys(character)
+// This function does not account for nested arrays. If nested arrays are ever introduced, this function will need to be updated.
+const formatCharacterDataForDBEntry = (character) => {
+    const baseKeys = Object.keys(character);
     for (let i = 0; i < baseKeys.length; i++) {
         let currValue = character[baseKeys[i]];
-        if (typeof currValue === "string") {
-            currValue = `"${currValue}"`
-        };
-        // Needs to parse return strings and add appropriate keys.
-        // For attacks and spells, if currValue is null, it would basiclaly just follow the same as the default
-        switch (baseKeys[i]) {
-            case "abilities":
-                console.log("Abilities: " + currValue);
-                break;
-            case "attacks":
-                console.log("Attacks: " + currValue);
-                break;
-            case "class":
-                console.log("Class: " + currValue);
-                break;
-            case "hitDice":
-                console.log("Hit Dice: " + currValue);
-                break;
-            case "skills":
-                console.log("Skills: " + currValue);
-                break;
-            case "spells":
-                console.log("Spells: " + currValue);
-                break;
-            default:
-                characterString ? characterString += `, "${baseKeys[i]}": ${currValue}` : characterString += `"${baseKeys[i]}": ${currValue}`;
-                break;
+        if (Array.isArray(currValue)) {
+            character[baseKeys[i]] = character[baseKeys[i]].map(subVal => JSON.stringify(subVal));
+        } else if (typeof currValue === "object") {
+            character[baseKeys[i]] = JSON.stringify(character[baseKeys[i]]);
         };
     };
-    return character
+    return character;
 };
-*/
 
 module.exports = {
     createRow,
     updateRow,
     getRowById,
-    flattenJSON,
-    //parseCharacterData
+    formatCharacterDataForDBEntry
 };
