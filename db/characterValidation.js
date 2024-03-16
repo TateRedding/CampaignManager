@@ -114,31 +114,23 @@ const spellSchema = {
 };
 
 const validateCharacterData = (character) => {
+    const schemaMap = {
+        "abilities": abilitiesSchema,
+        "attacks": attackSchema,
+        "class": classSchema,
+        "hitDice": hitDiceSchema,
+        "skills": skillsSchema,
+        "spells": spellSchema,
+    };
     const keys = Object.keys(character);
     for (let i = 0; i < keys.length; i++) {
         const value = character[keys[i]];
         let schema;
-        switch (keys[i]) {
-            case "abilities":
-                schema = abilitiesSchema;
+        for (let key of Object.keys(schemaMap)) {
+            if (keys[i].includes(key)) {
+                schema = schemaMap[key];
                 break;
-            case "attacks":
-                schema = attackSchema;
-                break;
-            case "class":
-                schema = classSchema;
-                break;
-            case "hitDice":
-                schema = hitDiceSchema;
-                break;
-            case "skills":
-                schema = skillsSchema;
-                break;
-            case "spells":
-                schema = spellSchema;
-                break;
-            default:
-                continue;
+            };
         };
         if (schema) {
             const validate = ajv.compile(schema);

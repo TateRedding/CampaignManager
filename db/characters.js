@@ -14,19 +14,21 @@ const createCharacter = async (fields) => {
 
 // This function does not account for nested arrays. If nested arrays are ever introduced, this function will need to be updated.
 const updateCharacter = async (id, fields) => {
-    fields = formatCharacterDataForDBEntry(fields);
-    const setString = Object.keys(fields).map((key, index) => {
-        if (key.includes('[')) {
-            const split = key.split('[');
-            return `"${split[0]}"[${split[1]}=$${index + 1}`;
-        } else {
-            return `"${key}"=$${index + 1}`;
-        };
-    }).join(', ');
-    if (!setString.length) {
-        return;
-    };
+    console.log(fields)
     try {
+        validateCharacterData(fields);
+        fields = formatCharacterDataForDBEntry(fields);
+        const setString = Object.keys(fields).map((key, index) => {
+            if (key.includes('[')) {
+                const split = key.split('[');
+                return `"${split[0]}"[${split[1]}=$${index + 1}`;
+            } else {
+                return `"${key}"=$${index + 1}`;
+            };
+        }).join(', ');
+        if (!setString.length) {
+            return;
+        };
         const { rows: [character] } = await client.query(`
             UPDATE characters
             SET ${setString}
