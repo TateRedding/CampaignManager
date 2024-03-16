@@ -11,10 +11,28 @@ const {
     createFakeUser,
     createFakeCharacter
 } = require("../utils");
+const { treddFargrim, thyriLittleflower } = require('../../db/characterObjects');
+const { validateCharacterData } = require('../../db/characterValidation');
 
 describe("DB characters", () => {
 
     beforeEach(async () => emptyTables());
+
+    describe("validateCharacterData", () => {
+        it("Validates the JSON data of a characters table entry for JSONB columns", async () => {
+            const goodCharacterData = thyriLittleflower;
+            const validationPassed = validateCharacterData(goodCharacterData);
+            expect(validationPassed).toBeTruthy();
+        });
+
+        it("Throws relevant errors if the data does not match the JSON schema", async () => {
+            const badCharacterData = treddFargrim;
+            badCharacterData.abilities.dexterity.proficiency = "string";
+            expect(() => {
+                validateCharacterData(badCharacterData);
+            }).toThrow("must be boolean");
+        });
+    })
 
     describe("createCharacter", () => {
         it("Creates and returns the new character", async () => {
@@ -33,7 +51,7 @@ describe("DB characters", () => {
             updatedCharacterAbilities.strength.score = 13;
             const updatedCharacterClass = character.class[0];
             updatedCharacterClass.baseClass = "paladin";
-            const updatedCharacter = await updateCharacter(character.id, { name, abilities: updatedCharacterAbilities, "class[0]": updatedCharacterClass});
+            const updatedCharacter = await updateCharacter(character.id, { name, abilities: updatedCharacterAbilities, "class[0]": updatedCharacterClass });
             expect(updatedCharacter).toEqual(
                 objectContaining({
                     id: character.id,

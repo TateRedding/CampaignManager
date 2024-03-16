@@ -18,7 +18,6 @@ const dropTables = async () => {
             DROP TYPE IF EXISTS abilities;
             DROP TYPE IF EXISTS alignment;
             DROP TYPE IF EXISTS ability;
-            DROP TYPE IF EXISTS damage_type;
             DROP TYPE IF EXISTS message_type;
         `);
         console.log('Finished dropping tables.');
@@ -53,22 +52,6 @@ const createTables = async () => {
                 'chaotic-evil'
             );
 
-            CREATE TYPE damage_type AS ENUM (
-                'acid',
-                'bludgeoning',
-                'cold',
-                'fire',
-                'force',
-                'lightning',
-                'necrotic',
-                'piercing',
-                'poison',
-                'psychic',
-                'radiant',
-                'slashing',
-                'thunder'
-            );
-
             CREATE TYPE message_type AS ENUM (
                 'invitation',
                 'join_request',
@@ -83,8 +66,8 @@ const createTables = async () => {
                 email VARCHAR(150) NOT NULL,
                 "registerTime" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                 "lookingForGroup" BOOLEAN DEFAULT false,
-                "isAdmin" BOOLEAN DEFAULT false,
                 "isActive" BOOLEAN DEFAULT false,
+                "isAdmin" BOOLEAN DEFAULT false,
                 "deactivationTime" TIMESTAMPTZ,
                 "avatarURL" text NOT NULL,
                 "firstName" VARCHAR(100),

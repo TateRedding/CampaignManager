@@ -289,7 +289,7 @@ const createFakeCharacter = async ({
         abilities: defaultAbilities,
         skills: defaultSkills,
         hitDice: [{
-            type: 6,
+            dieType: 6,
             total: 1,
             remaining: 1
         }]

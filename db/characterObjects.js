@@ -119,7 +119,6 @@ const treddFargrim = {
     subspecies: 'mountain',
     class: [{
         baseClass: 'paladin',
-        subclass: null,
         level: 1
     }],
     alignment: 'lawful-good',
@@ -250,7 +249,7 @@ const treddFargrim = {
     hitPoints: 12,
     currentHitPoints: 12,
     hitDice: [{
-        type: 10,
+        dieType: 10,
         total: 1,
         remaining: 1,
     }],
@@ -261,8 +260,7 @@ const treddFargrim = {
         damageDieCount: 1,
         damageBonus: 3,
         damageType: 'slashing',
-        save: false,
-        saveAbility: null
+        save: false
     }],
     gold: 100,
     equipment: 'Shield, plate armor, greatsword, 10 torches, 50 feet of hempen rope',
@@ -417,7 +415,7 @@ const thyriLittleflower = {
     currentHitPoints: 96,
     temporaryHitPoints: 5,
     hitDice: [{
-        type: 8,
+        dieType: 8,
         total: 13,
         remaining: 13
     }],
@@ -428,8 +426,7 @@ const thyriLittleflower = {
         damageDieCount: 1,
         damageBonus: 1,
         damageType: 'bludgeoning',
-        save: false,
-        saveAbility: null
+        save: false
     }, {
         name: 'Quarterstaff (Two handed)',
         attackBonus: 6,
@@ -437,8 +434,7 @@ const thyriLittleflower = {
         damageDieCount: 1,
         damageBonus: 1,
         damageType: 'bludgeoning',
-        save: false,
-        saveAbility: null
+        save: false
     }, {
         name: 'Produce Flame',
         attackBonus: 7,
@@ -446,8 +442,7 @@ const thyriLittleflower = {
         damageDieCount: 3,
         damageBonus: 0,
         damageType: 'fire',
-        save: false,
-        saveAbility: null
+        save: false
     }],
     spells: [{
         name: 'Produce Flame',
@@ -458,7 +453,6 @@ const thyriLittleflower = {
         verbal: true,
         somatic: true,
         material: false,
-        components: null,
         concentration: false,
         duration: '10 minutes',
         description: 'A flickering flame appears in your hand...'

@@ -1,9 +1,11 @@
 const client = require('./client');
-const { createRow, getRowById, formatCharacterDataForDBEntry, updateRow } = require('./utils');
+const { createRow, getRowById, formatCharacterDataForDBEntry } = require('./utils');
+const { validateCharacterData } = require('./characterValidation');
 
 const createCharacter = async (fields) => {
-    fields = formatCharacterDataForDBEntry(fields);
     try {
+        validateCharacterData(fields);
+        fields = formatCharacterDataForDBEntry(fields);
         return await createRow('characters', fields);
     } catch (error) {
         console.error(error);
