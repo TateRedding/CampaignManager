@@ -9,6 +9,7 @@ const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user
 const { createMessage } = require("../db/messages");
 const { createCharacter } = require("../db/characters");
 const { defaultAbilities, defaultSkills } = require("../db/characterObjects");
+const { createPage } = require('../db/pages');
 
 const emptyTables = async () => {
     await client.query(`
@@ -248,6 +249,26 @@ const createFakeCampaignWithUserCampaignsAndMessages = async ({
     return campaign;
 };
 
+const createFakePage = async ({
+    name = `${faker.word.adjective} ${faker.word.noun}`,
+    campaignId
+}) => {
+    if (!campaignId) {
+        const campaign = await createFakeCampaign({});
+        campaignId = campaign.id
+    };
+    const contentHTML = `<h1>${name}</h1><p>${faker.lorem.paragraph}</p>`
+    const page = await createPage({
+        campaignId,
+        name,
+        contentHTML
+    });
+    if (!page) {
+        throw new Error("createPage didn't return a page");
+    };
+    return page;
+};
+
 const createFakeCharacter = async ({
     userId,
     campaignId,
@@ -313,5 +334,6 @@ module.exports = {
     createFakeCampaignWithUserCampaigns,
     createFakeMessage,
     createFakeCampaignWithUserCampaignsAndMessages,
+    createFakePage,
     createFakeCharacter,
 };
