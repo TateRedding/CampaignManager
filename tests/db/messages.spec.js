@@ -5,7 +5,7 @@ const {
     updateMessage,
     getMessageById,
     deleteMessage,
-    getInvitationsByUserId,
+    getInvitationsAndRequestsByUserId,
     getPrivateMessagesByUserId,
     getPublicMessagesByCampaignId
 } = require("../../db/messages");
@@ -87,7 +87,7 @@ describe("DB messages", () => {
         });
     });
 
-    describe("getInvitationsByUserId", () => {
+    describe("getInvitationsAndRequestsByUserId", () => {
         it("Gets a list of all messages that are invitations and the given userId is that of either the message's recipientId", async () => {
             const numInvitations = 5;
             const user = await createFakeUser({});
@@ -100,7 +100,7 @@ describe("DB messages", () => {
                     type: 'invitation'
                 });
             };
-            const messages = await getInvitationsByUserId(user.id);
+            const messages = await getInvitationsAndRequestsByUserId(user.id);
             expect(messages.length).toBe(numInvitations);
         });
 
@@ -113,7 +113,7 @@ describe("DB messages", () => {
                 recipientId: user.id,
                 type: 'invitation'
             });
-            const messages = await getInvitationsByUserId(user.id);
+            const messages = await getInvitationsAndRequestsByUserId(user.id);
             expect(messages[0].campaignCreatorId).toBeTruthy();
             expect(messages[0].campaignCreatorId).toBe(campaign.creatorId);
         });
