@@ -275,7 +275,6 @@ const createFakeCharacter = async ({
         species: faker.word.noun(),
         class: [{
             baseClass: faker.word.adjective(),
-            subClass: null,
             level: 1
         }],
         alignment,

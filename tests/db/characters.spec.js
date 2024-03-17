@@ -19,9 +19,30 @@ describe("DB characters", () => {
     beforeEach(async () => emptyTables());
 
     describe("validateCharacterData", () => {
-        it("Validates the JSON data of a characters table entry for JSONB columns", async () => {
+        it("Validates the JSON data of a new characters table entry for JSONB columns", async () => {
             const goodCharacterData = thyriLittleflower;
-            const validationPassed = validateCharacterData(goodCharacterData);
+            const validationPassed = validateCharacterData("new", goodCharacterData);
+            expect(validationPassed).toBeTruthy();
+        });
+
+        it("Validates the JSON data of a characters table update for JSONB columns", async () => {
+            const characterUpdateData = {
+                class: {
+                    0: {
+                        level: 2
+                    },
+                    2: {
+                        subclass: "Circle of the Land"
+                    }
+                },
+                hitDice: {
+                    1: {
+                        total: 2,
+                        remaining: 2
+                    }
+                }
+            };
+            const validationPassed = validateCharacterData("update", characterUpdateData);
             expect(validationPassed).toBeTruthy();
         });
 
@@ -29,7 +50,7 @@ describe("DB characters", () => {
             const badCharacterData = treddFargrim;
             badCharacterData.abilities.dexterity.proficiency = "string";
             expect(() => {
-                validateCharacterData(badCharacterData);
+                validateCharacterData("new", badCharacterData);
             }).toThrow("must be boolean");
         });
     })
@@ -44,14 +65,11 @@ describe("DB characters", () => {
     });
 
     describe("updateCharacter", () => {
-        it("Updates and returns updated character information", async () => {
+        it("Updates base level table data and returns updated character information", async () => {
             const name = "Yog So'thoth"
+            const level = 14;
             const character = await createFakeCharacter({});
-            const updatedCharacterAbilities = character.abilities;
-            updatedCharacterAbilities.strength.score = 13;
-            const updatedCharacterClass = character.class[0];
-            updatedCharacterClass.baseClass = "paladin";
-            const updatedCharacter = await updateCharacter(character.id, { name, abilities: updatedCharacterAbilities, "class[0]": updatedCharacterClass });
+            const updatedCharacter = await updateCharacter(character.id, { name, level });
             expect(updatedCharacter).toEqual(
                 objectContaining({
                     id: character.id,
@@ -60,8 +78,64 @@ describe("DB characters", () => {
                 })
             );
             expect(updatedCharacter.name).toBe(name);
+            expect(updatedCharacter.level).toBe(level);
+        });
+
+        it("Updates JSON data and returns updated character information", async () => {
+            const character = await createFakeCharacter({});
+            const updatedCharacterAbilities = character.abilities;
+            updatedCharacterAbilities.strength.score = 13;
+            const updatedCharacter = await updateCharacter(character.id, { abilities: updatedCharacterAbilities });
+            expect(updatedCharacter).toEqual(
+                objectContaining({
+                    id: character.id,
+                    userId: character.userId,
+                    alignment: character.alignment,
+                })
+            );
             expect(updatedCharacter.abilities.strength.score).toBe(13);
+        });
+
+        it("Updates JSON data of an existing array element and returns updated character information", async () => {
+            const character = await createFakeCharacter({});
+            const updatedCharacterClass = character.class[0];
+            updatedCharacterClass.baseClass = "paladin";
+            updatedCharacterClass.level = 4;
+            const updatedCharacter = await updateCharacter(character.id, { class: { 0: updatedCharacterClass } });
+            expect(updatedCharacter).toEqual(
+                objectContaining({
+                    id: character.id,
+                    userId: character.userId,
+                    alignment: character.alignment,
+                })
+            );
             expect(updatedCharacter.class[0].baseClass).toBe("paladin");
+            expect(updatedCharacter.class[0].level).toBe(4);
+        });
+
+        it("Updates JSON data by adding a new array element and returns updated character information", async () => {
+            const character = await createFakeCharacter({});
+            const newSpellIndex = character.spells ? character.spells.length + 1 : 0;
+            const newSpell = {
+                name: "Produce Flame",
+                attackBonus: 7,
+                damageDie: 8,
+                damageDieCount: 3,
+                damageBonus: 0,
+                damageType: "fire",
+                save: false
+            };
+            const updatedSpells = {};
+            updatedSpells[newSpellIndex] = newSpell;
+            const updatedCharacter = await updateCharacter(character.id, { spells: updatedSpells });
+            expect(updatedCharacter).toEqual(
+                objectContaining({
+                    id: character.id,
+                    userId: character.userId,
+                    alignment: character.alignment,
+                })
+            );
+            expect(updatedCharacter.spells[newSpellIndex]).toMatchObject(newSpell);
         });
     });
 

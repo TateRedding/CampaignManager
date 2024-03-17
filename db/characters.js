@@ -4,7 +4,7 @@ const { validateCharacterData } = require('./characterValidation');
 
 const createCharacter = async (fields) => {
     try {
-        validateCharacterData(fields);
+        validateCharacterData("new", fields);
         fields = formatCharacterDataForDBEntry(fields);
         return await createRow('characters', fields);
     } catch (error) {
@@ -12,34 +12,35 @@ const createCharacter = async (fields) => {
     };
 };
 
-// This function does not account for nested arrays. If nested arrays are ever introduced, this function will need to be updated.
 const updateCharacter = async (id, fields) => {
-    console.log(fields)
     try {
-        validateCharacterData(fields);
-        fields = formatCharacterDataForDBEntry(fields);
-        const setString = Object.keys(fields).map((key, index) => {
-            if (key.includes('[')) {
-                const split = key.split('[');
-                return `"${split[0]}"[${split[1]}=$${index + 1}`;
+        validateCharacterData("update", fields);
+        const updates = [];
+        const values = [];
+        let index = 1;
+        Object.entries(fields).forEach(([key, value]) => {
+            if (key === "attacks" || key === "class" || key === "hitDice" || key === "spells") {
+                for (const [subKey, subValue] of Object.entries(value)) {
+                    updates.push(`"${key}"[${subKey}] = $${index++}`);
+                    values.push(subValue);
+                };
             } else {
-                return `"${key}"=$${index + 1}`;
+                updates.push(`"${key}" = $${index++}`);
+                values.push(value);
             };
-        }).join(', ');
-        if (!setString.length) {
-            return;
-        };
+        });
         const { rows: [character] } = await client.query(`
             UPDATE characters
-            SET ${setString}
-            WHERE id=${id}
+            SET ${updates.join(', ')}
+            WHERE id = ${id}
             RETURNING *;
-        `, Object.values(fields));
+        `, values);
         return character;
     } catch (error) {
         console.error(error);
     };
 };
+
 
 const getCharacterById = async (id) => {
     try {
