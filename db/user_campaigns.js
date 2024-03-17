@@ -1,5 +1,5 @@
 const client = require('./client');
-const { createRow, getRowById } = require('./utils');
+const { createRow, getRowById, updateRow } = require('./utils');
 
 const createUserCampaign = async (fields) => {
     try {
@@ -9,15 +9,9 @@ const createUserCampaign = async (fields) => {
     };
 };
 
-const updateUserCampaign = async (id, isDM) => {
+const updateUserCampaign = async (id, fields) => {
     try {
-        const { rows: [userCampaign] } = await client.query(`
-            UPDATE user_campaigns
-            SET "isDM"=${isDM}
-            WHERE id=${id}
-            RETURNING *;
-        `);
-        return userCampaign;
+        return await updateRow('user_campaigns', id, fields);
     } catch (error) {
         console.error(error);
     };

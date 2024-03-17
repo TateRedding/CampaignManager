@@ -36,7 +36,7 @@ describe("DB user_campaigns", () => {
     describe("updateUserCampaign", () => {
         it("Updates and returns the updated user_campaign information", async () => {
             const userCampaign = await createFakeUserCampaign({});
-            const updatedUserCampaign = await updateUserCampaign(userCampaign.id, true);
+            const updatedUserCampaign = await updateUserCampaign(userCampaign.id, { isDM: true});
             expect(updatedUserCampaign).toBeTruthy();
             expect(updatedUserCampaign).toEqual(
                 objectContaining({
@@ -45,18 +45,6 @@ describe("DB user_campaigns", () => {
                     isDM: true
                 })
             );
-        });
-
-        it("Only changes the boolean isDM", async () => {
-            const userCampaign = await createFakeUserCampaign({});
-            const updatedUserCampaign = await updateUserCampaign(userCampaign.id, !userCampaign.isDM);
-            expect(updatedUserCampaign).toEqual(
-                objectContaining({
-                    userId: userCampaign.userId,
-                    campaignId: userCampaign.campaignId,
-                })
-            );
-            expect(updatedUserCampaign.isDM).not.toBe(userCampaign.isDM);
         });
     });
 

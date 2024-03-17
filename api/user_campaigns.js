@@ -33,13 +33,12 @@ router.post('/', requireUser, async (req, res, next) => {
 
 router.patch('/:userCampaignId', requireUser, async (req, res, next) => {
     const { userCampaignId } = req.params;
-    const { isDM } = req.body;
     try {
         const userCampaign = await getUserCampaignById(userCampaignId);
         const campaign = await getCampaignById(userCampaign.campaignId);
         const loggedInUserPlayerData = campaign.users.filter(player => player.userId === req.user.id)[0];
         if (campaign.creatorId === req.user.id || (loggedInUserPlayerData && loggedInUserPlayerData.isDM)) {
-            const updatedUserCampaign = await updateUserCampaign(userCampaignId, isDM);
+            const updatedUserCampaign = await updateUserCampaign(userCampaignId, { ...req.body });
             res.send(updatedUserCampaign);
         } else {
             res.status(403);
