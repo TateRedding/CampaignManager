@@ -13,9 +13,9 @@ const dropTables = async () => {
             DROP TABLE IF EXISTS user_campaigns;
             DROP TABLE IF EXISTS messages;
             DROP TABLE IF EXISTS characters;
+            DROP TABLE IF EXISTS pages;
             DROP TABLE IF EXISTS campaigns;
             DROP TABLE IF EXISTS users;
-            DROP TYPE IF EXISTS abilities;
             DROP TYPE IF EXISTS alignment;
             DROP TYPE IF EXISTS ability;
             DROP TYPE IF EXISTS message_type;
@@ -83,6 +83,14 @@ const createTables = async () => {
                 location VARCHAR(255),
                 "creationTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 "isOpen" BOOLEAN DEFAULT false
+            );
+
+            CREATE TABLE pages (
+                id SERIAL PRIMARY KEY,
+                "campaignId" INTEGER REFERENCES campaigns(id) NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                "creationDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "contentHTML" TEXT
             );
  
             CREATE TABLE characters (
@@ -201,7 +209,7 @@ const createInitialUsers = async () => {
             lastName: 'Wells',
         }));
 
-        //console.log(users);
+        console.log(users);
         console.log('Finished creating users!')
     } catch (error) {
         console.log('Error creating users!');
@@ -419,10 +427,10 @@ const rebuildDB = async () => {
         await dropTables();
         await createTables();
         await createInitialUsers();
-        //await createInitialCampaigns();
+        await createInitialCampaigns();
         await createInitialCharacters();
-        //await createInitialUserCampaigns();
-        //await createInitialMessages();
+        await createInitialUserCampaigns();
+        await createInitialMessages();
     } catch (error) {
         console.error(error);
     };
