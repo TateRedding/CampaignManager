@@ -1,6 +1,7 @@
 const client = require('./client');
 const { getPublicMessagesByCampaignId } = require('./messages');
 const { getUserCampaignsByCampaignId } = require('./user_campaigns');
+const { getPagesByCampaignId } = require('./pages');
 const { createRow, updateRow } = require('./utils');
 
 const createCampaign = async (fields) => {
@@ -29,7 +30,7 @@ const getAllCampaigns = async () => {
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
-                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id);
             };
         };
         return campaigns;
@@ -38,7 +39,7 @@ const getAllCampaigns = async () => {
     };
 };
 
-const getCampaignById = async (id) => {
+const getCampaignById = async (id, userId) => {
     try {
         const { rows: [campaign] } = await client.query(`
             SELECT campaigns.*, users.username AS "creatorName"
@@ -49,7 +50,13 @@ const getCampaignById = async (id) => {
         `);
         if (campaign) {
             campaign.users = await getUserCampaignsByCampaignId(campaign.id);
-            campaign.messages = await getPublicMessagesByCampaignId(campaign.id);
+            if (userId) {
+                const isInCampaign = campaign.users.find(user => user.userId === userId);
+                if (isInCampaign) {
+                    campaign.messages = await getPublicMessagesByCampaignId(campaign.id);
+                    campaign.pages = await getPagesByCampaignId(campaign.id);
+                };
+            };
         };
         return campaign;
     } catch (error) {
@@ -68,7 +75,7 @@ const getOpenCampaigns = async () => {
         `);
         for (let i = 0; i < campaigns.length; i++) {
             if (campaigns[i]) {
-                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id)
+                campaigns[i].users = await getUserCampaignsByCampaignId(campaigns[i].id);
             };
         };
         return campaigns;
@@ -130,6 +137,10 @@ const deleteCampaign = async (id) => {
                 DELETE FROM messages
                 WHERE "campaignId"=${id};
             `);
+            await client.query(`
+                DELETE FROM pages
+                WHERE "campaignId"=${id};
+            `)
             const { rows: [deletedCampaign] } = await client.query(`
                 DELETE FROM campaigns
                 WHERE id=${id}

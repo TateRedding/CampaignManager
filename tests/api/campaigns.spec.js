@@ -11,6 +11,7 @@ const {
     createFakeUserCampaign,
     createFakeCampaignWithUserCampaigns,
     createFakeCampaignWithUserCampaignsAndMessages,
+    createFakeCampaignWithUserCampaignsAndPages,
     createFakeUserWithToken,
     expectToMatchObjectWithDates
 } = require("../utils");
@@ -105,6 +106,16 @@ describe("/api/campaigns", () => {
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
             expect(response.body.messages).toBeTruthy();
+        });
+
+        it("includes a list of pages if logged in user is in the campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaignWithUserCampaignsAndPages({ numUsers: 4, numPages: 3, creatorId: user.id });
+            const response = await request(app)
+                .get(`/api/campaigns/${campaign.id}`)
+                .set("Authorization", `Bearer ${token}`);
+            expectNotToBeError(response.body);
+            expect(response.body.pages).toBeTruthy();
         });
 
         it("Returns a relevant error if the campaign is not looking for players and no user is logged in or logged in user is not in camapign or an admin", async () => {

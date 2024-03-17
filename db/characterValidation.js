@@ -220,4 +220,4 @@ const validateCharacterData = (entryType, character) => {
 
 module.exports = {
     validateCharacterData
-}
+};

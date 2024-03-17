@@ -48,4 +48,4 @@ module.exports = {
     updatePage,
     getPagesByCampaignId,
     deletePage
-}
+};

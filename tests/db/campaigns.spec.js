@@ -16,6 +16,7 @@ const {
     createFakeCampaign,
     createFakeCampaignWithUserCampaigns,
     createFakeCampaignWithUserCampaignsAndMessages,
+    createFakeCampaignWithUserCampaignsAndPages
 } = require("../utils");
 
 describe("DB campaigns", () => {
@@ -105,13 +106,21 @@ describe("DB campaigns", () => {
             expect(campaign.users.length).toBe(numUsers);
         });
 
-        it("Includes a list of messages from the messages table", async () => {
+        it("Includes a list of messages from the messages table if a valid userId is given", async () => {
             const numUsers = 4;
             const numPublicMessages = 10;
             const _campaign = await createFakeCampaignWithUserCampaignsAndMessages({ numUsers, numPublicMessages });
             const campaign = await getCampaignById(_campaign.id, _campaign.creatorId);
             expect(campaign.messages).toBeTruthy();
             expect(campaign.messages.length).toBe(numPublicMessages);
+        });
+
+        it("Includes a list of pages from the pages table if a valid userId is given", async () => {
+            const numPages = 3;
+            const _campaign = await createFakeCampaignWithUserCampaignsAndPages({ numPages });
+            const campaign = await getCampaignById(_campaign.id, _campaign.creatorId);
+            expect(campaign.pages).toBeTruthy();
+            expect(campaign.pages.length).toBe(numPages);
         });
     });
 

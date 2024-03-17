@@ -5,7 +5,7 @@ require('dotenv').config();
 const { JWTS } = process.env;
 const { createUser } = require("../db/users");
 const { createCampaign } = require("../db/campaigns");
-const { createUserCampaign, getUserCampaignsByCampaignId } = require("../db/user_campaigns");
+const { createUserCampaign, getUserCampaignsByCampaignId, updateUserCampaign } = require("../db/user_campaigns");
 const { createMessage } = require("../db/messages");
 const { createCharacter } = require("../db/characters");
 const { defaultAbilities, defaultSkills } = require("../db/characterObjects");
@@ -15,6 +15,7 @@ const emptyTables = async () => {
     await client.query(`
         DELETE FROM user_campaigns;
         DELETE FROM messages;
+        DELETE FROM pages;
         DELETE FROM characters;
         DELETE FROM campaigns;
         DELETE FROM users;
@@ -269,6 +270,26 @@ const createFakePage = async ({
     return page;
 };
 
+const createFakeCampaignWithUserCampaignsAndPages = async ({
+    numUsers = 1,
+    numPages = 1,
+    numEditors = 0,
+    creatorId
+}) => {
+    if (numEditors > numUsers) {
+        numUsers = numEditors
+    };
+    const campaign = await createFakeCampaignWithUserCampaigns({ numUsers, creatorId });
+    const users = await getUserCampaignsByCampaignId(campaign.id);
+    for (let i = 0; i < numEditors; i++) {
+        await updateUserCampaign(users[i].userId, { canEdit: true });
+    };
+    for (let j = 0; j < numPages; j++) {
+        await createFakePage({ campaignId: campaign.id });
+    };
+    return campaign;
+};
+
 const createFakeCharacter = async ({
     userId,
     campaignId,
@@ -335,5 +356,6 @@ module.exports = {
     createFakeMessage,
     createFakeCampaignWithUserCampaignsAndMessages,
     createFakePage,
+    createFakeCampaignWithUserCampaignsAndPages,
     createFakeCharacter,
 };
