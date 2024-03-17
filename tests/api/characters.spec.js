@@ -10,6 +10,7 @@ const {
 } = require('../utils');
 const request = require("supertest");
 const app = require("../../app");
+const { defaultAbilities, defaultSkills } = require("../../db/characterObjects");
 
 describe("/api/characters", () => {
 
@@ -44,7 +45,7 @@ describe("/api/characters", () => {
                 userId: user.id,
                 name: "Tredd Xenon Li",
                 species: faker.word.noun(),
-                class: faker.word.adjective(),
+                class: [{ baseClass: faker.word.adjective(), level: 1 }],
                 alignment: "chaotic-evil",
                 background: `${faker.word.noun()} ${faker.word.adjective()}`,
                 age: randInt(350, 18),
@@ -53,10 +54,9 @@ describe("/api/characters", () => {
                 eyes: faker.color.human(),
                 hair: faker.color.human(),
                 skin: faker.color.human(),
-                proficiencies: {},
-                totalHitDice: { 'd10': 1 },
-                currentHitDice: { 'd10': 1 },
-                features: {}
+                abilities: defaultAbilities,
+                skills: defaultSkills,
+                hitDice: [{ dieType: 10, total: 1, remaining: 1 }]
             };
             const response = await request(app)
                 .post("/api/characters")
@@ -70,10 +70,10 @@ describe("/api/characters", () => {
             const user = createFakeUser({});
             const fakeCharacterData = {
                 userId: user.id,
-                name: "Robi Fargrimm",
+                name: "Tredd Xenon Li",
                 species: faker.word.noun(),
-                class: faker.word.adjective(),
-                alignment: "lawful-good",
+                class: [{ baseClass: faker.word.adjective(), level: 1 }],
+                alignment: "chaotic-evil",
                 background: `${faker.word.noun()} ${faker.word.adjective()}`,
                 age: randInt(350, 18),
                 height: randInt(75, 10),
@@ -81,10 +81,9 @@ describe("/api/characters", () => {
                 eyes: faker.color.human(),
                 hair: faker.color.human(),
                 skin: faker.color.human(),
-                proficiencies: {},
-                totalHitDice: { 'd10': 1 },
-                currentHitDice: { 'd10': 1 },
-                features: {}
+                abilities: defaultAbilities,
+                skills: defaultSkills,
+                hitDice: [{ dieType: 10, total: 1, remaining: 1 }]
             };
             const response = await request(app)
                 .post("/api/characters")

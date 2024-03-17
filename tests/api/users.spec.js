@@ -236,7 +236,7 @@ describe("/api/users", () => {
         it("Updates and returns the updated user data", async () => {
             const newData = {
                 firstName: "Fake",
-                surname: "User"
+                lastName: "User"
             };
             const { user, token } = await createFakeUserWithToken({});
             const response = await request(app)
@@ -245,14 +245,14 @@ describe("/api/users", () => {
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
             expect(response.body.firstName).toBe(newData.firstName);
-            expect(response.body.surname).toBe(newData.surname);
+            expect(response.body.lastName).toBe(newData.lastName);
 
         });
 
         it("Requires the user to be logged in", async () => {
             const newData = {
                 firstName: "Fake",
-                surname: "User"
+                lastName: "User"
             };
             const user = await createFakeUser({});
             const response = await request(app)
@@ -265,7 +265,7 @@ describe("/api/users", () => {
         it("Returns a relevant error if logged in user is trying to update a different user's data", async () => {
             const newData = {
                 firstName: "Fake",
-                surname: "User"
+                lastName: "User"
             };
             const user = await createFakeUser({});
             const { token } = await createFakeUserWithToken({});
@@ -286,7 +286,7 @@ describe("/api/users", () => {
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
             expect(response.body.isActive).toBeFalsy();
-            expect(response.body.deactivationDate).toBeTruthy();
+            expect(response.body.deactivationTime).toBeTruthy();
         });
 
         it("Requires the user to be logged in", async () => {
@@ -315,7 +315,7 @@ describe("/api/users", () => {
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
             expect(response.body.isActive).toBeFalsy();
-            expect(response.body.deactivationDate).toBeTruthy();
+            expect(response.body.deactivationTime).toBeTruthy();
         });
     });
 });

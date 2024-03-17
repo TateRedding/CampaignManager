@@ -127,6 +127,7 @@ describe("/api/campaigns", () => {
             const { user, token } = await createFakeUserWithToken({});
             const fakeCampaignData = {
                 name: "Hot Strahd",
+                path: "Hot_Strahd",
                 location: faker.location.city()
             };
             const response = await request(app)
