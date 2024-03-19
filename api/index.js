@@ -29,6 +29,7 @@ router.use(async (req, res, next) => {
 router.use('/campaigns', require('./campaigns'));
 router.use('/characters', require('./characters'));
 router.use('/messages', require('./messages'));
+router.use('/pages', require('./pages'));
 router.use('/user_campaigns', require('./user_campaigns'));
 router.use('/users', require('./users'));
 

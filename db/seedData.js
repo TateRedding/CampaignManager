@@ -87,10 +87,12 @@ const createTables = async () => {
 
             CREATE TABLE pages (
                 id SERIAL PRIMARY KEY,
+                "parentPageId" INTEGER REFERENCES pages(id),
                 "campaignId" INTEGER REFERENCES campaigns(id) NOT NULL,
                 name VARCHAR(100) NOT NULL,
                 "creationDate" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                "contentHTML" TEXT
+                "contentHTML" TEXT,
+                UNIQUE ("parentPageId", "campaignId", name)
             );
  
             CREATE TABLE characters (

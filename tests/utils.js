@@ -125,7 +125,8 @@ const createFakeCampaign = async ({
 const createFakeUserCampaign = async ({
     userId,
     campaignId,
-    isDM = false
+    isDM = false,
+    canEdit = false
 }) => {
     if (!userId) {
         const user = await createFakeUser({});
@@ -138,7 +139,8 @@ const createFakeUserCampaign = async ({
     const fakeUserCampaign = await createUserCampaign({
         userId,
         campaignId,
-        isDM
+        isDM,
+        canEdit
     });
     if (!fakeUserCampaign) {
         throw new Error("createCampaign didn't return a campaign");
@@ -252,6 +254,7 @@ const createFakeCampaignWithUserCampaignsAndMessages = async ({
 
 const createFakePage = async ({
     name = `${faker.word.adjective} ${faker.word.noun}`,
+    parentPageId = null,
     campaignId
 }) => {
     if (!campaignId) {
@@ -261,6 +264,7 @@ const createFakePage = async ({
     const contentHTML = `<h1>${name}</h1><p>${faker.lorem.paragraph}</p>`
     const page = await createPage({
         campaignId,
+        parentPageId,
         name,
         contentHTML
     });

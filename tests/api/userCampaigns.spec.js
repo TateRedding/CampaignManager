@@ -60,7 +60,7 @@ describe("/api/userCampaigns", () => {
             expectToBeError(loggedInResponse.body, "UnauthorizedError");
         });
 
-        it("Returns a relevant error if user_campaign with userId and campaignId already exists", async () => {
+        it("Returns a relevant error if user_campaign with given userId and campaignId already exists", async () => {
             const { user, token } = await createFakeUserWithToken({});
             const campaign = await createFakeCampaign({ creatorId: user.id });
             await createFakeUserCampaign({

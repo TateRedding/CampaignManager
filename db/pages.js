@@ -30,6 +30,21 @@ const getPagesByCampaignId = async (campaignId) => {
     };
 };
 
+const getPageByNameAndCampaignIdAndParentPageId = async (name, campaignId, parentPageId) => {
+    try {
+        const { rows: [page] } = await client.query(`
+            SELECT *
+            FROM pages
+            WHERE name='${name}'
+            AND "campaignId"=${campaignId}
+            AND "parentPageId"=${parentPageId}
+        `);
+        return page;
+    } catch (error) {
+        console.error(error);
+    };
+}
+
 const deletePage = async (id) => {
     try {
         const { rows: [deletedPage] } = await client.query(`
@@ -47,5 +62,6 @@ module.exports = {
     createPage,
     updatePage,
     getPagesByCampaignId,
+    getPageByNameAndCampaignIdAndParentPageId,
     deletePage
 };

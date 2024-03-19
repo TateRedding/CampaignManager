@@ -1,6 +1,6 @@
 const { objectContaining } = expect;
 const client = require("../../db/client");
-const { getPagesByCampaignId, updatePage, deletePage } = require("../../db/pages");
+const { updatePage, getPagesByCampaignId, getPageByNameAndCampaignIdAndParentPageId, deletePage } = require("../../db/pages");
 const { createFakeCampaign, createFakePage } = require("../utils");
 
 describe("DB pages", () => {
@@ -49,6 +49,24 @@ describe("DB pages", () => {
             const pages = await getPagesByCampaignId(campaign.id);
             expect(pages).toBeTruthy();
             expect(pages.length).toEqual(numPages);
+        });
+    });
+
+    describe("getPageByNameAndCampaignIdAndParentPageId", () => {
+        it("Gets the page with a given name, campaignId, and parentPageId", async () => {
+            const campaign = await createFakeCampaign({});
+            const parentPage = await createFakePage({ campaignId: campaign.id });
+            const name = "This is a sub page";
+            const _page = await createFakePage({ name, parentPageId: parentPage.id, campaignId: campaign.id })
+            const page = await getPageByNameAndCampaignIdAndParentPageId(name, campaign.id, parentPage.id);
+            expect(page).toBeTruthy();
+            expect(page).toEqual(
+                objectContaining({
+                    campaignId: _page.campaignId,
+                    name: _page.name,
+                    parentPageId: _page.parentPageId
+                })
+            );
         });
     });
 
