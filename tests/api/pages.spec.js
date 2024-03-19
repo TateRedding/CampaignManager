@@ -7,7 +7,8 @@ const {
     createFakeUserWithToken,
     createFakeCampaign,
     createFakeUserCampaign,
-    createFakePage
+    createFakePage,
+    expectToMatchObjectWithDates
 } = require("../utils");
 
 describe("/api/pages", () => {
@@ -183,7 +184,7 @@ describe("/api/pages", () => {
                 .delete(`/api/pages/${page.id}`)
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
-            expect(response.body).toMatchObject(page);
+            expectToMatchObjectWithDates(response.body, page);
         });
 
         it("Returns the data of the deleted page if logged in user is NOT the creator of the campaign, but is  an admin", async () => {
@@ -197,7 +198,7 @@ describe("/api/pages", () => {
                 .delete(`/api/pages/${page.id}`)
                 .set("Authorization", `Bearer ${token}`);
             expectNotToBeError(response.body);
-            expect(response.body).toMatchObject(page);
+            expectToMatchObjectWithDates(response.body, page);
         });
 
         it("Returns a relevant error if no user is logged in or logged in user is NOT the creatpr of the corresponding campaign, or an admin", async () => {

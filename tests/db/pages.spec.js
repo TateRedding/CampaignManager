@@ -1,6 +1,6 @@
 const { objectContaining } = expect;
 const client = require("../../db/client");
-const { updatePage, getPagesByCampaignId, getPageByNameAndCampaignIdAndParentPageId, deletePage } = require("../../db/pages");
+const { updatePage, getPagesByCampaignId, getPageByNameAndCampaignIdAndParentPageId, deletePage, getPageById } = require("../../db/pages");
 const { createFakeCampaign, createFakePage } = require("../utils");
 
 describe("DB pages", () => {
@@ -37,6 +37,14 @@ describe("DB pages", () => {
             );
         });
 
+    });
+
+    describe("getPageById", () => {
+        it("Gets the page with the given id", async () => {
+            const _page = await createFakePage({});
+            const page = await getPageById(_page.id);
+            expect(page).toMatchObject(_page);
+        });
     });
 
     describe("getPagesbyCampaignId", () => {

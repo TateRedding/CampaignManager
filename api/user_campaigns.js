@@ -83,12 +83,12 @@ router.delete('/:userCampaignId', requireUser, async (req, res, next) => {
             res.status(403);
             res.send({
                 name: 'UnauthorizedDeleteError',
-                message: `User ${req.user.username} does not have permission remove user with id ${userCampaign.userId} from the campaign ${campaign.name}`
+                message: `User ${req.user.username} does not have permission to remove user with id ${userCampaign.userId} from the campaign ${campaign.name}`
             });
         };
     } catch ({ name, message }) {
         next({ name, message });
     };
-})
+});
 
 module.exports = router;

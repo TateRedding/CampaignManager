@@ -1,5 +1,5 @@
 const client = require('./client');
-const { createRow, updateRow } = require('./utils');
+const { createRow, updateRow, getRowById } = require('./utils');
 
 const createPage = async (fields) => {
     try {
@@ -12,6 +12,14 @@ const createPage = async (fields) => {
 const updatePage = async (id, fields) => {
     try {
         return await updateRow('pages', id, fields);
+    } catch (error) {
+        console.error(error);
+    };
+};
+
+const getPageById = async (id) => {
+    try {
+        return await getRowById('pages', id);
     } catch (error) {
         console.error(error);
     };
@@ -61,6 +69,7 @@ const deletePage = async (id) => {
 module.exports = {
     createPage,
     updatePage,
+    getPageById,
     getPagesByCampaignId,
     getPageByNameAndCampaignIdAndParentPageId,
     deletePage
