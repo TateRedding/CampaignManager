@@ -5,6 +5,7 @@ const { createUserCampaign } = require('./user_campaigns');
 const { createMessage } = require('./messages');
 const { createCharacter } = require('./characters');
 const { treddFargrim, thyriLittleflower } = require('./characterObjects');
+const { createPage } = require('./pages');
 
 const dropTables = async () => {
     try {
@@ -262,6 +263,38 @@ const createInitialCampaigns = async () => {
     };
 };
 
+const createInitialPages = async () => {
+    try {
+        console.log('Creating pages...');
+        const pages = [];
+
+        pages.push(await createPage({
+            campaignId: 1,
+            name: "NPCs",
+            contentHTML: "<h1>NPC Directory Page</h1><p><a href=\"https://www.example.com\">Strahd von Zarovich</a><p>"
+        }));
+
+        pages.push(await createPage({
+            campaignId: 1,
+            parentPageId: 1,
+            name: "Strahd von Zarovich",
+            contentHTML: "<h1>Strahd von Zarovich</h1><p>Strahd is a bad boy. Kill him.<p>"
+        }));
+
+        pages.push(await createPage({
+            campaignId: 2,
+            name: "The End",
+            contentHTML: "<h1>The End</h1><p>Thank you all for such an amazing and rewarding experience!<p>"
+        }));
+
+        console.log(pages);
+        console.log('Finished creating pages!');
+    } catch (error) {
+        console.log('Error creating pages!');
+        console.error(error);
+    }
+};
+
 const createInitialCharacters = async () => {
     try {
         console.log('Creating characters...');
@@ -430,6 +463,7 @@ const rebuildDB = async () => {
         await createTables();
         await createInitialUsers();
         await createInitialCampaigns();
+        await createInitialPages();
         await createInitialCharacters();
         await createInitialUserCampaigns();
         await createInitialMessages();
