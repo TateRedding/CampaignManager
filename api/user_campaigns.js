@@ -12,20 +12,36 @@ const router = express.Router();
 
 router.post('/', requireUser, async (req, res, next) => {
     const fields = req.body;
-    fields.userId = req.user.id;
     try {
-        if (fields.campaignId) {
-            const _userCampaign = await getUserCampaignByUserIdAndCamapignId(fields.userId, fields.campaignId);
-            if (!_userCampaign) {
-                const userCampaign = await createUserCampaign(fields);
-                res.send(userCampaign);
+        const campaign = await getCampaignById(fields.campaignId);
+        if (campaign) {
+            const loggedInUserPlayerData = campaign.users.filter(player => player.userId === req.user.id)[0];
+            if (campaign.creatorId === req.user.id || (loggedInUserPlayerData && loggedInUserPlayerData.isDM)) {
+                const _userCampaign = await getUserCampaignByUserIdAndCamapignId(fields.userId, fields.campaignId);
+                if (!_userCampaign) {
+                    const userCampaign = await createUserCampaign(fields);
+                    res.send(userCampaign);
+                } else {
+                    res.status(400);
+                    res.send({
+                        name: 'UserCampaignError',
+                        message: 'Could not add user to campaign! User may already be in campaign.'
+                    });
+                };
             } else {
-                next({
-                    name: 'UserCampaignError',
-                    message: 'Could not add user to campaign! User may already be in campaign.'
+                res.status(403);
+                res.send({
+                    name: 'UnauthorizedError',
+                    message: `User ${req.user.username} does not have permission to add users to campaign with id ${campaign.userId}`
                 });
             };
-        }
+        } else {
+            res.status(404);
+            res.send({
+                name: 'CampaignNotFoundError',
+                message: `No campaign could be found with id ${fields.campaignId}`
+            });
+        };
     } catch ({ name, message }) {
         next({ name, message });
     };
@@ -44,7 +60,7 @@ router.patch('/:userCampaignId', requireUser, async (req, res, next) => {
             res.status(403);
             res.send({
                 name: 'UnauthorizedUpdateError',
-                message: `User ${req.user.username} does not have permission to change DM status of user with id ${userCampaign.userId}`
+                message: `User ${req.user.username} does not have permission to update user with id ${userCampaign.userId}`
             });
         };
     } catch ({ name, message }) {

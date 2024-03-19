@@ -40,7 +40,8 @@ router.get('/id/:userId', async (req, res, next) => {
         if (user) {
             res.send(user);
         } else {
-            next({
+            res.status(400);
+            res.send({
                 name: 'InvalidUserId',
                 message: `No user found with id ${userId}`
             });
@@ -58,7 +59,8 @@ router.get('/username/:username', async (req, res, next) => {
             const userData = await getPublicUserDataByUsername(username);
             res.send(userData);
         } else {
-            next({
+            res.status(400);
+            res.send({
                 name: 'InvalidUsername',
                 message: `No user found with username ${username}`
             });
@@ -107,12 +109,14 @@ router.post('/register', async (req, res, next) => {
         };
         const existingUser = await getUserByUsername(username);
         if (existingUser) {
-            next({
+            res.status(409)
+            res.send({
                 name: 'UsernameTakenError',
                 message: 'Username is already taken.'
             });
         } else if (password.length < 8) {
-            next({
+            res.status(403)
+            res.send({
                 name: 'PasswordTooShortError',
                 message: 'Password must be atleast 8 characters long.'
             });

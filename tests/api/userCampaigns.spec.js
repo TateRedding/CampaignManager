@@ -11,10 +11,11 @@ const {
 
 describe("/api/userCampaigns", () => {
     describe("POST /api/user_campaigns", () => {
-        it("Returns the data of the newly created message", async () => {
-            const { token } = await createFakeUserWithToken({});
-            const campaign = await createFakeCampaign({});
+        it("Returns the data of the newly created user_campaign", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({ creatorId: user.id });
             const fakeUserCampaignData = {
+                userId: user.id,
                 campaignId: campaign.id,
             };
             const response = await request(app)
@@ -25,27 +26,55 @@ describe("/api/userCampaigns", () => {
             expect(response.body).toMatchObject(fakeUserCampaignData);
         });
 
-        it("Returns a relevant error if no user is logged in", async () => {
-            const campaign = await createFakeCampaign({});
+        it("Returns a relevant error if no campaign exists with the given campaign id", async () => {
+            const { user, token } = await createFakeUserWithToken({});
+            const newestCampaign = await createFakeCampaign({});
+            const fakeUserCampaignData = {
+                userId: user.id,
+                campaignId: newestCampaign.id + 1
+            };
             const response = await request(app)
                 .post("/api/user_campaigns")
-                .send({ campaignId: campaign.id });
-            expect(response.status).toBe(401);
-            expectToBeError(response.body, "UnauthorizedError");
+                .send(fakeUserCampaignData)
+                .set("Authorization", `Bearer ${token}`);
+            expect(response.status).toBe(404);
+            expectToBeError(response.body, "CampaignNotFoundError");
+        });
+
+        it("Returns a relevant error if no user is logged in or logged in user is not the creator or a DM of the corresponding campaign", async () => {
+            const user = await createFakeUser({});
+            const { token } = await createFakeUserWithToken({});
+            const campaign = await createFakeCampaign({ creatorId: user.id });
+            const fakeUserCampaignData = {
+                userId: user.id,
+                campaignId: campaign.id
+            };
+            const noLoginResponse = await request(app).post('/api/user_campaigns');
+            const loggedInResponse = await request(app)
+                .post('/api/user_campaigns')
+                .send(fakeUserCampaignData)
+                .set("Authorization", `Bearer ${token}`);
+            expect(noLoginResponse.status).toBe(401);
+            expectToBeError(noLoginResponse.body, 'UnauthorizedError');
+            expect(loggedInResponse.status).toBe(403);
+            expectToBeError(loggedInResponse.body, "UnauthorizedError");
         });
 
         it("Returns a relevant error if user_campaign with userId and campaignId already exists", async () => {
             const { user, token } = await createFakeUserWithToken({});
-            const campaign = await createFakeCampaign({});
+            const campaign = await createFakeCampaign({ creatorId: user.id });
             await createFakeUserCampaign({
                 userId: user.id,
                 campaignId: campaign.id
             });
             const response = await request(app)
                 .post("/api/user_campaigns")
-                .send({ campaignId: campaign.id })
+                .send({
+                    userId: user.id,
+                    campaignId: campaign.id 
+                })
                 .set("Authorization", `Bearer ${token}`);
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(400);
             expectToBeError(response.body, "UserCampaignError");
         });
     });

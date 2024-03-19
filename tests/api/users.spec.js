@@ -73,7 +73,7 @@ describe("/api/users", () => {
 
         it("Returns a relevant error if no user is found", async () => {
             const response = await request(app).get('/api/users/id/1000000');
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(400);
             expectToBeError(response.body, 'InvalidUserId');
         });
     });
@@ -91,7 +91,7 @@ describe("/api/users", () => {
 
         it("Returns a relevant error if no user is found", async () => {
             const response = await request(app).get('/api/users/username/Jeffers');
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(400);
             expectToBeError(response.body, 'InvalidUsername');
         });
     });
@@ -214,7 +214,7 @@ describe("/api/users", () => {
             const response = await request(app)
                 .post("/api/users/register")
                 .send(secondUserData);
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(409);
             expectToBeError(response.body, "UsernameTakenError");
         });
 
@@ -227,7 +227,7 @@ describe("/api/users", () => {
             const response = await request(app)
                 .post("/api/users/register")
                 .send(fakeUserData);
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(403);
             expectToBeError(response.body, "PasswordTooShortError");
         });
     });
