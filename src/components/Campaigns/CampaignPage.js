@@ -38,13 +38,13 @@ const CampaignPage = ({ token, loading, userData }) => {
         if (content) {
             const fields = {
                 campaignId: campaign.id,
-                content,
-                isPublic
+                content
             };
 
             if (!isPublic) {
                 if (recipientId) {
                     fields.recipientId = recipientId
+                    fields.type = 'private'
                 } else {
                     return;
                 };
@@ -116,9 +116,9 @@ const CampaignPage = ({ token, loading, userData }) => {
                                                 onChange={(event) => setRecipientId(event.target.value)}>
                                                 <option value={0}>Select Recipient</option>
                                                 {
-                                                    campaign.players.map((player, i) => {
-                                                        if (player.username !== userData.username) {
-                                                            return <option key={i} value={player.id}>{player.username}</option>
+                                                    campaign.users.map((user, i) => {
+                                                        if (user.username !== userData.username) {
+                                                            return <option key={i} value={user.userId}>{user.username}</option>
                                                         }
                                                     })
                                                 }
