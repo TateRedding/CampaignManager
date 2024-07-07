@@ -17,7 +17,7 @@ router.use(async (req, res, next) => {
         try {
             const { id } = jwt.verify(token, JWTS);
             if (id) {
-                req.user = await getUserById(id)
+                req.user = await getUserById(id);
                 next();
             };
         } catch (error) {

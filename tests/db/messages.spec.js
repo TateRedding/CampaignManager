@@ -184,7 +184,7 @@ describe("DB messages", () => {
             };
             const threads = await getPrivateMessagesByUserId(user.id);
             expect(threads[0].messages.length).toBe(numPrivateMessages);
-            expect(threads[0].messages.filter(message => message.isInvitation).length).toBeFalsy();
+            expect(threads[0].messages.filter(message => message.type == 'invitation').length).toBeFalsy();
         });
 
         it("Does NOT return any messages where the given userId is neither that of the message's senderId or recipientId", async () => {

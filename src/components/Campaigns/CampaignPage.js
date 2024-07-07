@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const CampaignPage = ({ token, userData }) => {
+const CampaignPage = ({ token, loading, userData }) => {
     const [campaign, setCampaign] = useState({});
     const [content, setContent] = useState('');
     const [isPublic, setIsPublic] = useState(true);
@@ -10,13 +10,25 @@ const CampaignPage = ({ token, userData }) => {
     const { campaignId } = useParams();
 
     const getCampaignData = async () => {
-        try {
-            const response = await axios.get(`/api/campaigns/${campaignId}`);
-            if (!response.data.error) {
-                setCampaign(response.data);
+        if (!loading) {
+            try {
+                let response;
+                if (token) {
+                    response = await axios.get(`/api/campaigns/${campaignId}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                } else {
+                    response = await axios.get(`/api/campaigns/${campaignId}`);
+                };
+                if (response && !response.data.error) {
+                    setCampaign(response.data);
+                };
+            } catch (error) {
+                console.error(error);
             };
-        } catch (error) {
-            console.error(error);
         };
     };
 
@@ -60,6 +72,10 @@ const CampaignPage = ({ token, userData }) => {
     useEffect(() => {
         getCampaignData();
     }, []);
+
+    useEffect(() => {
+        getCampaignData();
+    }, [loading]);
 
     return (
         <div className="card">

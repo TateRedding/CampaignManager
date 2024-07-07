@@ -52,7 +52,7 @@ const getInvitationsAndRequestsByUserId = async (userId) => {
             FROM messages
             JOIN campaigns
                 ON messages."campaignId"=campaigns.id
-            WHERE (type = 'invitation' OR type = 'join_request')
+            WHERE (type = 'invitation' OR type = 'request')
             AND "recipientId"=${userId}
         `);
         return messages;

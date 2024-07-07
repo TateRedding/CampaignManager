@@ -20,6 +20,7 @@ import Register from "./components/Register";
 const App = () => {
     const TOKEN_NAME = 'campaignManagerLoginToken';
     const [token, setToken] = useState('');
+    const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState({});
 
     const navigate = useNavigate();
@@ -76,6 +77,7 @@ const App = () => {
                 setToken(currToken);
             };
         };
+        setLoading(false);
     }, []);
 
     useEffect(() => {
@@ -105,6 +107,7 @@ const App = () => {
                     <Route path='/campaigns/:campaignId' element={
                         <CampaignPage
                             token={token}
+                            loading={loading}
                             userData={userData}
                         />
                     } />

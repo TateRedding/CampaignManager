@@ -20,7 +20,7 @@ const InvitesAndRequests = ({ token, useQuery, userData }) => {
             }
         });
         if (response.data) {
-            userData.invitationsAndRequestsAndRequests.splice(userData.invitationsAndRequests.indexOf(message), 1);
+            userData.invitationsAndRequests.splice(userData.invitationsAndRequests.indexOf(message), 1);
             updateArrays();
         };
     };

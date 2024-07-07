@@ -47,10 +47,10 @@ router.delete('/:messageId', requireUser, async (req, res, next) => {
         let campaign;
         if (message.campaignId) {
             campaign = await getCampaignById(message.campaignId);
-        }
+        };
         if (message.senderId === req.user.id
             || campaign && req.user.id === campaign.creatorId
-            || (message.isInvitation && req.user.id === message.recipientId)
+            || (message.type == "invitation" && req.user.id === message.recipientId)
             || req.user.isAdmin) {
             const deletedMessage = await deleteMessage(messageId);
             res.send(deletedMessage);

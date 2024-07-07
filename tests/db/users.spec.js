@@ -188,7 +188,7 @@ describe("DB Users", () => {
                 senderId: userForRequest.id,
                 campaignId: campaignForRequest.id,
                 recipientId: _user.id,
-                type: 'join_request'
+                type: 'request'
             });
             const user = await getAllUserDataById(_user.id);
             expect(user.invitationsAndRequests).toBeTruthy();

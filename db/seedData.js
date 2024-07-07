@@ -55,7 +55,7 @@ const createTables = async () => {
 
             CREATE TYPE message_type AS ENUM (
                 'invitation',
-                'join_request',
+                'request',
                 'private',
                 'public'
             );
@@ -445,7 +445,7 @@ const createInitialMessages = async () => {
             senderId: 3,
             recipientId: 1,
             campaignId: 2,
-            type: 'join_request',
+            type: 'request',
             content: 'This is a request from Davis to join The Heroes of Red Larch',
         }));
 

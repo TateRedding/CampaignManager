@@ -15,7 +15,7 @@ const InvitationModal = ({ player, campaign, token, userData }) => {
 
     const sendInvitation = async () => {
         const messageData = {
-            isInvitation: true,
+            type: 'invitation',
             content: message,
             isPublic: false
         };
