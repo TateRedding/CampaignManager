@@ -59,7 +59,7 @@ const ProfileOverview = ({ profileData, parseDate, isLoggedInUser }) => {
                         :
                         null
                 }
-                <p>Member since: {parseDate(profileData.registerDate).split(' ').slice(1, 4).join(' ')}</p>
+                <p>Member since: {parseDate(profileData.registerTime).split(' ').slice(1, 4).join(' ')}</p>
                 <p className="mb-0"><b>About Me:</b></p>
                 <p>{profileData.bio ? profileData.bio : "There's nothing here!"}</p>
             </div>

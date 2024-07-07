@@ -32,7 +32,7 @@ const MessageThread = ({ thread, parseDate, userData }) => {
                 <div className="accordion-body">
                     {
                         thread.messages
-                            .sort((a, b) => a.postDate > b.postDate)
+                            .sort((a, b) => a.postTime > b.postTime)
                             .map(message => {
                                 return (
                                     <div className="d-flex flex-column" key={message.id}>

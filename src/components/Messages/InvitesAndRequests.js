@@ -20,21 +20,21 @@ const InvitesAndRequests = ({ token, useQuery, userData }) => {
             }
         });
         if (response.data) {
-            userData.invitations.splice(userData.invitations.indexOf(message), 1);
+            userData.invitationsAndRequestsAndRequests.splice(userData.invitationsAndRequests.indexOf(message), 1);
             updateArrays();
         };
     };
 
     const updateArrays = () => {
-        if (userData.invitations) {
-            setInvites(userData.invitations.filter(invitation => invitation.campaignCreatorId !== userData.id));
-            setRequests(userData.invitations.filter(invitation => invitation.campaignCreatorId === userData.id));
+        if (userData.invitationsAndRequests) {
+            setInvites(userData.invitationsAndRequests.filter(invitation => invitation.type == "invitation"));
+            setRequests(userData.invitationsAndRequests.filter(invitation => invitation.type === "request"));
         };
     };
 
     useEffect(() => {
         updateArrays();
-    }, [userData.invitations]);
+    }, [userData.invitationsAndRequests]);
 
     return (
         <>

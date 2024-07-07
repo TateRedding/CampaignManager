@@ -47,8 +47,8 @@ const App = () => {
         };
     };
 
-    const parseDate = (postDate) => {
-        const date = new Date(Date.parse(postDate));
+    const parseTimestamp = (timestamp) => {
+        const date = new Date(Date.parse(timestamp));
         const day = date.toString().split(' ')[0];
         const month = date.toString().split(' ')[1];
         date.setHours(12);
@@ -149,7 +149,7 @@ const App = () => {
                     <Route path='/messages' element={
                         <PrivateMessages
                             userData={userData}
-                            parseDate={parseDate}
+                            parseDate={parseTimestamp}
                         />
                     } />
                     <Route path='/register' element={
@@ -160,7 +160,7 @@ const App = () => {
                     />
                     <Route path='/u/:username' element={
                         <ProfilePage
-                            parseDate={parseDate}
+                            parseDate={parseTimestamp}
                             useQuery={useQuery}
                             userData={userData}
                         />

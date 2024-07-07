@@ -11,14 +11,14 @@ const SingleMessage = ({ message, letter, leftAlign, parseDate }) => {
                         </div>
                         <div>
                             <p className="mb-0">{message.content}</p>
-                            <p className="mb-0 text-secondary">{parseDate(message.postDate)}</p>
+                            <p className="mb-0 text-secondary">{parseDate(message.postTime)}</p>
                         </div>
                     </>
                     :
                     <>
                         <div className="ms-auto d-flex flex-column">
                             <p className="mb-0 ">{message.content}</p>
-                            <p className="mb-0 ms-auto text-secondary">{parseDate(message.postDate)}</p>
+                            <p className="mb-0 ms-auto text-secondary">{parseDate(message.postTime)}</p>
                         </div>
                         <div className="avatar-xsm ms-2 border border-primary rounded-circle d-flex align-items-center justify-content-center">
                             <p className="mb-0"><b>{letter}</b></p>
