@@ -40,14 +40,25 @@ const getPagesByCampaignId = async (campaignId) => {
 
 const getPageByNameAndCampaignIdAndParentPageId = async (name, campaignId, parentPageId) => {
     try {
-        const { rows: [page] } = await client.query(`
-            SELECT *
-            FROM pages
-            WHERE name='${name}'
-            AND "campaignId"=${campaignId}
-            AND "parentPageId"=${parentPageId}
-        `);
-        return page;
+        if (parentPageId) {
+            const { rows: [page] } = await client.query(`
+                SELECT *
+                FROM pages
+                WHERE name='${name}'
+                AND "campaignId"=${campaignId}
+                AND "parentPageId"=${parentPageId}
+            `);
+            return page;
+        } else {
+            const { rows: [page] } = await client.query(`
+                SELECT *
+                FROM pages
+                WHERE name='${name}'
+                AND "campaignId"=${campaignId}
+                AND "parentPageId" IS NULL;
+            `);
+            return page;
+        }
     } catch (error) {
         console.error(error);
     };

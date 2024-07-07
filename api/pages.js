@@ -21,12 +21,13 @@ router.post('/', requireUser, async (req, res, next) => {
                 if (!_page) {
                     const page = await createPage(fields);
                     res.send(page);
+                } else {
+                    res.status(400);
+                    res.send({
+                        name: 'PageError',
+                        message: 'Could not create new page! This page may already exist at that path.'
+                    });
                 }
-                res.status(400);
-                res.send({
-                    name: 'PageError',
-                    message: 'Could not create new page! This page may already exist at that path.'
-                });
             } else {
                 res.status(403);
                 res.send({
